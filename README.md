@@ -2,7 +2,7 @@
 
 An interactive ecological exhibit built for the **Marbles Kids Museum Backwards Science Fair 2026** at NC State University. The project turns the *Who Eats Whom* food web research database into a set of gamified, touch-driven experiences for children.
 
-Built by Bipin Gowda and Moksh in collaboration with Dr. Bradley Allf and Dr. Aditi Mallavarapu at NC State University.
+Built by Bipin Gowda in collaboration with Dr. Bradley Allf and Dr. Aditi Mallavarapu at NC State University.
 
 ---
 
@@ -21,10 +21,10 @@ The *Who Eats Whom* database contains ~13,000 verified feeding records (predatio
 
 ## Tech Stack
 
-- **Frontend:** Next.js + Framer Motion + Tailwind CSS
+- **Frontend:** Next.js (App Router) + Framer Motion + Tailwind CSS
 - **Backend:** FastAPI (Python)
-- **Database:** SQLite (local), Neo4j (full dataset)
-- **Touch input:** Pointer Events API (IR frame + iPad + mouse unified)
+- **Database:** SQLite (local exhibition), Neo4j (full dataset)
+- **Touch input:** Pointer Events API — unified across IR frame, iPad, and mouse
 
 ---
 
@@ -32,15 +32,39 @@ The *Who Eats Whom* database contains ~13,000 verified feeding records (predatio
 
 ```
 who-eats-whom/
+├── README.md
+├── .gitignore
 ├── backend/
 │   ├── main.py              # FastAPI app — all game endpoints
 │   ├── parse_csv.py         # CSV parser and SQLite loader
 │   ├── requirements.txt     # Python dependencies
-│   ├── data/                # Place your CSV files here (see below)
+│   ├── who_eats_whom.db     # SQLite DB (generated — not committed)
+│   ├── data/                # Place CSV files here (not committed)
 │   │   ├── nc_species.csv
 │   │   └── us_species.csv
-│   └── static_json/         # Auto-generated fallback JSON (after parse_csv.py)
-└── frontend/                # Next.js app (coming soon)
+│   └── static_json/         # Auto-generated fallback JSON (not committed)
+│       ├── relationships.json
+│       ├── species.json
+│       └── network.json
+└── frontend/
+    ├── app/
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── page.tsx          # Redirects to /game1
+    │   └── game1/
+    │       └── page.tsx      # Game 1 main page
+    ├── components/
+    │   ├── game1/
+    │   │   ├── AnimalShelf.tsx
+    │   │   ├── DropZone.tsx
+    │   │   ├── PhotoModal.tsx
+    │   │   └── NetworkCanvas.tsx
+    │   └── ui/
+    │       └── AnimalBlob.tsx
+    ├── lib/
+    │   ├── api.ts            # API client with static fallback
+    │   └── types.ts          # Shared TypeScript types
+    └── .env.local            # Local environment variables (not committed)
 ```
 
 ---
@@ -50,7 +74,6 @@ who-eats-whom/
 ### Prerequisites
 
 - Python 3.10+
-- pip
 
 ### 1. Clone the repo
 
@@ -61,7 +84,7 @@ cd who-eats-whom
 
 ### 2. Add the data files
 
-The CSV files are not committed to the repo. Place them manually in `backend/data/`:
+The CSV files are not committed. Place them manually inside `backend/data/`:
 
 ```
 backend/data/nc_species.csv
@@ -94,8 +117,6 @@ pip install -r requirements.txt
 
 ### 5. Build the database
 
-This parses the CSV files and loads them into a local SQLite database. It also exports static JSON fallback files.
-
 ```bash
 python3 parse_csv.py
 ```
@@ -105,17 +126,74 @@ You should see:
 Processing 697 unique relationships...
 ✓ Loaded 697 relationships
 ✓ Built species table with 808 entries
+✓ Species with thumbnails: 808/808
 ✓ Static JSON exported to static_json/
 ```
 
-### 6. Start the server
+### 6. Start the backend
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-The API is now running at `http://localhost:8000`.
-Interactive API docs are available at `http://localhost:8000/docs`.
+API is running at `http://localhost:8000`.
+Interactive docs at `http://localhost:8000/docs`.
+
+---
+
+## Frontend Setup
+
+### Prerequisites
+
+- Node.js 18+
+
+### 1. Install dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+### 2. Create environment file
+
+```bash
+echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+```
+
+If running the frontend on a different device than the backend (e.g. iPad accessing a laptop server), replace `localhost` with the laptop's local IP address:
+
+```bash
+echo "NEXT_PUBLIC_API_URL=http://192.168.x.x:8000" > .env.local
+```
+
+### 3. Start the frontend
+
+```bash
+npm run dev
+```
+
+App is running at `http://localhost:3000`.
+
+---
+
+## Running Both Together
+
+You need two terminals open:
+
+**Terminal 1 — Backend:**
+```bash
+cd backend
+source venv/bin/activate
+uvicorn main:app --reload --port 8000
+```
+
+**Terminal 2 — Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+Then open `http://localhost:3000`.
 
 ---
 
@@ -131,8 +209,8 @@ Interactive API docs are available at `http://localhost:8000/docs`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/species` | List all species. Optional params: `taxon_class`, `state`, `limit` |
-| GET | `/species/{scientific_name}` | Get a single species by scientific name |
+| GET | `/species` | List species. Params: `taxon_class`, `state`, `limit` |
+| GET | `/species/{scientific_name}` | Get a single species |
 
 ### Game 1 — Who Eats Whom?
 
@@ -146,7 +224,7 @@ Returns `direction`: `a_eats_b`, `b_eats_a`, `both`, or `none`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/game/snapshot` | Find a real photo of a feeding interaction among placed species. Param: `species` (comma-separated) |
+| GET | `/game/snapshot` | Find photo evidence among placed species. Param: `species` (comma-separated) |
 
 ### Game 3 — Who Ate My Fish?
 
@@ -159,15 +237,13 @@ Returns `direction`: `a_eats_b`, `b_eats_a`, `both`, or `none`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/game/network` | Get the full food web network (top N species by betweenness). Param: `top_n` (default 200) |
-| GET | `/game/collapse` | Simulate removing an entire taxon class. Param: `remove_taxon_class` |
-| GET | `/game/taxon-classes` | List all taxon classes available for collapse simulation |
+| GET | `/game/network` | Get the full food web network. Param: `top_n` (default 200) |
+| GET | `/game/collapse` | Simulate removing a taxon class. Param: `remove_taxon_class` |
+| GET | `/game/taxon-classes` | List all taxon classes |
 
 ---
 
 ## Postman Test Suite
-
-Use these to verify your backend is working correctly after setup:
 
 ```
 GET localhost:8000/health
@@ -184,18 +260,23 @@ GET localhost:8000/game/collapse?remove_taxon_class=Insecta
 
 ---
 
-## Data Notes
+## Exhibition Setup (Museum Day)
 
-- The dataset contains 697 verified US feeding relationships across 808 species
-- Every record includes a real iNaturalist observation photograph
-- The CSV column headers `Predator` and `Prey` are inverted from their intuitive meaning — this is corrected in `parse_csv.py`
-- The `n` column in the raw CSV contains Neo4j Cypher-style property strings which are parsed into clean fields on load
+1. Run backend on the laptop connected to the TV
+2. Find the laptop's local IP: `ip addr` (Linux/WSL) or `ipconfig` (Windows)
+3. Update `frontend/.env.local` with that IP
+4. Run `npm run build && npm run start` for production mode
+5. Open `http://localhost:3000` on the TV browser
+6. For iPads, open `http://[laptop-ip]:3000` in Safari
 
 ---
 
-## Contributing
+## Data Notes
 
-This project is part of active research at NC State University. If you'd like to contribute or have questions about the data, reach out to the project team.
+- 697 verified US feeding relationships across 808 species
+- Every record includes a real iNaturalist observation photograph
+- The CSV column headers `Predator` and `Prey` are inverted from their intuitive meaning — corrected in `parse_csv.py`
+- The `n` column in the raw CSV contains Neo4j Cypher-style property strings parsed into clean fields on load
 
 ---
 
