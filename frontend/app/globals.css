@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #0E0A05;
+  --cave-dark: #120D06;
+  --cave-mid: #1A1208;
+  --cave-surface: #2A1F0F;
+  --cave-border: #2E2010;
+  --cave-border-warm: #3E3020;
+  --gold-dim: #3E2E18;
+  --gold-mid: #5C4A2A;
+  --gold-warm: #8B7355;
+  --gold-bright: #C8A96E;
+  --gold-highlight: #E8C98E;
+  --font-display: var(--font-cinzel), 'Palatino Linotype', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--void);
+  color: var(--gold-warm);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide scrollbars but allow scrolling */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Touch action for IR frame multitouch */
+.touch-zone {
+  touch-action: none;
+}

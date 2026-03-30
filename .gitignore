@@ -1,4 +1,4 @@
-# Python
+# ── Python / Backend ──────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
@@ -21,29 +21,31 @@ backend/who_eats_whom.db
 # Static JSON fallback (generated — run parse_csv.py to recreate)
 backend/static_json/
 
-# Environment variables
+# CSV data files (too large for git — add manually to backend/data/)
+backend/data/
+
+# ── Next.js / Frontend ────────────────────────────────────────────────────────
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/.env.local
+frontend/.env.production
+
+# ── Environment variables ─────────────────────────────────────────────────────
 .env
 .env.local
 .env.production
 
-# CSV data files (too large for git — add manually to backend/data/)
-backend/data/
-
-# Next.js
-frontend/.next/
-frontend/node_modules/
-frontend/out/
-
-# OS
+# ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# IDE
+# ── IDE ───────────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Logs
+# ── Logs ──────────────────────────────────────────────────────────────────────
 *.log
 uvicorn.log

@@ -108,7 +108,7 @@ def who_eats_whom(species_a: str, species_b: str):
 
     a_eats_b = conn.execute("""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_url,
+               image_url, type_of_feeding, observation_uri,
                observed_on, place_state, prey_common_name
         FROM feeding_relationships
         WHERE predator_scientific = ? AND prey_scientific = ?
@@ -117,7 +117,7 @@ def who_eats_whom(species_a: str, species_b: str):
 
     b_eats_a = conn.execute("""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_url,
+               image_url, type_of_feeding, observation_uri,
                observed_on, place_state, prey_common_name
         FROM feeding_relationships
         WHERE predator_scientific = ? AND prey_scientific = ?
@@ -163,7 +163,7 @@ def snapshot_science(species: str = Query(..., description="Comma-separated scie
     placeholders = ",".join("?" * len(species_list))
     rows = conn.execute(f"""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_url,
+               image_url, type_of_feeding, observation_uri,
                observed_on, place_state, place_county,
                prey_common_name, prey_taxon_class
         FROM feeding_relationships
@@ -209,7 +209,7 @@ def who_ate_my_fish(species: str):
                s.trophic_pos        AS predator_trophic_pos,
                f.image_url,
                f.type_of_feeding,
-               f.observation_url,
+               f.observation_uri,
                f.observed_on,
                f.place_state
         FROM feeding_relationships f
@@ -225,7 +225,7 @@ def who_ate_my_fish(species: str):
                f.prey_trophic_pos,
                f.image_url,
                f.type_of_feeding,
-               f.observation_url,
+               f.observation_uri,
                f.observed_on,
                f.place_state
         FROM feeding_relationships f
