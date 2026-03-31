@@ -78,7 +78,10 @@ export default function AnimalBlob({
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
-        style={{ overflow: "visible", filter: dragging ? "drop-shadow(0 8px 24px rgba(0,0,0,0.6))" : "none" }}
+        style={{
+          overflow: "visible",
+          filter: dragging ? "drop-shadow(0 8px 24px rgba(0,0,0,0.6))" : "drop-shadow(0 6px 18px rgba(0,0,0,0.18))",
+        }}
       >
         <defs>
           <clipPath id={clipId}>
@@ -95,8 +98,8 @@ export default function AnimalBlob({
         {/* Blob background */}
         <path
           d={blobPath}
-          fill={selected ? "#5C4A2A" : "#2A2018"}
-          stroke={selected ? "#C8A96E" : "#6B5A3E"}
+          fill={selected ? "#7C6547" : "#C8B08B"}
+          stroke={selected ? "#E8C98E" : "#7B6246"}
           strokeWidth={selected ? 2 : 1.5}
           style={{
             filter: selected ? `url(#glow-${clipId})` : "none",
@@ -113,7 +116,7 @@ export default function AnimalBlob({
             height={size}
             clipPath={`url(#${clipId})`}
             preserveAspectRatio="xMidYMid slice"
-            style={{ opacity: 0.75 }}
+            style={{ opacity: 0.84, filter: "sepia(0.12) saturate(0.85)" }}
           />
         ) : (
           // Fallback — first letter of common name
@@ -133,7 +136,7 @@ export default function AnimalBlob({
         {/* Warm overlay tint for cave painting feel */}
         <path
           d={blobPath}
-          fill="rgba(180, 120, 40, 0.08)"
+          fill="rgba(120, 78, 36, 0.08)"
           stroke="none"
         />
 
@@ -156,9 +159,9 @@ export default function AnimalBlob({
       <span
         className="text-center leading-tight"
         style={{
-          fontFamily: "'Cinzel', serif",
+          fontFamily: "var(--font-display)",
           fontSize: 9,
-          color: selected ? "#C8A96E" : "#8B7355",
+          color: selected ? "#E8C98E" : "#6E573F",
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           maxWidth: size + 8,

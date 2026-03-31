@@ -14,7 +14,13 @@
   --gold-warm: #8B7355;
   --gold-bright: #C8A96E;
   --gold-highlight: #E8C98E;
+  --parchment: #d7c2a2;
+  --parchment-deep: #b79d79;
+  --moss: #6c7b52;
+  --charcoal: #241912;
   --font-display: var(--font-cinzel), 'Palatino Linotype', serif;
+  --font-medieval-display: var(--font-medieval), 'Palatino Linotype', serif;
+  --font-manuscript: var(--font-imfell), 'Palatino Linotype', serif;
 }
 
 * {
@@ -26,7 +32,9 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: var(--void);
+  background:
+    radial-gradient(circle at top, rgba(200, 169, 110, 0.08), transparent 30%),
+    linear-gradient(180deg, #1b120a 0%, #0e0a05 100%);
   color: var(--gold-warm);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

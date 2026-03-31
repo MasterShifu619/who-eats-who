@@ -14,7 +14,6 @@ const NODE_RADIUS = 32
 export default function NetworkCanvas({ nodes, links }: NetworkCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dims, setDims] = useState({ width: 0, height: 0 })
-  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({})
 
   // Measure container
   useEffect(() => {
@@ -33,33 +32,20 @@ export default function NetworkCanvas({ nodes, links }: NetworkCanvasProps) {
     return () => obs.disconnect()
   }, [])
 
-  // Assign positions when nodes or dims change
-  useEffect(() => {
-    if (nodes.length === 0 || dims.width === 0) return
-
-    setPositions((prev) => {
-      const next = { ...prev }
-      nodes.forEach((node, i) => {
-        if (!next[node.scientific_name]) {
-          // Spread nodes in a circle layout
-          const angle = (i / nodes.length) * Math.PI * 2
-          const rx = (dims.width / 2 - NODE_RADIUS - 20)
-          const ry = (dims.height / 2 - NODE_RADIUS - 20)
-          next[node.scientific_name] = {
-            x: dims.width / 2 + Math.cos(angle) * rx * 0.6,
-            y: dims.height / 2 + Math.sin(angle) * ry * 0.6,
-          }
-        }
-      })
-      return next
+  const positions: Record<string, { x: number; y: number }> = {}
+  if (nodes.length && dims.width) {
+    nodes.forEach((node, i) => {
+      const angle = (i / nodes.length) * Math.PI * 2
+      const rx = dims.width / 2 - NODE_RADIUS - 20
+      const ry = dims.height / 2 - NODE_RADIUS - 20
+      positions[node.scientific_name] = {
+        x: dims.width / 2 + Math.cos(angle) * rx * 0.6,
+        y: dims.height / 2 + Math.sin(angle) * ry * 0.6,
+      }
     })
-  }, [nodes, dims])
+  }
 
   const getPos = (name: string) => positions[name]
-
-  useEffect(() => {
-    console.log("positions updated:", positions)
-  }, [positions])
   
   return (
     <div
