@@ -410,3 +410,44 @@ def list_taxon_classes():
     """).fetchall()
     conn.close()
     return rows_to_list(rows)
+
+
+@app.get("/game/feed")
+def feed(predator: str, prey: str):
+    """
+    Quick check: does predator eat prey?
+    Returns valid flag + photo evidence if true.
+    Used for Game 2 (Heron mouth drop game).
+    """
+    conn = get_conn()
+
+    row = conn.execute("""
+        SELECT predator_scientific, prey_scientific,
+               image_url, type_of_feeding, observation_uri,
+               observed_on, place_state, prey_common_name
+        FROM feeding_relationships
+        WHERE predator_scientific = ? AND prey_scientific = ?
+        AND image_url != ''
+        LIMIT 1
+    """, (predator, prey)).fetchone()
+
+    conn.close()
+
+    if row:
+        return {
+            "valid": True,
+            "predator": predator,
+            "prey": prey,
+            "type_of_feeding": row["type_of_feeding"],
+            "image_url": row["image_url"],
+            "observation_uri": row["observation_uri"],
+            "observed_on": row["observed_on"],
+            "place_state": row["place_state"],
+            "prey_common_name": row["prey_common_name"],
+        }
+    else:
+        return {
+            "valid": False,
+            "predator": predator,
+            "prey": prey,
+        }

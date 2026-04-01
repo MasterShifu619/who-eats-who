@@ -71,3 +71,24 @@ export async function checkWhoEatsWhom(
     `/game/who-eats-whom?species_a=${encodeURIComponent(speciesA)}&species_b=${encodeURIComponent(speciesB)}`
   )
 }
+
+
+// ── Game 2 ────────────────────────────────────────────────────────────────────
+
+export interface FeedResult {
+  valid: boolean
+  predator: string
+  prey: string
+  type_of_feeding?: string
+  image_url?: string
+  observation_uri?: string
+  observed_on?: string
+  place_state?: string
+  prey_common_name?: string
+}
+
+export async function checkFeed(predator: string, prey: string): Promise<FeedResult> {
+  return fetchAPI<FeedResult>(
+    `/game/feed?predator=${encodeURIComponent(predator)}&prey=${encodeURIComponent(prey)}`
+  )
+}

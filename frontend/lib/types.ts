@@ -57,3 +57,15 @@ export interface DroppedAnimal {
   species: Species
   zoneId: "A" | "B"
 }
+
+export interface FeedResult {
+  valid: boolean
+  predator: string
+  prey: string
+  type_of_feeding?: string
+  image_url?: string
+  observation_uri?: string
+  observed_on?: string
+  place_state?: string
+  prey_common_name?: string
+}
