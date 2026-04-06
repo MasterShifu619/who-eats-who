@@ -36,7 +36,7 @@ export default function RoomBubble({
   const controls = useAnimationControls()
   const posRef = useRef({ x: initialX, y: initialY })
   const velRef = useRef(getVelocity(species.scientific_name))
-  const frameRef = useRef<number>()
+  const frameRef = useRef<number | null>(null)
   const isDraggingRef = useRef(false)
   const dragPosRef = useRef({ x: initialX, y: initialY })
 
@@ -60,13 +60,13 @@ export default function RoomBubble({
 
   useEffect(() => {
     startPhysics()
-    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) }
+    return () => { if (frameRef.current !== null) cancelAnimationFrame(frameRef.current) }
   }, [held, eaten])
 
   // Release from tongue — push gently away
   useEffect(() => {
     if (!held && heldX !== undefined && heldY !== undefined) {
-      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
       posRef.current = { x: heldX, y: heldY }
       velRef.current = {
         vx: heldX > roomW / 2 ? -0.4 : 0.4,
@@ -82,7 +82,7 @@ export default function RoomBubble({
     if (held || eaten) return
     e.preventDefault()
     isDraggingRef.current = true
-    if (frameRef.current) cancelAnimationFrame(frameRef.current)
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
 
     // Capture initial offset so bubble doesn't jump
     const startX = e.clientX

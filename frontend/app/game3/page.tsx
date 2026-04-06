@@ -82,7 +82,7 @@ export default function Game3Page() {
   const edgesRef    = useRef<Edge[]>([])
   const particlesRef= useRef<Particle[]>([])
   const fusesRef = useRef<FuseParticle[]>([])
-  const animRef     = useRef<number>()
+  const animRef     = useRef<number | null>(null)
   const dwellRef    = useRef<{ nodeId: string; startTime: number; timerId: NodeJS.Timeout | null } | null>(null)
   const dragRef     = useRef<{ nodeId: string; offsetX: number; offsetY: number } | null>(null)
   const hoveredRef  = useRef<string | null>(null)
@@ -632,7 +632,7 @@ export default function Game3Page() {
     }
 
     animRef.current = requestAnimationFrame(draw)
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+    return () => { if (animRef.current !== null) cancelAnimationFrame(animRef.current) }
   }, [loading, tick])
 
   // ── Pointer helpers ───────────────────────────────────────────────────
