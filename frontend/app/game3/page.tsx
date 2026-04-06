@@ -16,6 +16,7 @@ interface Node {
   deleted: boolean
   exploding: boolean
   starving: boolean
+  pinned: boolean
 }
 
 interface Edge {
@@ -23,6 +24,17 @@ interface Edge {
   predator: string
   deleting: boolean
   deleted: boolean
+}
+
+interface FuseParticle {
+  edgeKey: string
+  progress: number  // 0 to 1 along the path
+  color: string
+  startTime: number
+  duration: number
+  fromX: number; fromY: number
+  cpX: number; cpY: number   // control point
+  toX: number; toY: number
 }
 
 interface Particle {
@@ -41,9 +53,9 @@ interface Particle {
 // ── Constants ──────────────────────────────────────────────────────────────
 const DWELL_MS     = 5000   // 5 second hold to delete
 const NODE_R       = 36
-const REPEL        = 9000
+const REPEL        = 18000
 const ATTRACT      = 0.012
-const IDEAL_DIST   = 220
+const IDEAL_DIST   = 320
 const DAMPING      = 0.78
 const API_BASE     = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -69,6 +81,7 @@ export default function Game3Page() {
   const nodesRef    = useRef<Node[]>([])
   const edgesRef    = useRef<Edge[]>([])
   const particlesRef= useRef<Particle[]>([])
+  const fusesRef = useRef<FuseParticle[]>([])
   const animRef     = useRef<number>()
   const dwellRef    = useRef<{ nodeId: string; startTime: number; timerId: NodeJS.Timeout | null } | null>(null)
   const dragRef     = useRef<{ nodeId: string; offsetX: number; offsetY: number } | null>(null)
@@ -79,6 +92,7 @@ export default function Game3Page() {
   const [dwellProgress, setDwellProgress] = useState<{ nodeId: string; pct: number } | null>(null)
   const [message, setMessage]   = useState<{ text: string; color: string } | null>(null)
   const [deletedCount, setDeletedCount] = useState(0)
+  const deletedSetRef = useRef<Set<string>>(new Set())
   const [dims, setDims]         = useState({ w: 1440, h: 900 })
 
   // ── Load data ─────────────────────────────────────────────────────────
@@ -99,7 +113,7 @@ export default function Game3Page() {
         })
 
         const cx = w / 2, cy = h / 2
-        const radii = [0, h * 0.2, h * 0.34, h * 0.42, h * 0.46]
+        const radii = [0, h * 0.32, h * 0.46, h * 0.54, h * 0.58]
 
         nodesRef.current = data.nodes.map((n: any) => {
           const tier = tiers[n.trophic] ?? 2
@@ -113,7 +127,7 @@ export default function Game3Page() {
             x: tier === 0 ? cx : cx + Math.cos(angle) * r,
             y: tier === 0 ? cy : cy + Math.sin(angle) * r,
             vx: 0, vy: 0,
-            deleted: false, exploding: false, starving: false,
+            deleted: false, exploding: false, starving: false, pinned: false,
           }
         })
 
@@ -136,6 +150,7 @@ export default function Game3Page() {
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const a = nodes[i], b = nodes[j]
+        if (a.pinned && b.pinned) continue
         const dx = b.x - a.x, dy = b.y - a.y
         const d = Math.hypot(dx, dy) || 1
         const f = REPEL / (d * d)
@@ -149,6 +164,7 @@ export default function Game3Page() {
       const a = nodes.find(n => n.id === e.prey)
       const b = nodes.find(n => n.id === e.predator)
       if (!a || !b) return
+      if (a.pinned && b.pinned) return
       const dx = b.x - a.x, dy = b.y - a.y
       const d = Math.hypot(dx, dy) || 1
       const f = (d - IDEAL_DIST) * ATTRACT
@@ -159,8 +175,15 @@ export default function Game3Page() {
     // Center gravity + integrate
     nodes.forEach(n => {
       if (dragRef.current?.nodeId === n.id) return
-      n.vx += (w/2 - n.x) * 0.002
-      n.vy += (h/2 - n.y) * 0.002
+      if (n.pinned) {
+        // Pinned nodes: zero velocity, stay put, only very gentle nudge if out of bounds
+        n.vx = 0; n.vy = 0
+        n.x = Math.max(65, Math.min(w - 65, n.x))
+        n.y = Math.max(80, Math.min(h - 65, n.y))
+        return
+      }
+      n.vx += (w/2 - n.x) * 0.001
+      n.vy += (h/2 - n.y) * 0.001
       n.vx *= DAMPING; n.vy *= DAMPING
       n.x += n.vx; n.y += n.vy
       n.x = Math.max(65, Math.min(w - 65, n.x))
@@ -193,8 +216,9 @@ export default function Game3Page() {
   // ── Cascade deletion ──────────────────────────────────────────────────
   const triggerCascade = useCallback(async (removedId: string) => {
     try {
-      const res = await fetch(`${API_BASE}/game/foodweb/nc/cascade?removed=${encodeURIComponent(removedId)}`)
-      const data = await res.json()
+        deletedSetRef.current.add(removedId)
+        const res = await fetch(`${API_BASE}/game/foodweb/nc/cascade?removed=${encodeURIComponent([...deletedSetRef.current].join(","))}`)        
+        const data = await res.json()
 
       if (data.exploding.length === 0 && data.starving.length === 0) return
 
@@ -211,15 +235,19 @@ export default function Game3Page() {
         if (n) n.starving = true
       })
 
-      await sleep(2000)
+      await sleep(3000)
 
-      // Delete starving species one by one with cascade animation
       for (const id of data.starving) {
+        const n = nodesRef.current.find(n => n.id === id)
+        if (!n || n.deleted) continue
+        setMessage({ text: `🔴 ${n.emoji} ${n.label} is starving — no food sources remain!`, color: "#FF4444" })
+        await sleep(1200)
         await deleteNodeAnimated(id, true)
-        await sleep(800)
+        await sleep(600)
+        // Recurse — this deletion may starve more species
+        await triggerCascade(id)
       }
-
-      setTimeout(() => setMessage(null), 3000)
+      setTimeout(() => setMessage(null), 2000)
     } catch (e) {
       console.error(e)
     }
@@ -239,12 +267,37 @@ export default function Game3Page() {
 
     for (const edge of connectedEdges) {
       edge.deleting = true
-      await sleep(180)
+      const a = nodesRef.current.find(n => n.id === edge.prey)
+      const b = nodesRef.current.find(n => n.id === edge.predator)
+      if (a && b) {
+        const dx = b.x - a.x, dy = b.y - a.y
+        const d = Math.hypot(dx, dy) || 1
+        const ux = dx/d, uy = dy/d
+        const x1 = a.x + ux * NODE_R
+        const y1 = a.y + uy * NODE_R
+        const x2 = b.x - ux * (NODE_R + 10)
+        const y2 = b.y - uy * (NODE_R + 10)
+        const cpX = (x1+x2)/2 - uy*20
+        const cpY = (y1+y2)/2 + ux*20
+        const color = TROPHIC_COLOR[a.trophic] || "#FFF"
+        fusesRef.current.push({
+          edgeKey: `${edge.prey}-${edge.predator}`,
+          progress: 0,
+          color,
+          startTime: Date.now(),
+          duration: 1200,
+          fromX: x1, fromY: y1,
+          cpX, cpY,
+          toX: x2, toY: y2,
+        })
+      }
+      await sleep(1500)
       edge.deleted = true
       edge.deleting = false
+      fusesRef.current = fusesRef.current.filter(f => f.edgeKey !== `${edge.prey}-${edge.predator}`)
     }
 
-    await sleep(300)
+    await sleep(800)
 
     // Step 2: Snap particle explosion
     spawnParticles(node.x, node.y, color)
@@ -320,8 +373,11 @@ export default function Game3Page() {
         const mx = (x1+x2)/2 - uy*20
         const my = (y1+y2)/2 + ux*20
 
-        // Deleting edge — shrink it
-        const alphaScale = e.deleting ? 0.2 : 1
+        const fuse = fusesRef.current.find(f => f.edgeKey === `${e.prey}-${e.predator}`)
+        const fuseT = fuse ? Math.min((Date.now() - fuse.startTime) / fuse.duration, 1) : 0
+        if (e.deleted) return
+        if (e.deleting && (!fuse || fuseT >= 1)) { e.deleted = true; return }
+        const alphaScale = 1
 
         const aColor = TROPHIC_COLOR[a.trophic] || "#FFF"
         const bColor = TROPHIC_COLOR[b.trophic] || "#FFF"
@@ -329,14 +385,31 @@ export default function Game3Page() {
         grad.addColorStop(0, aColor + (isHov ? "DD" : e.deleting ? "33" : "55"))
         grad.addColorStop(1, bColor + (isHov ? "DD" : e.deleting ? "33" : "55"))
 
-        ctx.beginPath()
-        ctx.moveTo(x1, y1)
-        ctx.quadraticCurveTo(mx, my, x2, y2)
-        ctx.strokeStyle = grad
-        ctx.lineWidth = isHov ? 2.5 : 1.2
-        ctx.globalAlpha = alphaScale
-        ctx.stroke()
-        ctx.globalAlpha = 1
+        if (e.deleting && fuse) {
+          // Only draw the unconsumed portion (from fuseT to 1)
+          ctx.beginPath()
+          for (let i = 0; i <= 20; i++) {
+            const s = fuseT + (i / 20) * (1 - fuseT)
+            const qx = (1-s)*(1-s)*x1 + 2*(1-s)*s*mx + s*s*x2
+            const qy = (1-s)*(1-s)*y1 + 2*(1-s)*s*my + s*s*y2
+            if (i === 0) ctx.moveTo(qx, qy)
+            else ctx.lineTo(qx, qy)
+          }
+          ctx.strokeStyle = grad
+          ctx.lineWidth = 1.2
+          ctx.globalAlpha = 1
+          ctx.stroke()
+          ctx.globalAlpha = 1
+        } else {
+          ctx.beginPath()
+          ctx.moveTo(x1, y1)
+          ctx.quadraticCurveTo(mx, my, x2, y2)
+          ctx.strokeStyle = grad
+          ctx.lineWidth = isHov ? 2.5 : 1.2
+          ctx.globalAlpha = alphaScale
+          ctx.stroke()
+          ctx.globalAlpha = 1
+        }
 
         // Arrowhead
         const ang = Math.atan2(y2-my, x2-mx)
@@ -435,14 +508,101 @@ export default function Game3Page() {
         ctx.fillText(lbl, n.x, ly)
       })
 
+      // ── Fuse particles ──
+      const now = Date.now()
+      fusesRef.current = fusesRef.current.filter(f => {
+        const t = Math.min((now - f.startTime) / f.duration, 1)
+        f.progress = t
+
+        // Quadratic bezier point at progress t
+        const px = (1-t)*(1-t)*f.fromX + 2*(1-t)*t*f.cpX + t*t*f.toX
+        const py = (1-t)*(1-t)*f.fromY + 2*(1-t)*t*f.cpY + t*t*f.toY
+
+        // Draw consumed trail (dark, erased)
+        ctx.beginPath()
+        ctx.moveTo(f.fromX, f.fromY)
+        // Partial bezier — draw from start to current progress
+        // Approximate with line segments
+        for (let i = 0; i <= 20; i++) {
+          const s = (i / 20) * t
+          const qx = (1-s)*(1-s)*f.fromX + 2*(1-s)*s*f.cpX + s*s*f.toX
+          const qy = (1-s)*(1-s)*f.fromY + 2*(1-s)*s*f.cpY + s*s*f.toY
+          if (i === 0) ctx.moveTo(qx, qy)
+          else ctx.lineTo(qx, qy)
+        }
+        ctx.strokeStyle = "#06060F"
+        ctx.lineWidth = 6
+        ctx.stroke()
+
+        // Tail — last 5% of path behind spark
+        ctx.beginPath()
+        for (let i = 0; i <= 8; i++) {
+          const s = Math.max(0, t - 0.06) + (i / 8) * 0.06
+          const qx = (1-s)*(1-s)*f.fromX + 2*(1-s)*s*f.cpX + s*s*f.toX
+          const qy = (1-s)*(1-s)*f.fromY + 2*(1-s)*s*f.cpY + s*s*f.toY
+          if (i === 0) ctx.moveTo(qx, qy)
+          else ctx.lineTo(qx, qy)
+        }
+        ctx.strokeStyle = "#FFFFFF"
+        ctx.lineWidth = 2.5
+        ctx.globalAlpha = 0.6
+        ctx.stroke()
+        ctx.globalAlpha = 1
+
+        // Tail — last 5% of path behind spark
+        ctx.beginPath()
+        for (let i = 0; i <= 8; i++) {
+          const s = Math.max(0, t - 0.06) + (i / 8) * 0.06
+          const qx = (1-s)*(1-s)*f.fromX + 2*(1-s)*s*f.cpX + s*s*f.toX
+          const qy = (1-s)*(1-s)*f.fromY + 2*(1-s)*s*f.cpY + s*s*f.toY
+          if (i === 0) ctx.moveTo(qx, qy)
+          else ctx.lineTo(qx, qy)
+        }
+        ctx.strokeStyle = "#FFFFFF"
+        ctx.lineWidth = 2.5
+        ctx.globalAlpha = 0.6
+        ctx.stroke()
+        ctx.globalAlpha = 1
+
+        // Spark head — small tight glow
+        const glowG = ctx.createRadialGradient(px, py, 0, px, py, 6)
+        glowG.addColorStop(0, "#FFFFFF")
+        glowG.addColorStop(0.5, f.color)
+        glowG.addColorStop(1, "transparent")
+        ctx.fillStyle = glowG
+        ctx.beginPath()
+        ctx.arc(px, py, 6, 0, Math.PI*2)
+        ctx.fill()
+
+        // Bright core dot
+        ctx.beginPath()
+        ctx.arc(px, py, 2, 0, Math.PI*2)
+        ctx.fillStyle = "#FFFFFF"
+        ctx.fill()
+
+        // Flare at destination when done
+        if (t >= 1) {
+          const flareG = ctx.createRadialGradient(f.toX, f.toY, 0, f.toX, f.toY, 24)
+          flareG.addColorStop(0, "#FFFFFF")
+          flareG.addColorStop(0.4, f.color)
+          flareG.addColorStop(1, "transparent")
+          ctx.fillStyle = flareG
+          ctx.beginPath()
+          ctx.arc(f.toX, f.toY, 24, 0, Math.PI*2)
+          ctx.fill()
+        }
+
+        return t < 1.15  // keep a bit after completion for flare
+      })
+
       // ── Particles ──
       particlesRef.current = particlesRef.current.filter(p => p.alpha > 0.02)
       particlesRef.current.forEach(p => {
         p.x += p.vx; p.y += p.vy
-        p.vy += 0.08  // gravity
-        p.alpha -= 0.018
+        p.vy += 0.018  // gravity — slow
+        p.alpha -= 0.004
         p.rotation += p.rotSpeed
-        p.size *= 0.97
+        p.size *= 0.993
 
         ctx.save()
         ctx.translate(p.x, p.y)
@@ -538,6 +698,11 @@ export default function Game3Page() {
   }, [cancelDwell])
 
   const handlePointerUp = useCallback(() => {
+    if (dragRef.current) {
+      // Pin node at its current position so physics won't drag it back
+      const n = nodesRef.current.find(n => n.id === dragRef.current!.nodeId)
+      if (n) { n.pinned = true; n.vx = 0; n.vy = 0 }
+    }
     dragRef.current = null
     cancelDwell()
   }, [cancelDwell])
@@ -624,7 +789,7 @@ export default function Game3Page() {
               </div>
             )}
             {info.eatenBy.length === 0 && (
-              <div style={{ fontFamily:"system-ui", fontSize:11, color:"#FF3333", marginTop:4 }}>👑 Apex — nothing eats this</div>
+              <div style={{ fontFamily:"system-ui", fontSize:11, color:"#44FF44", marginTop:4 }}>⬆️ Population is increasing — nothing is hunting this species!</div>
             )}
             <div style={{ fontFamily:"system-ui", fontSize:9, color:"rgba(255,255,255,0.3)", marginTop:8, letterSpacing:"0.1em" }}>
               HOLD FOR 5 SECONDS TO REMOVE

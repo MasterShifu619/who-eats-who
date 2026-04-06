@@ -481,6 +481,7 @@ def get_cascade(removed: str):
     Returns species that lose ALL predators (population explodes)
     and species that lose ALL prey (may starve).
     """
+    removed_set = set(removed.split(","))
     conn = get_conn()
     rows = conn.execute("SELECT prey, predator FROM foodweb_nc").fetchall()
     conn.close()
@@ -488,7 +489,7 @@ def get_cascade(removed: str):
     edges = [dict(r) for r in rows]
 
     # Remove all edges involving the deleted species
-    remaining = [e for e in edges if e["prey"] != removed and e["predator"] != removed]
+    remaining = [e for e in edges if e["prey"] not in removed_set and e["predator"] not in removed_set]
 
     # Which prey species had ALL their predators removed?
     all_predators = {}
@@ -503,7 +504,7 @@ def get_cascade(removed: str):
     for prey, preds in all_predators.items():
         if prey == removed:
             continue
-        if removed in preds and not remaining_predators.get(prey):
+        if removed_set & preds and not remaining_predators.get(prey):
             exploding.append(prey)
 
     # Which predator species had ALL their prey removed?
