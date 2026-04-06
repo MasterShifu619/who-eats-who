@@ -543,9 +543,9 @@ export default function Game3Page() {
           if (i === 0) ctx.moveTo(qx, qy)
           else ctx.lineTo(qx, qy)
         }
-        ctx.strokeStyle = "#FFFFFF"
-        ctx.lineWidth = 2.5
-        ctx.globalAlpha = 0.6
+        ctx.strokeStyle = "#FF8800"
+        ctx.lineWidth = 3
+        ctx.globalAlpha = 0.85
         ctx.stroke()
         ctx.globalAlpha = 1
 
@@ -564,21 +564,35 @@ export default function Game3Page() {
         ctx.stroke()
         ctx.globalAlpha = 1
 
-        // Spark head — small tight glow
-        const glowG = ctx.createRadialGradient(px, py, 0, px, py, 6)
-        glowG.addColorStop(0, "#FFFFFF")
-        glowG.addColorStop(0.5, f.color)
+        // Bright tip
+        ctx.beginPath()
+        ctx.arc(px, py, 3, 0, Math.PI*2)
+        ctx.fillStyle = "#FFFFFF"
+        ctx.fill()
+
+        // Orange glow around tip
+        const glowG = ctx.createRadialGradient(px, py, 0, px, py, 8)
+        glowG.addColorStop(0, "rgba(255,200,50,0.9)")
+        glowG.addColorStop(0.5, "rgba(255,100,0,0.5)")
         glowG.addColorStop(1, "transparent")
         ctx.fillStyle = glowG
         ctx.beginPath()
-        ctx.arc(px, py, 6, 0, Math.PI*2)
+        ctx.arc(px, py, 8, 0, Math.PI*2)
         ctx.fill()
 
-        // Bright core dot
-        ctx.beginPath()
-        ctx.arc(px, py, 2, 0, Math.PI*2)
-        ctx.fillStyle = "#FFFFFF"
-        ctx.fill()
+        // Sideways sparks — 4 small particles shooting off
+        for (let k = 0; k < 4; k++) {
+          const sparkAngle = Math.random() * Math.PI * 2
+          const sparkDist = 4 + Math.random() * 8
+          const sx = px + Math.cos(sparkAngle) * sparkDist
+          const sy = py + Math.sin(sparkAngle) * sparkDist
+          ctx.beginPath()
+          ctx.arc(sx, sy, 1 + Math.random() * 1.5, 0, Math.PI*2)
+          ctx.fillStyle = Math.random() > 0.5 ? "#FFFF00" : "#FF8800"
+          ctx.globalAlpha = 0.6 + Math.random() * 0.4
+          ctx.fill()
+          ctx.globalAlpha = 1
+        }
 
         // Flare at destination when done
         if (t >= 1) {
