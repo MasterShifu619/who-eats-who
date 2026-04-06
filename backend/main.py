@@ -108,7 +108,7 @@ def who_eats_whom(species_a: str, species_b: str):
 
     a_eats_b = conn.execute("""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_uri,
+               image_url, type_of_feeding, observation_url,
                observed_on, place_state, prey_common_name
         FROM feeding_relationships
         WHERE predator_scientific = ? AND prey_scientific = ?
@@ -117,7 +117,7 @@ def who_eats_whom(species_a: str, species_b: str):
 
     b_eats_a = conn.execute("""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_uri,
+               image_url, type_of_feeding, observation_url,
                observed_on, place_state, prey_common_name
         FROM feeding_relationships
         WHERE predator_scientific = ? AND prey_scientific = ?
@@ -163,7 +163,7 @@ def snapshot_science(species: str = Query(..., description="Comma-separated scie
     placeholders = ",".join("?" * len(species_list))
     rows = conn.execute(f"""
         SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_uri,
+               image_url, type_of_feeding, observation_url,
                observed_on, place_state, place_county,
                prey_common_name, prey_taxon_class
         FROM feeding_relationships
@@ -209,7 +209,7 @@ def who_ate_my_fish(species: str):
                s.trophic_pos        AS predator_trophic_pos,
                f.image_url,
                f.type_of_feeding,
-               f.observation_uri,
+               f.observation_url,
                f.observed_on,
                f.place_state
         FROM feeding_relationships f
@@ -225,7 +225,7 @@ def who_ate_my_fish(species: str):
                f.prey_trophic_pos,
                f.image_url,
                f.type_of_feeding,
-               f.observation_uri,
+               f.observation_url,
                f.observed_on,
                f.place_state
         FROM feeding_relationships f
@@ -412,42 +412,120 @@ def list_taxon_classes():
     return rows_to_list(rows)
 
 
-@app.get("/game/feed")
-def feed(predator: str, prey: str):
+# ── Game 3: NC Food Web ───────────────────────────────────────────────────────
+
+@app.get("/game/foodweb/nc")
+def get_nc_foodweb():
     """
-    Quick check: does predator eat prey?
-    Returns valid flag + photo evidence if true.
-    Used for Game 2 (Heron mouth drop game).
+    Returns the NC food web as nodes + edges for the collapse game.
+    Edges represent: prey → predator (energy flow direction).
     """
     conn = get_conn()
 
-    row = conn.execute("""
-        SELECT predator_scientific, prey_scientific,
-               image_url, type_of_feeding, observation_uri,
-               observed_on, place_state, prey_common_name
-        FROM feeding_relationships
-        WHERE predator_scientific = ? AND prey_scientific = ?
-        AND image_url != ''
-        LIMIT 1
-    """, (predator, prey)).fetchone()
-
+    rows = conn.execute("SELECT prey, predator FROM foodweb_nc").fetchall()
     conn.close()
 
-    if row:
-        return {
-            "valid": True,
-            "predator": predator,
-            "prey": prey,
-            "type_of_feeding": row["type_of_feeding"],
-            "image_url": row["image_url"],
-            "observation_uri": row["observation_uri"],
-            "observed_on": row["observed_on"],
-            "place_state": row["place_state"],
-            "prey_common_name": row["prey_common_name"],
+    # Build node list
+    species_set = set()
+    edges = []
+    for r in rows:
+        d = dict(r)
+        species_set.add(d["prey"])
+        species_set.add(d["predator"])
+        edges.append({"prey": d["prey"], "predator": d["predator"]})
+
+    # Trophic level assignment
+    TROPHIC = {
+        "Fruit":      "producer",
+        "Worm":       "primary",
+        "Butterfly":  "primary",
+        "Beetle":     "primary",
+        "Grasshopper":"primary",
+        "Ant":        "primary",
+        "Crab":       "primary",
+        "Dragonfly":  "secondary",
+        "Spider":     "secondary",
+        "Fish":       "secondary",
+        "Frog":       "secondary",
+        "Rat":        "secondary",
+        "Snake":      "tertiary",
+        "Lizard":     "tertiary",
+        "Blue Heron": "apex",
+    }
+
+    EMOJI = {
+        "Fruit": "🍎", "Worm": "🪱", "Butterfly": "🦋",
+        "Beetle": "🪲", "Grasshopper": "🦗", "Ant": "🐜",
+        "Crab": "🦀", "Dragonfly": "🪰", "Spider": "🕷️",
+        "Fish": "🐟", "Frog": "🐸", "Rat": "🐀",
+        "Snake": "🐍", "Lizard": "🦎", "Blue Heron": "🦤",
+    }
+
+    nodes = [
+        {
+            "id": sp,
+            "label": sp,
+            "emoji": EMOJI.get(sp, "❓"),
+            "trophic": TROPHIC.get(sp, "unknown"),
         }
-    else:
-        return {
-            "valid": False,
-            "predator": predator,
-            "prey": prey,
-        }
+        for sp in sorted(species_set)
+    ]
+
+    return {"nodes": nodes, "edges": edges}
+
+
+@app.get("/game/foodweb/nc/cascade")
+def get_cascade(removed: str):
+    """
+    Given a removed species, return what cascades.
+    Returns species that lose ALL predators (population explodes)
+    and species that lose ALL prey (may starve).
+    """
+    conn = get_conn()
+    rows = conn.execute("SELECT prey, predator FROM foodweb_nc").fetchall()
+    conn.close()
+
+    edges = [dict(r) for r in rows]
+
+    # Remove all edges involving the deleted species
+    remaining = [e for e in edges if e["prey"] != removed and e["predator"] != removed]
+
+    # Which prey species had ALL their predators removed?
+    all_predators = {}
+    for e in edges:
+        all_predators.setdefault(e["prey"], set()).add(e["predator"])
+
+    remaining_predators = {}
+    for e in remaining:
+        remaining_predators.setdefault(e["prey"], set()).add(e["predator"])
+
+    exploding = []  # lost all predators — population unchecked
+    for prey, preds in all_predators.items():
+        if prey == removed:
+            continue
+        if removed in preds and not remaining_predators.get(prey):
+            exploding.append(prey)
+
+    # Which predator species had ALL their prey removed?
+    all_prey = {}
+    for e in edges:
+        all_prey.setdefault(e["predator"], set()).add(e["prey"])
+
+    remaining_prey = {}
+    for e in remaining:
+        remaining_prey.setdefault(e["predator"], set()).add(e["prey"])
+
+    starving = []
+    for pred, preys in all_prey.items():
+        if pred == removed:
+            continue
+        if not remaining_prey.get(pred):
+            starving.append(pred)
+
+    return {
+        "removed": removed,
+        "exploding": exploding,   # population boom
+        "starving": starving,     # may go extinct
+        "edges_remaining": len(remaining),
+        "edges_removed": len(edges) - len(remaining),
+    }
