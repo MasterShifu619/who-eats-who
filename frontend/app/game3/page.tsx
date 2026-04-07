@@ -174,7 +174,7 @@ export default function Game3Page() {
 
     if(starving.length===0&&exploding.length===0) return
 
-    setMessage({text:"⚠️ Watch the caascade...",color:"#FFAA00"})
+    setMessage({text:"⚠️ Watch the cascade...",color:"#FFAA00"})
     playCascadeWarning()
     exploding.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.exploding=true})
     starving.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.starving=true})
