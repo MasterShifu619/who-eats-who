@@ -20,7 +20,8 @@ interface Particle {
   size: number; color: string; alpha: number; rotation: number; rotSpeed: number
 }
 
-const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78, SHELF_W=200
+const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
+const SHELF_W = typeof window !== "undefined" ? Math.max(180, Math.min(280, window.innerWidth * 0.20)) : 220
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
 const TROPHIC_COLOR: Record<string,string>={producer:"#44DD88",primary:"#44AAFF",secondary:"#FFAA00",tertiary:"#FF6644",apex:"#FF3333"}
 const SHELF_MAP: Record<string,string>={
@@ -173,7 +174,7 @@ export default function Game3Page() {
 
     if(starving.length===0&&exploding.length===0) return
 
-    setMessage({text:"⚠️ Watch the cascade...",color:"#FFAA00"})
+    setMessage({text:"⚠️ Watch the caascade...",color:"#FFAA00"})
     playCascadeWarning()
     exploding.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.exploding=true})
     starving.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.starving=true})

@@ -530,3 +530,30 @@ def get_cascade(removed: str):
         "edges_remaining": len(remaining),
         "edges_removed": len(edges) - len(remaining),
     }
+
+
+def init_db():
+    conn = get_conn()
+    conn.execute('''CREATE TABLE IF NOT EXISTS foodweb_nc (
+        prey TEXT NOT NULL, predator TEXT NOT NULL, PRIMARY KEY (prey, predator))''')
+    data = [
+        ('Fruit','Grasshopper'),('Fruit','Butterfly'),('Fruit','Worm'),('Fruit','Ant'),('Fruit','Rat'),
+        ('Worm','Frog'),('Worm','Snake'),('Worm','Fish'),('Worm','Blue Heron'),
+        ('Butterfly','Dragonfly'),('Butterfly','Spider'),('Butterfly','Frog'),('Butterfly','Lizard'),
+        ('Beetle','Frog'),('Beetle','Spider'),('Beetle','Rat'),
+        ('Grasshopper','Dragonfly'),('Grasshopper','Frog'),('Grasshopper','Snake'),
+        ('Grasshopper','Lizard'),('Grasshopper','Blue Heron'),
+        ('Dragonfly','Frog'),('Dragonfly','Fish'),('Dragonfly','Spider'),('Dragonfly','Lizard'),
+        ('Ant','Frog'),('Ant','Spider'),('Ant','Lizard'),
+        ('Spider','Frog'),('Spider','Snake'),('Spider','Lizard'),
+        ('Crab','Blue Heron'),('Crab','Fish'),('Crab','Snake'),
+        ('Fish','Blue Heron'),('Fish','Snake'),('Fish','Lizard'),
+        ('Frog','Snake'),('Frog','Blue Heron'),('Frog','Lizard'),
+        ('Rat','Snake'),('Rat','Blue Heron'),('Rat','Lizard'),
+        ('Snake','Blue Heron'),('Lizard','Blue Heron'),('Lizard','Snake'),
+    ]
+    conn.executemany('INSERT OR IGNORE INTO foodweb_nc (prey, predator) VALUES (?, ?)', data)
+    conn.commit()
+    conn.close()
+
+init_db()
