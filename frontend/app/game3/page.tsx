@@ -20,7 +20,8 @@ interface Particle {
   size: number; color: string; alpha: number; rotation: number; rotSpeed: number
 }
 
-const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78, SHELF_W=200
+const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
+const SHELF_W = typeof window !== "undefined" ? Math.max(160, Math.min(240, window.innerWidth * 0.16)) : 200
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
 const TROPHIC_COLOR: Record<string,string>={producer:"#44DD88",primary:"#44AAFF",secondary:"#FFAA00",tertiary:"#FF6644",apex:"#FF3333"}
 const SHELF_MAP: Record<string,string>={
