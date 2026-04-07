@@ -363,7 +363,7 @@ export default function Game3Page() {
       const def=allNodes.find(d=>d.id===node.id)
       const eats=edgesRef.current.filter(ed=>ed.predator===node.id&&!ed.deleted).map(ed=>ed.prey)
       const eatenBy=edgesRef.current.filter(ed=>ed.prey===node.id&&!ed.deleted).map(ed=>ed.predator)
-      if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
+      // if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
     }
   },[allNodes,startDwell])
 
@@ -380,7 +380,7 @@ export default function Game3Page() {
         const def=allNodes.find(d=>d.id===node.id)
         const eats=edgesRef.current.filter(ed=>ed.predator===node.id&&!ed.deleted).map(ed=>ed.prey)
         const eatenBy=edgesRef.current.filter(ed=>ed.prey===node.id&&!ed.deleted).map(ed=>ed.predator)
-        if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
+        // if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
       } else setInfo(null)
     }
   },[allNodes,cancelDwell])
@@ -516,8 +516,6 @@ export default function Game3Page() {
           Drag animals in · Hold 5s to remove
         </div>
       </div>
-
-      <a href="/game2/heron" style={{position:"absolute",top:20,right:20,zIndex:20,fontFamily:"system-ui",fontWeight:700,fontSize:12,color:"rgba(255,255,255,0.3)",textDecoration:"none"}}>← Back</a>
 
       <AnimatePresence>
         {info&&(
