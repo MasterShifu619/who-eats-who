@@ -2,786 +2,572 @@
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-
-// ── Types ──────────────────────────────────────────────────────────────────
-interface Node {
-  id: string
-  label: string
-  emoji: string
-  trophic: string
-  x: number
-  y: number
-  vx: number
-  vy: number
-  deleted: boolean
-  exploding: boolean
-  starving: boolean
-  pinned: boolean
+import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning } from "@/lib/sounds"
+interface NodeDef {
+  id: string; label: string; emoji: string; trophic: string; shelf: string
 }
-
-interface Edge {
-  prey: string
-  predator: string
-  deleting: boolean
-  deleted: boolean
+interface PlacedNode {
+  id: string; x: number; y: number; vx: number; vy: number
+  deleted: boolean; exploding: boolean; starving: boolean; pinned: boolean
 }
-
+interface Edge { prey: string; predator: string; deleting: boolean; deleted: boolean }
 interface FuseParticle {
-  edgeKey: string
-  progress: number
-  color: string
-  startTime: number
-  duration: number
-  fromX: number; fromY: number
-  cpX: number; cpY: number
-  toX: number; toY: number
+  edgeKey: string; progress: number; color: string; startTime: number; duration: number
+  fromX: number; fromY: number; cpX: number; cpY: number; toX: number; toY: number
 }
-
 interface Particle {
-  id: number
-  x: number
-  y: number
-  vx: number
-  vy: number
-  size: number
-  color: string
-  alpha: number
-  rotation: number
-  rotSpeed: number
+  id: number; x: number; y: number; vx: number; vy: number
+  size: number; color: string; alpha: number; rotation: number; rotSpeed: number
 }
 
-// ── Constants ──────────────────────────────────────────────────────────────
-const DWELL_MS   = 5000
-const NODE_R     = 36
-const REPEL      = 18000
-const ATTRACT    = 0.012
-const IDEAL_DIST = 320
-const DAMPING    = 0.78
-const API_BASE   = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-
-const TROPHIC_COLOR: Record<string, string> = {
-  producer:  "#44DD88",
-  primary:   "#44AAFF",
-  secondary: "#FFAA00",
-  tertiary:  "#FF6644",
-  apex:      "#FF3333",
+const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78, SHELF_W=200
+const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
+const TROPHIC_COLOR: Record<string,string>={producer:"#44DD88",primary:"#44AAFF",secondary:"#FFAA00",tertiary:"#FF6644",apex:"#FF3333"}
+const SHELF_MAP: Record<string,string>={
+  "Fruit":"🌱 Plants","Worm":"🐛 Bugs","Butterfly":"🐛 Bugs","Beetle":"🐛 Bugs",
+  "Grasshopper":"🐛 Bugs","Ant":"🐛 Bugs","Dragonfly":"🐛 Bugs","Spider":"🐛 Bugs",
+  "Fish":"🐟 Water Animals","Crab":"🐟 Water Animals",
+  "Frog":"🐸 Land Animals","Rat":"🐸 Land Animals","Lizard":"🐸 Land Animals",
+  "Snake":"🐍 Hunters","Blue Heron":"🐍 Hunters",
 }
+const SHELF_ORDER=["🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🐍 Hunters"]
+const ALL_EDGES: [string,string][]=[
+  ["Fruit","Grasshopper"],["Fruit","Butterfly"],["Fruit","Worm"],["Fruit","Ant"],["Fruit","Rat"],
+  ["Worm","Frog"],["Worm","Snake"],["Worm","Fish"],["Worm","Blue Heron"],
+  ["Butterfly","Dragonfly"],["Butterfly","Spider"],["Butterfly","Frog"],["Butterfly","Lizard"],
+  ["Beetle","Frog"],["Beetle","Spider"],["Beetle","Rat"],
+  ["Grasshopper","Dragonfly"],["Grasshopper","Frog"],["Grasshopper","Snake"],["Grasshopper","Lizard"],["Grasshopper","Blue Heron"],
+  ["Dragonfly","Frog"],["Dragonfly","Fish"],["Dragonfly","Spider"],["Dragonfly","Lizard"],
+  ["Ant","Frog"],["Ant","Spider"],["Ant","Lizard"],
+  ["Spider","Frog"],["Spider","Snake"],["Spider","Lizard"],
+  ["Crab","Blue Heron"],["Crab","Fish"],["Crab","Snake"],
+  ["Fish","Blue Heron"],["Fish","Snake"],["Fish","Lizard"],
+  ["Frog","Snake"],["Frog","Blue Heron"],["Frog","Lizard"],
+  ["Rat","Snake"],["Rat","Blue Heron"],["Rat","Lizard"],
+  ["Snake","Blue Heron"],["Lizard","Blue Heron"],["Lizard","Snake"],
+]
 
-const TROPHIC_LABEL: Record<string, string> = {
-  producer:  "Producer",
-  primary:   "Primary Consumer",
-  secondary: "Secondary Predator",
-  tertiary:  "Tertiary Predator",
-  apex:      "Apex Predator",
-}
-
-// ── Main Component ─────────────────────────────────────────────────────────
 export default function Game3Page() {
-  const canvasRef    = useRef<HTMLCanvasElement>(null)
-  const nodesRef     = useRef<Node[]>([])
-  const edgesRef     = useRef<Edge[]>([])
-  const particlesRef = useRef<Particle[]>([])
-  const fusesRef     = useRef<FuseParticle[]>([])
-  const animRef      = useRef<number | null>(null)
-  const dwellRef     = useRef<{ nodeId: string; startTime: number; timerId: NodeJS.Timeout | null } | null>(null)
-  const dragRef      = useRef<{ nodeId: string; offsetX: number; offsetY: number } | null>(null)
-  const hoveredRef   = useRef<string | null>(null)
+  const canvasRef=useRef<HTMLCanvasElement>(null)
+  const placedRef=useRef<PlacedNode[]>([])
+  const edgesRef=useRef<Edge[]>([])
+  const particlesRef=useRef<Particle[]>([])
+  const fusesRef=useRef<FuseParticle[]>([])
+  const animRef=useRef<number|null>(null)
+  const dwellRef=useRef<{nodeId:string;startTime:number;timerId:ReturnType<typeof setTimeout>|null}|null>(null)
+  const dragRef=useRef<{nodeId:string;fromShelf:boolean;offsetX:number;offsetY:number}|null>(null)
+  const hoveredRef=useRef<string|null>(null)
+  const deletedSetRef=useRef<Set<string>>(new Set())
 
-  const [loading, setLoading]           = useState(true)
-  const [info, setInfo]                 = useState<{ name: string; emoji: string; eats: string[]; eatenBy: string[]; color: string } | null>(null)
-  const [message, setMessage]           = useState<{ text: string; color: string } | null>(null)
-  const [deletedCount, setDeletedCount] = useState(0)
-  const deletedSetRef                   = useRef<Set<string>>(new Set())
-  const [dims, setDims]                 = useState({ w: 1440, h: 900 })
+  const [allNodes,setAllNodes]=useState<NodeDef[]>([])
+  const [placedIds,setPlacedIds]=useState<Set<string>>(new Set())
+  const [message,setMessage]=useState<{text:string;color:string}|null>(null)
+  const [shelfOpen,setShelfOpen]=useState<Record<string,boolean>>(Object.fromEntries(SHELF_ORDER.map(s=>[s,true])))
+  const [shelfVisible,setShelfVisible]=useState(true)
+  const [info,setInfo]=useState<{name:string;emoji:string;eats:string[];eatenBy:string[];color:string}|null>(null)
+  const [dims,setDims]=useState({w:1440,h:900})
+  const [shelfDrag,setShelfDrag]=useState<{nodeId:string;x:number;y:number}|null>(null)
 
-  // ── Load data ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    fetch(`${API_BASE}/game/foodweb/nc`)
-      .then(r => r.json())
-      .then(data => {
-        const w = window.innerWidth, h = window.innerHeight
-        setDims({ w, h })
 
-        const tiers: Record<string, number> = { producer: 0, primary: 1, secondary: 2, tertiary: 3, apex: 4 }
-        const byTier: Record<number, string[]> = {}
-        data.nodes.forEach((n: any) => {
-          const t = tiers[n.trophic] ?? 2
-          byTier[t] = byTier[t] || []
-          byTier[t].push(n.id)
-        })
+  useEffect(()=>{
+    fetch(`${API_BASE}/game/foodweb/nc`).then(r=>r.json()).then(data=>{
+      const nodes=data.nodes.map((n:any)=>({...n,shelf:SHELF_MAP[n.id]||"🐛 Bugs"}))
+      setAllNodes(nodes)
+      setDims({w:window.innerWidth,h:window.innerHeight})
+      // Preload sounds in background
+      nodes.forEach((n:any) => preloadSound(n.id))
+    }).catch(()=>{})
+  },[])
 
-        const cx = w / 2, cy = h / 2
-        const radii = [0, h * 0.32, h * 0.46, h * 0.54, h * 0.58]
-
-        nodesRef.current = data.nodes.map((n: any) => {
-          const tier = tiers[n.trophic] ?? 2
-          const siblings = byTier[tier] || []
-          const idx = siblings.indexOf(n.id)
-          const total = siblings.length
-          const angle = tier === 0 ? 0 : (idx / total) * Math.PI * 2 - Math.PI / 2 + tier * 0.2
-          const r = radii[tier] || h * 0.3
-          return {
-            ...n,
-            x: tier === 0 ? cx : cx + Math.cos(angle) * r,
-            y: tier === 0 ? cy : cy + Math.sin(angle) * r,
-            vx: 0, vy: 0,
-            deleted: false, exploding: false, starving: false, pinned: false,
-          }
-        })
-
-        edgesRef.current = data.edges.map((e: any) => ({
-          ...e, deleting: false, deleted: false
-        }))
-
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [])
-
-  // ── Physics tick ───────────────────────────────────────────────────────
-  const tick = useCallback(() => {
-    const nodes = nodesRef.current.filter(n => !n.deleted)
-    const edges = edgesRef.current.filter(e => !e.deleted)
-    const { w, h } = dims
-
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j]
-        if (a.pinned && b.pinned) continue
-        const dx = b.x - a.x, dy = b.y - a.y
-        const d = Math.hypot(dx, dy) || 1
-        const f = REPEL / (d * d)
-        a.vx -= (dx/d)*f; a.vy -= (dy/d)*f
-        b.vx += (dx/d)*f; b.vy += (dy/d)*f
+  const placeAnimal=useCallback((id:string,x:number,y:number)=>{
+    if(placedIds.has(id)) return
+    const px=Math.max(SHELF_W+60,Math.min(dims.w-60,x))
+    const py=Math.max(60,Math.min(dims.h-60,y))
+    // Remove stale entry before re-adding
+    placedRef.current=placedRef.current.filter(n=>n.id!==id)
+    placedRef.current.push({id,x:px,y:py,vx:0,vy:0,deleted:false,exploding:false,starving:false,pinned:false})
+    const present=new Set(placedRef.current.filter(n=>!n.deleted).map(n=>n.id))
+    ALL_EDGES.forEach(([prey,pred])=>{
+      if((prey===id&&present.has(pred))||(pred===id&&present.has(prey))){
+        const existing=edgesRef.current.find(e=>e.prey===prey&&e.predator===pred)
+        if(existing){existing.deleted=false;existing.deleting=false}
+        else edgesRef.current.push({prey,predator:pred,deleting:false,deleted:false})
       }
-    }
-
-    edges.forEach(e => {
-      const a = nodes.find(n => n.id === e.prey)
-      const b = nodes.find(n => n.id === e.predator)
-      if (!a || !b) return
-      if (a.pinned && b.pinned) return
-      const dx = b.x - a.x, dy = b.y - a.y
-      const d = Math.hypot(dx, dy) || 1
-      const f = (d - IDEAL_DIST) * ATTRACT
-      a.vx += (dx/d)*f; a.vy += (dy/d)*f
-      b.vx -= (dx/d)*f; b.vy -= (dy/d)*f
     })
+    setPlacedIds(prev=>new Set([...prev,id]))
+    deletedSetRef.current.delete(id)
+    placedRef.current.forEach(n=>{n.exploding=false;n.starving=false})
+    playPlaceSound(id)
+    playPlaceChime()
+  },[placedIds,dims])
 
-    nodes.forEach(n => {
-      if (dragRef.current?.nodeId === n.id) return
-      if (n.pinned) {
-        n.vx = 0; n.vy = 0
-        n.x = Math.max(65, Math.min(w - 65, n.x))
-        n.y = Math.max(80, Math.min(h - 65, n.y))
-        return
-      }
-      n.vx += (w/2 - n.x) * 0.001
-      n.vy += (h/2 - n.y) * 0.001
-      n.vx *= DAMPING; n.vy *= DAMPING
-      n.x += n.vx; n.y += n.vy
-      n.x = Math.max(65, Math.min(w - 65, n.x))
-      n.y = Math.max(80, Math.min(h - 65, n.y))
+  const returnToShelf=useCallback((id:string)=>{
+    placedRef.current=placedRef.current.filter(n=>n.id!==id)
+    // Remove edges that connected to this node so they don't linger
+    edgesRef.current=edgesRef.current.filter(e=>e.prey!==id&&e.predator!==id)
+    setPlacedIds(prev=>{const s=new Set(prev);s.delete(id);return s})
+  },[])
+
+  const autoFill=useCallback(()=>{
+    const unplaced=allNodes.filter(n=>!placedIds.has(n.id))
+    const {w,h}=dims
+    unplaced.forEach((n,i)=>{
+      const angle=(i/unplaced.length)*Math.PI*2
+      const r=Math.min(w-SHELF_W,h)*0.32
+      placeAnimal(n.id,SHELF_W+(w-SHELF_W)/2+Math.cos(angle)*r,h/2+Math.sin(angle)*r)
     })
-  }, [dims])
+  },[allNodes,placedIds,dims,placeAnimal])
 
-  // ── Snap particles ─────────────────────────────────────────────────────
-  const spawnParticles = (x: number, y: number, color: string) => {
-    const newP: Particle[] = []
-    for (let i = 0; i < 60; i++) {
-      const angle = Math.random() * Math.PI * 2
-      const speed = 1 + Math.random() * 4
-      newP.push({
-        id: Date.now() + i, x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1,
-        size: 3 + Math.random() * 6,
-        color, alpha: 1,
-        rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 8,
-      })
+  const tick=useCallback(()=>{
+    const nodes=placedRef.current.filter(n=>!n.deleted)
+    const edges=edgesRef.current.filter(e=>!e.deleted)
+    const {w,h}=dims
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j]; if(a.pinned&&b.pinned) continue
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,f=REPEL/(d*d)
+      a.vx-=(dx/d)*f;a.vy-=(dy/d)*f;b.vx+=(dx/d)*f;b.vy+=(dy/d)*f
     }
-    particlesRef.current = [...particlesRef.current, ...newP]
+    edges.forEach(e=>{
+      const a=nodes.find(n=>n.id===e.prey),b=nodes.find(n=>n.id===e.predator)
+      if(!a||!b||a.pinned&&b.pinned) return
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,f=(d-IDEAL_DIST)*ATTRACT
+      a.vx+=(dx/d)*f;a.vy+=(dy/d)*f;b.vx-=(dx/d)*f;b.vy-=(dy/d)*f
+    })
+    const cx=SHELF_W+(w-SHELF_W)/2,cy=h/2
+    nodes.forEach(n=>{
+      if(dragRef.current?.nodeId===n.id) return
+      if(n.pinned){n.vx=0;n.vy=0;return}
+      n.vx+=(cx-n.x)*0.001;n.vy+=(cy-n.y)*0.001
+      n.vx*=DAMPING;n.vy*=DAMPING;n.x+=n.vx;n.y+=n.vy
+      n.x=Math.max(SHELF_W+55,Math.min(w-55,n.x));n.y=Math.max(55,Math.min(h-55,n.y))
+    })
+  },[dims])
+
+  const spawnParticles=(x:number,y:number,color:string)=>{
+    const newP:Particle[]=[]
+    for(let i=0;i<60;i++){
+      const a=Math.random()*Math.PI*2,s=1+Math.random()*4
+      newP.push({id:Date.now()+i,x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1,
+        size:3+Math.random()*6,color,alpha:1,rotation:Math.random()*360,rotSpeed:(Math.random()-0.5)*8})
+    }
+    particlesRef.current=[...particlesRef.current,...newP]
   }
 
-  // ── Cascade ────────────────────────────────────────────────────────────
-  const triggerCascade = useCallback(async (removedId: string) => {
-    try {
-      deletedSetRef.current.add(removedId)
-      const res = await fetch(`${API_BASE}/game/foodweb/nc/cascade?removed=${encodeURIComponent([...deletedSetRef.current].join(","))}`)
-      const data = await res.json()
+  const triggerCascade=useCallback(async(removedId:string)=>{
+    // Compute cascade locally based only on what's in the play area
+    const presentIds=new Set(placedRef.current.filter(n=>!n.deleted).map(n=>n.id))
 
-      if (data.exploding.length === 0 && data.starving.length === 0) return
+    // Find species that have no food sources left in play area
+    const starving: string[]=[]
+    const exploding: string[]=[]
 
-      setMessage({ text: "⚠️ Watch the cascade...", color: "#FFAA00" })
+    presentIds.forEach(id=>{
+      // What does this species eat?
+      const myPrey=ALL_EDGES.filter(([prey,pred])=>pred===id).map(([prey])=>prey)
+      // What eats this species?
+      const myPredators=ALL_EDGES.filter(([prey,pred])=>prey===id).map(([,pred])=>pred)
 
-      data.exploding.forEach((id: string) => {
-        const n = nodesRef.current.find(n => n.id === id)
-        if (n) n.exploding = true
-      })
-      data.starving.forEach((id: string) => {
-        const n = nodesRef.current.find(n => n.id === id)
-        if (n) n.starving = true
-      })
+      if(myPrey.length>0 && myPrey.every(prey=>!presentIds.has(prey))) starving.push(id)
+      if(myPredators.length>0 && myPredators.every(pred=>!presentIds.has(pred))) exploding.push(id)
+    })
 
-      await sleep(3000)
+    if(starving.length===0&&exploding.length===0) return
 
-      for (const id of data.starving) {
-        const n = nodesRef.current.find(n => n.id === id)
-        if (!n || n.deleted) continue
-        setMessage({ text: `🔴 ${n.emoji} ${n.label} is starving — no food sources remain!`, color: "#FF4444" })
-        await sleep(1200)
-        await deleteNodeAnimated(id, true)
-        await sleep(600)
-        await triggerCascade(id)
-      }
+    setMessage({text:"⚠️ Watch the cascade...",color:"#FFAA00"})
+    playCascadeWarning()
+    exploding.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.exploding=true})
+    starving.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.starving=true})
 
-      setTimeout(() => setMessage(null), 2000)
-    } catch (e) {
-      console.error(e)
+    await sleep(3000)
+
+    for(const id of starving){
+      const n=placedRef.current.find(n=>n.id===id);if(!n||n.deleted) continue
+      const def=allNodes.find(d=>d.id===id)
+      setMessage({text:`🔴 ${def?.emoji} ${id} is starving — no food sources remain!`,color:"#FF4444"})
+      await sleep(1200);await deleteNodeAnimated(id,true);await sleep(600);await triggerCascade(id)
     }
-  }, [])
+    setTimeout(()=>setMessage(null),2000)
+  },[allNodes])
 
-  // ── Delete node ────────────────────────────────────────────────────────
-  const deleteNodeAnimated = useCallback(async (nodeId: string, isCascade = false) => {
-    const node = nodesRef.current.find(n => n.id === nodeId)
-    if (!node || node.deleted) return
-
-    const color = TROPHIC_COLOR[node.trophic] || "#FFFFFF"
-
-    const connectedEdges = edgesRef.current.filter(
-      e => !e.deleted && (e.prey === nodeId || e.predator === nodeId)
-    )
-
-    for (const edge of connectedEdges) {
-      edge.deleting = true
-      const a = nodesRef.current.find(n => n.id === edge.prey)
-      const b = nodesRef.current.find(n => n.id === edge.predator)
-      if (a && b) {
-        const dx = b.x - a.x, dy = b.y - a.y
-        const d = Math.hypot(dx, dy) || 1
-        const ux = dx/d, uy = dy/d
-        const x1 = a.x + ux * NODE_R
-        const y1 = a.y + uy * NODE_R
-        const x2 = b.x - ux * (NODE_R + 10)
-        const y2 = b.y - uy * (NODE_R + 10)
-        fusesRef.current.push({
-          edgeKey: `${edge.prey}-${edge.predator}`,
-          progress: 0,
-          color: TROPHIC_COLOR[a.trophic] || "#FFF",
-          startTime: Date.now(),
-          duration: 1200,
-          fromX: x1, fromY: y1,
-          cpX: (x1+x2)/2 - uy*20,
-          cpY: (y1+y2)/2 + ux*20,
-          toX: x2, toY: y2,
-        })
+  const deleteNodeAnimated=useCallback(async(nodeId:string,isCascade=false)=>{
+    const node=placedRef.current.find(n=>n.id===nodeId);if(!node||node.deleted) return
+    const def=allNodes.find(d=>d.id===nodeId)
+    const color=TROPHIC_COLOR[def?.trophic||""]||"#FFF"
+    const connected=edgesRef.current.filter(e=>!e.deleted&&(e.prey===nodeId||e.predator===nodeId))
+    for(const edge of connected){
+      edge.deleting=true
+      const a=placedRef.current.find(n=>n.id===edge.prey),b=placedRef.current.find(n=>n.id===edge.predator)
+      if(a&&b){
+        const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d
+        const x1=a.x+ux*NODE_R,y1=a.y+uy*NODE_R,x2=b.x-ux*(NODE_R+10),y2=b.y-uy*(NODE_R+10)
+        fusesRef.current.push({edgeKey:`${edge.prey}-${edge.predator}`,progress:0,
+          color:TROPHIC_COLOR[def?.trophic||""]||"#FFF",startTime:Date.now(),duration:1200,
+          fromX:x1,fromY:y1,cpX:(x1+x2)/2-uy*20,cpY:(y1+y2)/2+ux*20,toX:x2,toY:y2})
       }
-      await sleep(1500)
-      edge.deleted = true
-      edge.deleting = false
-      fusesRef.current = fusesRef.current.filter(f => f.edgeKey !== `${edge.prey}-${edge.predator}`)
+      await sleep(1500);edge.deleted=true;edge.deleting=false
+      fusesRef.current=fusesRef.current.filter(f=>f.edgeKey!==`${edge.prey}-${edge.predator}`)
     }
-
-    await sleep(800)
-    spawnParticles(node.x, node.y, color)
-    node.deleted = true
-    setDeletedCount(c => c + 1)
-
-    if (!isCascade) {
-      setMessage({ text: `${node.emoji} ${node.label} removed from the web`, color })
-      setTimeout(() => setMessage(null), 2500)
-      await sleep(600)
-      await triggerCascade(nodeId)
+    await sleep(800);spawnParticles(node.x,node.y,color);node.deleted=true
+    playRemoveSound(nodeId)
+    setTimeout(()=>returnToShelf(nodeId),500)
+    if(!isCascade){
+      setMessage({text:`${def?.emoji} ${nodeId} removed — back to shelf`,color})
+      setTimeout(()=>setMessage(null),2500);await sleep(600);await triggerCascade(nodeId)
     }
-  }, [triggerCascade])
+  },[allNodes,returnToShelf,triggerCascade])
 
-  // ── Draw loop ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (loading) return
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext("2d")!
-
-    const draw = (t: number) => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      tick()
-
-      ctx.fillStyle = "#06060F"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      // Stars
-      for (let i = 0; i < 60; i++) {
-        const sx = (i * 137.5 * canvas.width / 100) % canvas.width
-        const sy = (i * 97.3 * canvas.height / 100) % canvas.height
-        const sr = (Math.sin(t * 0.001 + i) * 0.5 + 0.5) * 1.8
-        ctx.beginPath()
-        ctx.arc(sx, sy, sr, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255,255,255,${0.2 + (i % 3) * 0.1})`
-        ctx.fill()
+  useEffect(()=>{
+    if(allNodes.length===0) return
+    const canvas=canvasRef.current;if(!canvas) return
+    const ctx=canvas.getContext("2d")!
+    const draw=(t:number)=>{
+      canvas.width=window.innerWidth;canvas.height=window.innerHeight;tick()
+      ctx.fillStyle="#06060F";ctx.fillRect(0,0,canvas.width,canvas.height)
+      for(let i=0;i<60;i++){
+        const sx=(i*137.5*canvas.width/100)%canvas.width,sy=(i*97.3*canvas.height/100)%canvas.height
+        ctx.beginPath();ctx.arc(sx,sy,(Math.sin(t*0.001+i)*0.5+0.5)*1.8,0,Math.PI*2)
+        ctx.fillStyle=`rgba(255,255,255,${0.2+(i%3)*0.1})`;ctx.fill()
       }
-
-      const nodes = nodesRef.current
-      const edges = edgesRef.current
-      const hovId = hoveredRef.current
-
-      // ── Edges ──
-      edges.forEach(e => {
-        if (e.deleted) return
-        const a = nodes.find(n => n.id === e.prey && !n.deleted)
-        const b = nodes.find(n => n.id === e.predator && !n.deleted)
-        if (!a || !b) return
-
-        const isHov = hovId && (hovId === e.prey || hovId === e.predator)
-        const dx = b.x - a.x, dy = b.y - a.y
-        const d = Math.hypot(dx, dy) || 1
-        const ux = dx/d, uy = dy/d
-        const x1 = a.x + ux * NODE_R
-        const y1 = a.y + uy * NODE_R
-        const x2 = b.x - ux * (NODE_R + 10)
-        const y2 = b.y - uy * (NODE_R + 10)
-        const mx = (x1+x2)/2 - uy*20
-        const my = (y1+y2)/2 + ux*20
-
-        const fuse = fusesRef.current.find(f => f.edgeKey === `${e.prey}-${e.predator}`)
-        const fuseT = fuse ? Math.min((Date.now() - fuse.startTime) / fuse.duration, 1) : 0
-
-        // Force delete once fuse completes
-        if (e.deleting && (!fuse || fuseT >= 1)) { e.deleted = true; return }
-
-        const aColor = TROPHIC_COLOR[a.trophic] || "#FFF"
-        const bColor = TROPHIC_COLOR[b.trophic] || "#FFF"
-        const grad = ctx.createLinearGradient(x1, y1, x2, y2)
-
-        if (e.deleting && fuse) {
-          // Only draw unconsumed portion (fuseT → 1)
-          grad.addColorStop(0, aColor + "55")
-          grad.addColorStop(1, bColor + "55")
+      if(shelfVisible){
+        ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.lineWidth=1;ctx.setLineDash([6,8])
+        ctx.beginPath();ctx.moveTo(SHELF_W,0);ctx.lineTo(SHELF_W,canvas.height);ctx.stroke();ctx.setLineDash([])
+      }
+      const nodes=placedRef.current,edges=edgesRef.current,hovId=hoveredRef.current
+      edges.forEach(e=>{
+        if(e.deleted) return
+        const a=nodes.find(n=>n.id===e.prey&&!n.deleted),b=nodes.find(n=>n.id===e.predator&&!n.deleted)
+        if(!a||!b) return
+        const defA=allNodes.find(d=>d.id===a.id),defB=allNodes.find(d=>d.id===b.id)
+        const aColor=TROPHIC_COLOR[defA?.trophic||""]||"#FFF",bColor=TROPHIC_COLOR[defB?.trophic||""]||"#FFF"
+        const isHov=hovId&&(hovId===e.prey||hovId===e.predator)
+        const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d
+        const x1=a.x+ux*NODE_R,y1=a.y+uy*NODE_R,x2=b.x-ux*(NODE_R+10),y2=b.y-uy*(NODE_R+10)
+        const mx=(x1+x2)/2-uy*20,my=(y1+y2)/2+ux*20
+        const fuse=fusesRef.current.find(f=>f.edgeKey===`${e.prey}-${e.predator}`)
+        const fuseT=fuse?Math.min((Date.now()-fuse.startTime)/fuse.duration,1):0
+        if(e.deleting&&(!fuse||fuseT>=1)){e.deleted=true;return}
+        const grad=ctx.createLinearGradient(x1,y1,x2,y2)
+        if(e.deleting&&fuse){
+          grad.addColorStop(0,aColor+"55");grad.addColorStop(1,bColor+"55")
           ctx.beginPath()
-          for (let i = 0; i <= 20; i++) {
-            const s = fuseT + (i / 20) * (1 - fuseT)
-            const qx = (1-s)*(1-s)*x1 + 2*(1-s)*s*mx + s*s*x2
-            const qy = (1-s)*(1-s)*y1 + 2*(1-s)*s*my + s*s*y2
-            if (i === 0) ctx.moveTo(qx, qy)
-            else ctx.lineTo(qx, qy)
-          }
-          ctx.strokeStyle = grad
-          ctx.lineWidth = 1.2
-          ctx.globalAlpha = 1
-          ctx.stroke()
-          ctx.globalAlpha = 1
+          for(let i=0;i<=20;i++){const s=fuseT+(i/20)*(1-fuseT);
+            const qx=(1-s)*(1-s)*x1+2*(1-s)*s*mx+s*s*x2,qy=(1-s)*(1-s)*y1+2*(1-s)*s*my+s*s*y2
+            if(i===0)ctx.moveTo(qx,qy);else ctx.lineTo(qx,qy)}
+          ctx.strokeStyle=grad;ctx.lineWidth=1.2;ctx.globalAlpha=1;ctx.stroke();ctx.globalAlpha=1
         } else {
-          grad.addColorStop(0, aColor + (isHov ? "DD" : "55"))
-          grad.addColorStop(1, bColor + (isHov ? "DD" : "55"))
-          ctx.beginPath()
-          ctx.moveTo(x1, y1)
-          ctx.quadraticCurveTo(mx, my, x2, y2)
-          ctx.strokeStyle = grad
-          ctx.lineWidth = isHov ? 2.5 : 1.2
-          ctx.globalAlpha = 1
-          ctx.stroke()
-          ctx.globalAlpha = 1
-
-          // Arrowhead only for non-deleting edges
-          const ang = Math.atan2(y2-my, x2-mx)
-          ctx.beginPath()
-          ctx.moveTo(x2, y2)
-          ctx.lineTo(x2 - 11*Math.cos(ang-0.4), y2 - 11*Math.sin(ang-0.4))
-          ctx.lineTo(x2 - 11*Math.cos(ang+0.4), y2 - 11*Math.sin(ang+0.4))
-          ctx.closePath()
-          ctx.fillStyle = bColor + (isHov ? "EE" : "66")
-          ctx.fill()
+          grad.addColorStop(0,aColor+(isHov?"DD":"55"));grad.addColorStop(1,bColor+(isHov?"DD":"55"))
+          ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2)
+          ctx.strokeStyle=grad;ctx.lineWidth=isHov?2.5:1.2;ctx.globalAlpha=1;ctx.stroke();ctx.globalAlpha=1
+          const ang=Math.atan2(y2-my,x2-mx)
+          ctx.beginPath();ctx.moveTo(x2,y2)
+          ctx.lineTo(x2-11*Math.cos(ang-0.4),y2-11*Math.sin(ang-0.4))
+          ctx.lineTo(x2-11*Math.cos(ang+0.4),y2-11*Math.sin(ang+0.4))
+          ctx.closePath();ctx.fillStyle=bColor+(isHov?"EE":"66");ctx.fill()
         }
       })
-
-      // ── Nodes ──
-      nodes.forEach(n => {
-        if (n.deleted) return
-        const isHov = hovId === n.id
-        const isDwelling = dwellRef.current?.nodeId === n.id
-        const color = TROPHIC_COLOR[n.trophic] || "#FFF"
-        const r = isHov ? NODE_R + 4 : NODE_R
-
-        if (n.exploding) {
-          const pulse = Math.sin(t * 0.008) * 0.5 + 0.5
-          const g = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 3)
-          g.addColorStop(0, `rgba(100,255,100,${0.3 * pulse})`)
-          g.addColorStop(1, "transparent")
-          ctx.fillStyle = g
-          ctx.beginPath()
-          ctx.arc(n.x, n.y, r * 3, 0, Math.PI * 2)
-          ctx.fill()
+      nodes.forEach(n=>{
+        if(n.deleted) return
+        const def=allNodes.find(d=>d.id===n.id);if(!def) return
+        const isHov=hovId===n.id,isDwelling=dwellRef.current?.nodeId===n.id
+        const color=TROPHIC_COLOR[def.trophic]||"#FFF",r=isHov?NODE_R+4:NODE_R
+        if(n.exploding){
+          const pulse=Math.sin(t*0.008)*0.5+0.5,g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
+          g.addColorStop(0,`rgba(100,255,100,${0.3*pulse})`);g.addColorStop(1,"transparent")
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
         }
-
-        if (n.starving) {
-          const pulse = Math.sin(t * 0.01) * 0.5 + 0.5
-          const g = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 3)
-          g.addColorStop(0, `rgba(255,60,60,${0.35 * pulse})`)
-          g.addColorStop(1, "transparent")
-          ctx.fillStyle = g
-          ctx.beginPath()
-          ctx.arc(n.x, n.y, r * 3, 0, Math.PI * 2)
-          ctx.fill()
+        if(n.starving){
+          const pulse=Math.sin(t*0.01)*0.5+0.5,g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
+          g.addColorStop(0,`rgba(255,60,60,${0.35*pulse})`);g.addColorStop(1,"transparent")
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
         }
-
-        if (isHov || isDwelling) {
-          const g = ctx.createRadialGradient(n.x, n.y, r*0.3, n.x, n.y, r*3)
-          g.addColorStop(0, color + "88")
-          g.addColorStop(1, "transparent")
-          ctx.fillStyle = g
-          ctx.beginPath()
-          ctx.arc(n.x, n.y, r*3, 0, Math.PI*2)
-          ctx.fill()
+        if(isHov||isDwelling){
+          const g=ctx.createRadialGradient(n.x,n.y,r*0.3,n.x,n.y,r*3)
+          g.addColorStop(0,color+"88");g.addColorStop(1,"transparent")
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
         }
-
-        const bg = ctx.createRadialGradient(n.x - r*0.3, n.y - r*0.3, 2, n.x, n.y, r)
-        bg.addColorStop(0, color + (isHov ? "55" : "22"))
-        bg.addColorStop(1, "#06060F")
-        ctx.beginPath()
-        ctx.arc(n.x, n.y, r, 0, Math.PI*2)
-        ctx.fillStyle = bg
-        ctx.fill()
-        ctx.strokeStyle = isDwelling ? "#FF3333" : n.exploding ? "#44FF44" : n.starving ? "#FF4444" : color
-        ctx.lineWidth = isDwelling ? 3 : isHov ? 2.5 : 1.8
-        ctx.stroke()
-
-        if (isDwelling && dwellRef.current) {
-          const pct = (Date.now() - dwellRef.current.startTime) / DWELL_MS
-          ctx.beginPath()
-          ctx.arc(n.x, n.y, r + 8, -Math.PI/2, -Math.PI/2 + pct * Math.PI * 2)
-          ctx.strokeStyle = "#FF3333"
-          ctx.lineWidth = 4
-          ctx.stroke()
+        const bg=ctx.createRadialGradient(n.x-r*0.3,n.y-r*0.3,2,n.x,n.y,r)
+        bg.addColorStop(0,color+(isHov?"55":"22"));bg.addColorStop(1,"#06060F")
+        ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill()
+        ctx.strokeStyle=isDwelling?"#FF3333":n.exploding?"#44FF44":n.starving?"#FF4444":color
+        ctx.lineWidth=isDwelling?3:isHov?2.5:1.8;ctx.stroke()
+        if(isDwelling&&dwellRef.current){
+          const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+          ctx.beginPath();ctx.arc(n.x,n.y,r+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
+          ctx.strokeStyle="#FF3333";ctx.lineWidth=4;ctx.stroke()
         }
-
-        ctx.font = `${isHov ? 22 : 18}px serif`
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.fillText(n.emoji, n.x, n.y - 1)
-
-        const lbl = n.label.toUpperCase()
-        ctx.font = `bold ${isHov ? 11 : 9}px Arial, sans-serif`
-        const tw = ctx.measureText(lbl).width
-        const ly = n.y + r + 14
-        ctx.fillStyle = "rgba(0,0,0,0.65)"
-        ctx.beginPath()
-        ctx.roundRect(n.x - tw/2 - 5, ly - 7, tw + 10, 14, 7)
-        ctx.fill()
-        ctx.fillStyle = n.exploding ? "#44FF44" : n.starving ? "#FF4444" : isHov ? "#FFFFFF" : color
-        ctx.fillText(lbl, n.x, ly)
+        ctx.font=`${isHov?22:18}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(def.emoji,n.x,n.y-1)
+        ctx.font=`bold ${isHov?11:9}px Arial, sans-serif`
+        const lbl=def.label.toUpperCase(),tw=ctx.measureText(lbl).width,ly=n.y+r+14
+        ctx.fillStyle="rgba(0,0,0,0.65)";ctx.beginPath();ctx.roundRect(n.x-tw/2-5,ly-7,tw+10,14,7);ctx.fill()
+        ctx.fillStyle=n.exploding?"#44FF44":n.starving?"#FF4444":isHov?"#FFF":color;ctx.fillText(lbl,n.x,ly)
       })
-
-      // ── Fuse sparks ──
-      const now = Date.now()
-      fusesRef.current = fusesRef.current.filter(f => {
-        const ft = Math.min((now - f.startTime) / f.duration, 1)
-        f.progress = ft
-
-        const px = (1-ft)*(1-ft)*f.fromX + 2*(1-ft)*ft*f.cpX + ft*ft*f.toX
-        const py = (1-ft)*(1-ft)*f.fromY + 2*(1-ft)*ft*f.cpY + ft*ft*f.toY
-
-        // Orange tail
+      const now=Date.now()
+      fusesRef.current=fusesRef.current.filter(f=>{
+        const ft=Math.min((now-f.startTime)/f.duration,1);f.progress=ft
+        const px=(1-ft)*(1-ft)*f.fromX+2*(1-ft)*ft*f.cpX+ft*ft*f.toX
+        const py=(1-ft)*(1-ft)*f.fromY+2*(1-ft)*ft*f.cpY+ft*ft*f.toY
         ctx.beginPath()
-        for (let i = 0; i <= 8; i++) {
-          const s = Math.max(0, ft - 0.08) + (i / 8) * 0.08
-          const qx = (1-s)*(1-s)*f.fromX + 2*(1-s)*s*f.cpX + s*s*f.toX
-          const qy = (1-s)*(1-s)*f.fromY + 2*(1-s)*s*f.cpY + s*s*f.toY
-          if (i === 0) ctx.moveTo(qx, qy)
-          else ctx.lineTo(qx, qy)
-        }
-        ctx.strokeStyle = "#FF8800"
-        ctx.lineWidth = 3
-        ctx.globalAlpha = 0.85
-        ctx.stroke()
-        ctx.globalAlpha = 1
-
-        // White inner tail
+        for(let i=0;i<=8;i++){const s=Math.max(0,ft-0.08)+(i/8)*0.08
+          const qx=(1-s)*(1-s)*f.fromX+2*(1-s)*s*f.cpX+s*s*f.toX,qy=(1-s)*(1-s)*f.fromY+2*(1-s)*s*f.cpY+s*s*f.toY
+          if(i===0)ctx.moveTo(qx,qy);else ctx.lineTo(qx,qy)}
+        ctx.strokeStyle="#FF8800";ctx.lineWidth=3;ctx.globalAlpha=0.85;ctx.stroke();ctx.globalAlpha=1
         ctx.beginPath()
-        for (let i = 0; i <= 5; i++) {
-          const s = Math.max(0, ft - 0.04) + (i / 5) * 0.04
-          const qx = (1-s)*(1-s)*f.fromX + 2*(1-s)*s*f.cpX + s*s*f.toX
-          const qy = (1-s)*(1-s)*f.fromY + 2*(1-s)*s*f.cpY + s*s*f.toY
-          if (i === 0) ctx.moveTo(qx, qy)
-          else ctx.lineTo(qx, qy)
-        }
-        ctx.strokeStyle = "#FFFFFF"
-        ctx.lineWidth = 1.5
-        ctx.globalAlpha = 0.7
-        ctx.stroke()
-        ctx.globalAlpha = 1
-
-        // Spark tip
-        ctx.beginPath()
-        ctx.arc(px, py, 3, 0, Math.PI*2)
-        ctx.fillStyle = "#FFFFFF"
-        ctx.fill()
-
-        // Orange halo
-        const glowG = ctx.createRadialGradient(px, py, 0, px, py, 8)
-        glowG.addColorStop(0, "rgba(255,200,50,0.9)")
-        glowG.addColorStop(0.5, "rgba(255,100,0,0.5)")
-        glowG.addColorStop(1, "transparent")
-        ctx.fillStyle = glowG
-        ctx.beginPath()
-        ctx.arc(px, py, 8, 0, Math.PI*2)
-        ctx.fill()
-
-        // Sideways sparks
-        for (let k = 0; k < 4; k++) {
-          const sparkAngle = Math.random() * Math.PI * 2
-          const sparkDist = 4 + Math.random() * 8
-          ctx.beginPath()
-          ctx.arc(px + Math.cos(sparkAngle)*sparkDist, py + Math.sin(sparkAngle)*sparkDist, 1 + Math.random()*1.5, 0, Math.PI*2)
-          ctx.fillStyle = Math.random() > 0.5 ? "#FFFF00" : "#FF8800"
-          ctx.globalAlpha = 0.6 + Math.random() * 0.4
-          ctx.fill()
-          ctx.globalAlpha = 1
-        }
-
-        // Flare at end
-        if (ft >= 1) {
-          const flareG = ctx.createRadialGradient(f.toX, f.toY, 0, f.toX, f.toY, 20)
-          flareG.addColorStop(0, "#FFFFFF")
-          flareG.addColorStop(0.4, f.color)
-          flareG.addColorStop(1, "transparent")
-          ctx.fillStyle = flareG
-          ctx.beginPath()
-          ctx.arc(f.toX, f.toY, 20, 0, Math.PI*2)
-          ctx.fill()
-        }
-
-        return ft < 1.1
+        for(let i=0;i<=5;i++){const s=Math.max(0,ft-0.04)+(i/5)*0.04
+          const qx=(1-s)*(1-s)*f.fromX+2*(1-s)*s*f.cpX+s*s*f.toX,qy=(1-s)*(1-s)*f.fromY+2*(1-s)*s*f.cpY+s*s*f.toY
+          if(i===0)ctx.moveTo(qx,qy);else ctx.lineTo(qx,qy)}
+        ctx.strokeStyle="#FFFFFF";ctx.lineWidth=1.5;ctx.globalAlpha=0.7;ctx.stroke();ctx.globalAlpha=1
+        ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fillStyle="#FFFFFF";ctx.fill()
+        const g=ctx.createRadialGradient(px,py,0,px,py,8)
+        g.addColorStop(0,"rgba(255,200,50,0.9)");g.addColorStop(0.5,"rgba(255,100,0,0.5)");g.addColorStop(1,"transparent")
+        ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);ctx.fill()
+        for(let k=0;k<4;k++){const sa=Math.random()*Math.PI*2,sd=4+Math.random()*8
+          ctx.beginPath();ctx.arc(px+Math.cos(sa)*sd,py+Math.sin(sa)*sd,1+Math.random()*1.5,0,Math.PI*2)
+          ctx.fillStyle=Math.random()>0.5?"#FFFF00":"#FF8800";ctx.globalAlpha=0.6+Math.random()*0.4;ctx.fill();ctx.globalAlpha=1}
+        if(ft>=1){const fg=ctx.createRadialGradient(f.toX,f.toY,0,f.toX,f.toY,20)
+          fg.addColorStop(0,"#FFF");fg.addColorStop(0.4,f.color);fg.addColorStop(1,"transparent")
+          ctx.fillStyle=fg;ctx.beginPath();ctx.arc(f.toX,f.toY,20,0,Math.PI*2);ctx.fill()}
+        return ft<1.1
       })
-
-      // ── Snap particles ──
-      particlesRef.current = particlesRef.current.filter(p => p.alpha > 0.02)
-      particlesRef.current.forEach(p => {
-        p.x += p.vx; p.y += p.vy
-        p.vy += 0.018
-        p.alpha -= 0.004
-        p.rotation += p.rotSpeed
-        p.size *= 0.993
-        ctx.save()
-        ctx.translate(p.x, p.y)
-        ctx.rotate((p.rotation * Math.PI) / 180)
-        ctx.globalAlpha = p.alpha
-        ctx.fillStyle = p.color
-        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size)
-        ctx.restore()
-        ctx.globalAlpha = 1
+      particlesRef.current=particlesRef.current.filter(p=>p.alpha>0.02)
+      particlesRef.current.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;p.vy+=0.018;p.alpha-=0.004;p.rotation+=p.rotSpeed;p.size*=0.993
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation*Math.PI/180)
+        ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size)
+        ctx.restore();ctx.globalAlpha=1
       })
-
-      animRef.current = requestAnimationFrame(draw)
+      animRef.current=requestAnimationFrame(draw)
     }
+    animRef.current=requestAnimationFrame(draw)
+    return ()=>{if(animRef.current!==null)cancelAnimationFrame(animRef.current)}
+  },[allNodes,shelfVisible,tick])
 
-    animRef.current = requestAnimationFrame(draw)
-    return () => { if (animRef.current !== null) cancelAnimationFrame(animRef.current) }
-  }, [loading, tick])
+  const getPlacedNode=(x:number,y:number)=>placedRef.current.find(n=>!n.deleted&&Math.hypot(x-n.x,y-n.y)<NODE_R+8)
 
-  // ── Helpers ────────────────────────────────────────────────────────────
-  const getNode = (x: number, y: number) =>
-    nodesRef.current.find(n => !n.deleted && Math.hypot(x - n.x, y - n.y) < NODE_R + 8)
+  const startDwell=useCallback((nodeId:string)=>{
+    if(dwellRef.current?.nodeId===nodeId) return
+    if(dwellRef.current?.timerId) clearTimeout(dwellRef.current.timerId)
+    const timerId=setTimeout(async()=>{dwellRef.current=null;await deleteNodeAnimated(nodeId)},DWELL_MS)
+    dwellRef.current={nodeId,startTime:Date.now(),timerId}
+  },[deleteNodeAnimated])
 
-  const startDwell = useCallback((nodeId: string) => {
-    if (dwellRef.current?.nodeId === nodeId) return
-    if (dwellRef.current?.timerId) clearTimeout(dwellRef.current.timerId)
-    const timerId = setTimeout(async () => {
-      dwellRef.current = null
-      await deleteNodeAnimated(nodeId)
-    }, DWELL_MS)
-    dwellRef.current = { nodeId, startTime: Date.now(), timerId }
-  }, [deleteNodeAnimated])
+  const cancelDwell=useCallback(()=>{if(dwellRef.current?.timerId)clearTimeout(dwellRef.current.timerId);dwellRef.current=null},[])
 
-  const cancelDwell = useCallback(() => {
-    if (dwellRef.current?.timerId) clearTimeout(dwellRef.current.timerId)
-    dwellRef.current = null
-  }, [])
-
-  // ── Pointer events ─────────────────────────────────────────────────────
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left, y = e.clientY - rect.top
-    const node = getNode(x, y)
-    if (node) {
-      dragRef.current = { nodeId: node.id, offsetX: node.x - x, offsetY: node.y - y }
-      hoveredRef.current = node.id
-      startDwell(node.id)
-      const eats = edgesRef.current.filter(ed => ed.predator === node.id && !ed.deleted).map(ed => ed.prey)
-      const eatenBy = edgesRef.current.filter(ed => ed.prey === node.id && !ed.deleted).map(ed => ed.predator)
-      setInfo({ name: node.label, emoji: node.emoji, eats, eatenBy, color: TROPHIC_COLOR[node.trophic] })
+  const handlePointerDown=useCallback((e:React.PointerEvent)=>{
+    const canvas=canvasRef.current;if(!canvas) return
+    const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
+    const node=getPlacedNode(x,y)
+    if(node){
+      dragRef.current={nodeId:node.id,fromShelf:false,offsetX:node.x-x,offsetY:node.y-y}
+      hoveredRef.current=node.id;startDwell(node.id)
+      const def=allNodes.find(d=>d.id===node.id)
+      const eats=edgesRef.current.filter(ed=>ed.predator===node.id&&!ed.deleted).map(ed=>ed.prey)
+      const eatenBy=edgesRef.current.filter(ed=>ed.prey===node.id&&!ed.deleted).map(ed=>ed.predator)
+      if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
     }
-  }, [startDwell])
+  },[allNodes,startDwell])
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left, y = e.clientY - rect.top
-    const node = getNode(x, y)
-
-    if (dragRef.current) {
-      const n = nodesRef.current.find(n => n.id === dragRef.current!.nodeId)
-      if (n) { n.x = x + dragRef.current.offsetX; n.y = y + dragRef.current.offsetY; n.vx = 0; n.vy = 0 }
-      if (dwellRef.current && node?.id !== dwellRef.current.nodeId) cancelDwell()
+  const handlePointerMove=useCallback((e:React.PointerEvent)=>{
+    const canvas=canvasRef.current;if(!canvas) return
+    const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
+    if(dragRef.current&&!dragRef.current.fromShelf){
+      const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId)
+      if(n){n.x=x+dragRef.current.offsetX;n.y=y+dragRef.current.offsetY;n.vx=0;n.vy=0}
+      if(dwellRef.current&&getPlacedNode(x,y)?.id!==dwellRef.current.nodeId)cancelDwell()
     } else {
-      hoveredRef.current = node?.id || null
-      if (node && !node.deleted) {
-        const eats = edgesRef.current.filter(ed => ed.predator === node.id && !ed.deleted).map(ed => ed.prey)
-        const eatenBy = edgesRef.current.filter(ed => ed.prey === node.id && !ed.deleted).map(ed => ed.predator)
-        setInfo({ name: node.label, emoji: node.emoji, eats, eatenBy, color: TROPHIC_COLOR[node.trophic] })
-      } else {
-        setInfo(null)
-      }
+      const node=getPlacedNode(x,y);hoveredRef.current=node?.id||null
+      if(node&&!node.deleted){
+        const def=allNodes.find(d=>d.id===node.id)
+        const eats=edgesRef.current.filter(ed=>ed.predator===node.id&&!ed.deleted).map(ed=>ed.prey)
+        const eatenBy=edgesRef.current.filter(ed=>ed.prey===node.id&&!ed.deleted).map(ed=>ed.predator)
+        if(def)setInfo({name:def.label,emoji:def.emoji,eats,eatenBy,color:TROPHIC_COLOR[def.trophic]})
+      } else setInfo(null)
     }
-  }, [cancelDwell])
+  },[allNodes,cancelDwell])
 
-  const handlePointerUp = useCallback(() => {
-    if (dragRef.current) {
-      const n = nodesRef.current.find(n => n.id === dragRef.current!.nodeId)
-      if (n) { n.pinned = true; n.vx = 0; n.vy = 0 }
+  const handlePointerUp=useCallback(()=>{
+    if(dragRef.current){const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId);if(n){n.pinned=true;n.vx=0;n.vy=0}}
+    dragRef.current=null;cancelDwell()
+  },[cancelDwell])
+
+  const handleShelfDragStart=useCallback((e:React.PointerEvent,nodeId:string)=>{
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    dragRef.current={nodeId,fromShelf:true,offsetX:0,offsetY:0}
+
+    const onMove=(ev:PointerEvent)=>{
+      setShelfDrag({nodeId,x:ev.clientX,y:ev.clientY})
     }
-    dragRef.current = null
-    cancelDwell()
-  }, [cancelDwell])
+    const onUp=(ev:PointerEvent)=>{
+      window.removeEventListener("pointermove",onMove)
+      window.removeEventListener("pointerup",onUp)
+      setShelfDrag(null)
+      if(!dragRef.current?.fromShelf){dragRef.current=null;return}
+      const canvas=canvasRef.current;if(!canvas){dragRef.current=null;return}
+      const rect=canvas.getBoundingClientRect()
+      const x=ev.clientX-rect.left,y=ev.clientY-rect.top
+      if(x>SHELF_W) placeAnimal(nodeId,x,y)
+      dragRef.current=null
+    }
+    window.addEventListener("pointerup",onUp)
+    window.addEventListener("pointermove",onMove)
+    
 
-  // ── Render ─────────────────────────────────────────────────────────────
-  if (loading) return (
-    <div style={{ width:"100vw", height:"100vh", background:"#06060F", display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div style={{ fontFamily:"system-ui", fontSize:18, color:"#FFAA00", letterSpacing:"0.2em" }}>Loading food web...</div>
+  },[placeAnimal])
+
+  if(allNodes.length===0) return(
+    <div style={{width:"100vw",height:"100vh",background:"#06060F",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:"system-ui",fontSize:18,color:"#FFAA00",letterSpacing:"0.2em"}}>Loading...</div>
     </div>
   )
 
-  const totalNodes = nodesRef.current.length
-  const activeCount = totalNodes - deletedCount
+  const unplacedCount=allNodes.length-placedIds.size
 
-  return (
-    <div style={{ width:"100vw", height:"100vh", position:"relative", overflow:"hidden", userSelect:"none" }}>
-      <canvas ref={canvasRef}
-        style={{ display:"block", touchAction:"none" }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-      />
+  return(
+    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none"}}>
+      <canvas ref={canvasRef} style={{display:"block",touchAction:"none"}}
+        onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}/>
 
-      {/* Title */}
-      <div style={{ position:"absolute", top:18, left:"50%", transform:"translateX(-50%)", textAlign:"center", pointerEvents:"none" }}>
-        <div style={{ fontFamily:"system-ui", fontWeight:900, fontSize:18, color:"white", letterSpacing:"0.2em", textShadow:"0 0 20px rgba(255,255,255,0.3)" }}>
+      {/* Shelf */}
+      <AnimatePresence>
+        {shelfVisible&&(
+          <motion.div initial={{x:-SHELF_W}} animate={{x:0}} exit={{x:-SHELF_W}}
+            transition={{type:"spring",stiffness:300,damping:30}}
+            style={{position:"absolute",top:0,left:0,bottom:0,width:SHELF_W,
+              background:"rgba(6,6,15,0.92)",borderRight:"1px solid rgba(255,255,255,0.08)",
+              backdropFilter:"blur(12px)",zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+            <div style={{padding:"12px 10px 8px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+              <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:11,color:"rgba(255,255,255,0.5)",letterSpacing:"0.15em",textTransform:"uppercase"}}>
+                Animals ({unplacedCount} left)
+              </div>
+              <div style={{display:"flex",gap:6,marginTop:8}}>
+                <button onClick={autoFill} style={{flex:1,padding:"5px 0",fontFamily:"system-ui",fontWeight:700,fontSize:9,
+                  color:"#44DD88",background:"rgba(68,221,136,0.1)",border:"1px solid rgba(68,221,136,0.3)",
+                  borderRadius:6,cursor:"pointer",letterSpacing:"0.08em"}}>⚡ Auto Fill</button>
+                <button onClick={()=>setShelfVisible(false)} style={{padding:"5px 8px",fontFamily:"system-ui",fontWeight:700,fontSize:9,
+                  color:"rgba(255,255,255,0.4)",background:"transparent",border:"1px solid rgba(255,255,255,0.1)",
+                  borderRadius:6,cursor:"pointer"}}>Hide</button>
+              </div>
+            </div>
+            <div style={{flex:1,overflowY:"auto",padding:"6px 0"}}>
+              {SHELF_ORDER.map(shelf=>{
+                const shelfNodes=allNodes.filter(n=>n.shelf===shelf&&!placedIds.has(n.id))
+                return(
+                  <div key={shelf}>
+                    <button onClick={()=>setShelfOpen(p=>({...p,[shelf]:!p[shelf]}))} style={{
+                      width:"100%",padding:"6px 10px",display:"flex",alignItems:"center",justifyContent:"space-between",
+                      background:"transparent",border:"none",cursor:"pointer",fontFamily:"system-ui",fontWeight:700,
+                      fontSize:10,color:"rgba(255,255,255,0.45)",letterSpacing:"0.08em"}}>
+                      <span>{shelf}</span><span style={{fontSize:8,opacity:0.5}}>{shelfOpen[shelf]?"▲":"▼"}</span>
+                    </button>
+                    <AnimatePresence>
+                      {shelfOpen[shelf]&&(
+                        <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
+                          transition={{duration:0.2}} style={{overflow:"hidden"}}>
+                          {shelfNodes.length===0?(
+                            <div style={{padding:"4px 12px 8px",fontFamily:"system-ui",fontSize:9,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>All placed</div>
+                          ):(
+                            <div style={{padding:"2px 8px 8px",display:"flex",flexWrap:"wrap",gap:5}}>
+                              {shelfNodes.map(node=>{
+                                const color=TROPHIC_COLOR[node.trophic]||"#FFF"
+                                return(
+                                  <motion.div key={node.id} whileHover={{scale:1.08}}
+                                    style={{width:52,display:"flex",flexDirection:"column",alignItems:"center",
+                                      cursor:"grab",padding:"5px 3px",borderRadius:8,border:`1px solid ${color}33`,
+                                      background:`${color}11`,touchAction:"none"}}
+                                    onPointerDown={e=>handleShelfDragStart(e,node.id)}>
+                                    <span style={{fontSize:20}}>{node.emoji}</span>
+                                    <span style={{fontFamily:"system-ui",fontWeight:700,fontSize:7,color,
+                                      textAlign:"center",marginTop:2,lineHeight:1.2,letterSpacing:"0.05em"}}>
+                                      {node.label.toUpperCase()}</span>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!shelfVisible&&(
+          <motion.button initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            onClick={()=>setShelfVisible(true)}
+            style={{position:"absolute",top:20,left:16,zIndex:20,padding:"8px 12px",
+              fontFamily:"system-ui",fontWeight:700,fontSize:11,color:"rgba(255,255,255,0.6)",
+              background:"rgba(6,6,15,0.8)",border:"1px solid rgba(255,255,255,0.12)",
+              borderRadius:8,cursor:"pointer"}}>☰ Animals</motion.button>
+        )}
+      </AnimatePresence>
+
+      <div style={{position:"absolute",top:18,left:"50%",transform:"translateX(-50%)",textAlign:"center",pointerEvents:"none",zIndex:10}}>
+        <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:18,color:"white",letterSpacing:"0.2em",textShadow:"0 0 20px rgba(255,255,255,0.3)"}}>
           🌿 NC Food Web
         </div>
-        <div style={{ fontFamily:"system-ui", fontSize:10, color:"rgba(255,255,255,0.35)", letterSpacing:"0.15em", marginTop:3 }}>
-          Hold on a species for 5 seconds to remove it
+        <div style={{fontFamily:"system-ui",fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginTop:3}}>
+          Drag animals in · Hold 5s to remove
         </div>
       </div>
 
-      <div style={{ position:"absolute", top:20, left:20, fontFamily:"system-ui", fontWeight:900, fontSize:16, color:"rgba(255,255,255,0.5)", pointerEvents:"none" }}>
-        {`${activeCount} / ${totalNodes} species`}
-      </div>
+      <a href="/game2/heron" style={{position:"absolute",top:20,right:20,zIndex:20,fontFamily:"system-ui",fontWeight:700,fontSize:12,color:"rgba(255,255,255,0.3)",textDecoration:"none"}}>← Back</a>
 
-      <a href="/game2/heron" style={{ position:"absolute", top:20, right:20, fontFamily:"system-ui", fontWeight:700, fontSize:12, color:"rgba(255,255,255,0.3)", textDecoration:"none" }}>← Back</a>
-
-      {/* Legend */}
-      <div style={{ position:"absolute", bottom:20, left:20, pointerEvents:"none" }}>
-        {Object.entries(TROPHIC_LABEL).map(([k, v]) => (
-          <div key={k} style={{ display:"flex", alignItems:"center", gap:7, marginBottom:5 }}>
-            <div style={{ width:10, height:10, borderRadius:"50%", background:TROPHIC_COLOR[k] }}/>
-            <span style={{ fontFamily:"system-ui", fontSize:9, color:TROPHIC_COLOR[k], letterSpacing:"0.1em", textTransform:"uppercase" }}>{v}</span>
-          </div>
-        ))}
-        <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:7 }}>
-          <div style={{ width:10, height:10, borderRadius:"50%", background:"#44FF44" }}/>
-          <span style={{ fontFamily:"system-ui", fontSize:9, color:"#44FF44", letterSpacing:"0.1em", textTransform:"uppercase" }}>Population boom</span>
-        </div>
-        <div style={{ display:"flex", alignItems:"center", gap:7, marginTop:4 }}>
-          <div style={{ width:10, height:10, borderRadius:"50%", background:"#FF4444" }}/>
-          <span style={{ fontFamily:"system-ui", fontSize:9, color:"#FF4444", letterSpacing:"0.1em", textTransform:"uppercase" }}>Starving</span>
-        </div>
-      </div>
-
-      {/* Info panel */}
       <AnimatePresence>
-        {info && (
-          <motion.div style={{
-            position:"absolute", bottom:24, left:"50%", transform:"translateX(-50%)",
-            background:"rgba(0,0,0,0.75)", borderRadius:12, padding:"14px 24px",
-            border:`1px solid ${info.color}44`, minWidth:280, textAlign:"center",
-            backdropFilter:"blur(8px)",
-          }}
-            initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:8 }}
-          >
-            <div style={{ fontFamily:"system-ui", fontWeight:900, fontSize:20, color:info.color }}>
-              {info.emoji} {info.name}
-            </div>
-            {info.eats.length > 0 && (
-              <div style={{ fontFamily:"system-ui", fontSize:11, color:"#FFAA00", marginTop:6, letterSpacing:"0.06em" }}>
-                🍽 Eats: {info.eats.join(", ")}
-              </div>
-            )}
-            {info.eatenBy.length > 0 && (
-              <div style={{ fontFamily:"system-ui", fontSize:11, color:"#FF6644", marginTop:4, letterSpacing:"0.06em" }}>
-                ⚠️ Eaten by: {info.eatenBy.join(", ")}
-              </div>
-            )}
-            {info.eatenBy.length === 0 && (
-              <div style={{ fontFamily:"system-ui", fontSize:11, color:"#44FF44", marginTop:4 }}>
-                ⬆️ Population is increasing — nothing is hunting this species!
-              </div>
-            )}
-            <div style={{ fontFamily:"system-ui", fontSize:9, color:"rgba(255,255,255,0.3)", marginTop:8, letterSpacing:"0.1em" }}>
-              HOLD FOR 5 SECONDS TO REMOVE
-            </div>
+        {info&&(
+          <motion.div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",
+            background:"rgba(0,0,0,0.78)",borderRadius:12,padding:"14px 24px",
+            border:`1px solid ${info.color}44`,minWidth:280,textAlign:"center",
+            backdropFilter:"blur(8px)",zIndex:20}}
+            initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:8}}>
+            <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:20,color:info.color}}>{info.emoji} {info.name}</div>
+            {info.eats.length>0&&<div style={{fontFamily:"system-ui",fontSize:11,color:"#FFAA00",marginTop:6}}>🍽 Eats: {info.eats.join(", ")}</div>}
+            {info.eatenBy.length>0&&<div style={{fontFamily:"system-ui",fontSize:11,color:"#FF6644",marginTop:4}}>⚠️ Eaten by: {info.eatenBy.join(", ")}</div>}
+            {info.eatenBy.length===0&&<div style={{fontFamily:"system-ui",fontSize:11,color:"#44FF44",marginTop:4}}>⬆️ Population increasing — nothing hunts this!</div>}
+            <div style={{fontFamily:"system-ui",fontSize:9,color:"rgba(255,255,255,0.25)",marginTop:8,letterSpacing:"0.1em"}}>HOLD 5 SECONDS TO REMOVE</div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Message */}
       <AnimatePresence>
-        {message && (
-          <motion.div style={{
-            position:"absolute", top:"30%", left:"50%", transform:"translateX(-50%)",
-            background:"rgba(0,0,0,0.8)", borderRadius:12, padding:"16px 32px",
-            border:`2px solid ${message.color}`, pointerEvents:"none",
-            backdropFilter:"blur(8px)",
-          }}
-            initial={{ scale:0.8, opacity:0 }} animate={{ scale:1, opacity:1 }} exit={{ scale:0.8, opacity:0 }}
-            transition={{ type:"spring", stiffness:300, damping:22 }}
-          >
-            <div style={{ fontFamily:"system-ui", fontWeight:900, fontSize:22, color:message.color, textAlign:"center" }}>
-              {message.text}
-            </div>
+        {message&&(
+          <motion.div style={{position:"absolute",top:"30%",left:"50%",transform:"translateX(-50%)",
+            background:"rgba(0,0,0,0.82)",borderRadius:12,padding:"16px 32px",
+            border:`2px solid ${message.color}`,pointerEvents:"none",backdropFilter:"blur(8px)",zIndex:30}}
+            initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.8,opacity:0}}
+            transition={{type:"spring",stiffness:300,damping:22}}>
+            <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:22,color:message.color,textAlign:"center"}}>{message.text}</div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Collapse screen */}
-      <AnimatePresence>
-        {totalNodes > 0 && activeCount === 0 && (
-          <motion.div style={{
-            position:"absolute", inset:0, background:"rgba(0,0,0,0.85)", backdropFilter:"blur(8px)",
-            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-          }} initial={{ opacity:0 }} animate={{ opacity:1 }}>
-            <div style={{ fontSize:72 }}>💀</div>
-            <div style={{ fontFamily:"system-ui", fontWeight:900, fontSize:36, color:"#FF3333", marginTop:16 }}>
-              The web has collapsed
-            </div>
-            <div style={{ fontFamily:"system-ui", fontSize:16, color:"rgba(255,255,255,0.6)", marginTop:8 }}>
-              Every species is gone
-            </div>
-            <button style={{
-              marginTop:32, padding:"14px 44px", fontFamily:"system-ui", fontWeight:800,
-              fontSize:16, color:"#06060F", background:"#44DD88", border:"none",
-              borderRadius:50, cursor:"pointer",
-            }}
-              onClick={() => window.location.reload()}
-            >🔄 Restore the Web</button>
-          </motion.div>
-        )}
+    <AnimatePresence>
+        {shelfDrag&&(()=>{
+          const def=allNodes.find(n=>n.id===shelfDrag.nodeId)
+          const color=TROPHIC_COLOR[def?.trophic||""]||"#FFF"
+          return(
+            <motion.div
+              style={{
+                position:"fixed",
+                left:shelfDrag.x-28,top:shelfDrag.y-28,
+                width:56,height:56,borderRadius:"50%",
+                background:`${color}22`,border:`2px solid ${color}88`,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:24,pointerEvents:"none",zIndex:100,
+              }}
+              initial={{scale:0.8,opacity:0}}
+              animate={{scale:1,opacity:1}}
+              exit={{scale:0.8,opacity:0}}
+            >{def?.emoji}</motion.div>
+          )
+        })()}
       </AnimatePresence>
     </div>
   )
 }
 
-function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)) }
+function sleep(ms:number){return new Promise(r=>setTimeout(r,ms))}
