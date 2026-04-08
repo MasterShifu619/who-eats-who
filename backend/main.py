@@ -550,6 +550,7 @@ def init_db():
         ('Fish','Blue Heron'),('Fish','Snake'),('Fish','Lizard'),
         ('Frog','Snake'),('Frog','Blue Heron'),('Frog','Lizard'),
         ('Rat','Snake'),('Rat','Blue Heron'),('Rat','Lizard'),
+        ('Fruit', 'Beetle'),('Worm', 'Crab'),('Fish', 'Crab'),
         ('Snake','Blue Heron'),('Lizard','Blue Heron'),('Lizard','Snake'),
     ]
     conn.executemany('INSERT OR IGNORE INTO foodweb_nc (prey, predator) VALUES (?, ?)', data)
