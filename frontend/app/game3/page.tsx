@@ -24,9 +24,24 @@ interface Particle {
 const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
 const SHELF_W = typeof window !== "undefined" ? Math.max(180, Math.min(280, window.innerWidth * 0.20)) : 220
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
+
+// Watercolor field-guide trophic palette
 const TROPHIC_COLOR: Record<string,string>={
-  producer:"#44DD88", primary:"#44AAFF", secondary:"#FFAA00",
-  tertiary:"#FF6644", apex:"#FF3333", sun:"#FFD700"
+  producer:  "#6B8C5E",   // sage green
+  primary:   "#C8851A",   // warm ochre
+  secondary: "#4A8B8C",   // soft teal
+  tertiary:  "#A0522D",   // rust / terracotta
+  apex:      "#6B8CAA",   // dusty blue
+  sun:       "#D4A847",   // warm amber
+}
+
+// PNGs that replace emojis on canvas
+const NODE_PNG_MAP: Record<string,string> = {
+  "Butterfly": "/Butterfly.svg",
+  "Crab":      "/Crab.svg",
+  "Dragonfly": "/Dragonfly.svg",
+  "Fish":      "/Fish.svg",
+  "Frog":      "/Frog.svg",
 }
 
 const SUN_ID = "Sun"
@@ -95,6 +110,7 @@ export default function Game3Page() {
   const hoveredRef   = useRef<string|null>(null)
   const sunPresentRef = useRef(false)
   const placedIdsRef = useRef<Set<string>>(new Set())
+  const nodeImagesRef = useRef<Record<string,HTMLImageElement>>({})
 
 
   const [allNodes]   = useState<NodeDef[]>(STATIC_NODES)
@@ -107,13 +123,19 @@ export default function Game3Page() {
   const [sunPresent,setSunPresent]   = useState(false)
   const [daytimeBg,setDaytimeBg]     = useState<HTMLImageElement|null>(null)
 
-  // Load daytime bg image
+  // Load background + PNG animal images
   useEffect(()=>{
-    const img = new Image()
-    img.src = "/images/daytime-bg.jpg"
-    img.onload = () => setDaytimeBg(img)
+    const bg = new Image()
+    bg.src = "/watercolor-lake-background.jpg"
+    bg.onload = () => setDaytimeBg(bg)
     setDims({w:window.innerWidth,h:window.innerHeight})
     STATIC_NODES.forEach(n=>preloadSound(n.id))
+    // Preload PNG animal illustrations
+    Object.entries(NODE_PNG_MAP).forEach(([id, src])=>{
+      const img = new Image()
+      img.src = src
+      img.onload = () => { nodeImagesRef.current[id] = img }
+    })
   },[])
 
   const isSunPlaced = useCallback(()=>sunPresentRef.current,[])
@@ -315,61 +337,76 @@ export default function Game3Page() {
       canvas.width=window.innerWidth;canvas.height=window.innerHeight;tick()
       const isDay=sunPresentRef.current
 
-      // Background
-      if(isDay&&daytimeBg){
-        // Daytime: draw image at low opacity over light bg
-        ctx.fillStyle="#D4EAF7"
-        ctx.fillRect(0,0,canvas.width,canvas.height)
-        ctx.globalAlpha=0.18
+      // ── Watercolor background ──
+      if(daytimeBg){
         ctx.drawImage(daytimeBg,0,0,canvas.width,canvas.height)
+      } else {
+        ctx.fillStyle=isDay?"#C8DEBB":"#2A3A4A"
+        ctx.fillRect(0,0,canvas.width,canvas.height)
+      }
+      if(isDay){
+        // Very faint parchment wash — let the lake show through
+        ctx.globalAlpha=0.10
+        ctx.fillStyle="#F4EDD3"
+        ctx.fillRect(0,0,canvas.width,canvas.height)
         ctx.globalAlpha=1
-        // Warm golden overlay
-        const sunGlow=ctx.createRadialGradient(canvas.width*0.8,canvas.height*0.15,0,canvas.width*0.8,canvas.height*0.15,canvas.height*0.6)
-        sunGlow.addColorStop(0,"rgba(255,220,100,0.18)")
+        // Subtle sun-glow
+        const sunGlow=ctx.createRadialGradient(canvas.width*0.78,canvas.height*0.14,0,canvas.width*0.78,canvas.height*0.14,canvas.height*0.55)
+        sunGlow.addColorStop(0,"rgba(212,168,71,0.10)")
         sunGlow.addColorStop(1,"transparent")
         ctx.fillStyle=sunGlow;ctx.fillRect(0,0,canvas.width,canvas.height)
       } else {
-        ctx.fillStyle="#06060F";ctx.fillRect(0,0,canvas.width,canvas.height)
-        // Stars only at night
-        for(let i=0;i<60;i++){
+        // Night: lighter overlay so the lake still shows
+        ctx.globalAlpha=0.40
+        ctx.fillStyle="#1A2535"
+        ctx.fillRect(0,0,canvas.width,canvas.height)
+        ctx.globalAlpha=1
+        // Ink-dot stars
+        for(let i=0;i<80;i++){
           const sx=(i*137.5*canvas.width/100)%canvas.width,sy=(i*97.3*canvas.height/100)%canvas.height
-          ctx.beginPath();ctx.arc(sx,sy,(Math.sin(t*0.001+i)*0.5+0.5)*1.8,0,Math.PI*2)
-          ctx.fillStyle=`rgba(255,255,255,${0.2+(i%3)*0.1})`;ctx.fill()
+          const sz=(Math.sin(t*0.001+i)*0.5+0.5)*1.6
+          ctx.beginPath();ctx.arc(sx,sy,sz,0,Math.PI*2)
+          ctx.fillStyle=`rgba(220,210,190,${0.15+(i%4)*0.08})`;ctx.fill()
         }
       }
 
       if(shelfVisible){
-        ctx.strokeStyle=isDay?"rgba(0,0,0,0.08)":"rgba(255,255,255,0.06)"
-        ctx.lineWidth=1;ctx.setLineDash([6,8])
+        ctx.strokeStyle="rgba(92,61,46,0.18)"
+        ctx.lineWidth=1;ctx.setLineDash([5,7])
         ctx.beginPath();ctx.moveTo(SHELF_W,0);ctx.lineTo(SHELF_W,canvas.height);ctx.stroke();ctx.setLineDash([])
       }
 
       const nodes=placedRef.current,edges=edgesRef.current,hovId=hoveredRef.current
 
-      // Draw sun node special
+      // Draw sun node — warm amber watercolor medallion
       const sunNode=nodes.find(n=>n.id===SUN_ID&&!n.deleted)
       if(sunNode){
         const pulse=Math.sin(t*0.003)*0.5+0.5
-        const sg=ctx.createRadialGradient(sunNode.x,sunNode.y,0,sunNode.x,sunNode.y,NODE_R*4)
-        sg.addColorStop(0,`rgba(255,220,50,${0.5+pulse*0.3})`)
-        sg.addColorStop(0.5,`rgba(255,180,0,${0.2+pulse*0.1})`)
+        // Soft amber glow
+        const sg=ctx.createRadialGradient(sunNode.x,sunNode.y,0,sunNode.x,sunNode.y,NODE_R*4.5)
+        sg.addColorStop(0,`rgba(212,168,71,${0.45+pulse*0.25})`)
+        sg.addColorStop(0.5,`rgba(200,133,26,${0.18+pulse*0.1})`)
         sg.addColorStop(1,"transparent")
-        ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R*4,0,Math.PI*2);ctx.fill()
+        ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R*4.5,0,Math.PI*2);ctx.fill()
+        // Parchment fill
+        const snFill=ctx.createRadialGradient(sunNode.x-NODE_R*0.3,sunNode.y-NODE_R*0.3,4,sunNode.x,sunNode.y,NODE_R)
+        snFill.addColorStop(0,"rgba(255,252,220,0.96)")
+        snFill.addColorStop(1,`rgba(212,168,71,0.88)`)
         ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R,0,Math.PI*2)
-        ctx.fillStyle=`rgba(255,220,50,0.9)`;ctx.fill()
-        ctx.strokeStyle="#FFD700";ctx.lineWidth=3;ctx.stroke()
+        ctx.fillStyle=snFill;ctx.fill()
+        ctx.strokeStyle="rgba(212,168,71,0.85)";ctx.lineWidth=2.5;ctx.stroke()
         if(dwellRef.current?.nodeId===SUN_ID){
           const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
           ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
-          ctx.strokeStyle="#FF3333";ctx.lineWidth=4;ctx.stroke()
+          ctx.strokeStyle="rgba(160,82,45,0.9)";ctx.lineWidth=3.5;ctx.stroke()
         }
         ctx.font="22px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("☀️",sunNode.x,sunNode.y-1)
-        ctx.font="bold 11px Arial, sans-serif"
-        const tw=ctx.measureText("SUN").width
-        const ly=sunNode.y+NODE_R+16
-        ctx.fillStyle=isDay?"rgba(0,0,0,0.5)":"rgba(0,0,0,0.65)"
-        ctx.beginPath();ctx.roundRect(sunNode.x-tw/2-5,ly-7,tw+10,14,7);ctx.fill()
-        ctx.fillStyle="#FFD700";ctx.fillText("SUN",sunNode.x,ly)
+        // Name tag
+        ctx.font="bold 10px Georgia, serif"
+        const tw=ctx.measureText("Sun").width, ly=sunNode.y+NODE_R+16
+        ctx.fillStyle="rgba(244,237,211,0.90)"
+        ctx.beginPath();ctx.roundRect(sunNode.x-tw/2-7,ly-8,tw+14,16,8);ctx.fill()
+        ctx.fillStyle="rgba(160,82,45,0.85)";ctx.fillText("Sun",sunNode.x,ly)
       }
 
       // Edges
@@ -396,57 +433,86 @@ export default function Game3Page() {
             if(i===0)ctx.moveTo(qx,qy);else ctx.lineTo(qx,qy)}
           ctx.strokeStyle=grad;ctx.lineWidth=1.2;ctx.globalAlpha=1;ctx.stroke();ctx.globalAlpha=1
         } else {
-          const opacity=isDay?"88":"55"
-          grad.addColorStop(0,aColor+(isHov?"DD":opacity));grad.addColorStop(1,bColor+(isHov?"DD":opacity))
+          // Ink-warm edges — prominent lines + large arrow heads
+          const opA=isHov?"FF":"CC", opB=isHov?"FF":"BB"
+          grad.addColorStop(0,aColor+opA);grad.addColorStop(1,bColor+opB)
           ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2)
-          ctx.strokeStyle=grad;ctx.lineWidth=isHov?2.5:1.5;ctx.globalAlpha=1;ctx.stroke();ctx.globalAlpha=1
+          ctx.strokeStyle=grad;ctx.lineWidth=isHov?4.5:3;ctx.globalAlpha=1;ctx.stroke();ctx.globalAlpha=1
+          // Large solid arrowhead
           const ang=Math.atan2(y2-my,x2-mx)
           ctx.beginPath();ctx.moveTo(x2,y2)
-          ctx.lineTo(x2-11*Math.cos(ang-0.4),y2-11*Math.sin(ang-0.4))
-          ctx.lineTo(x2-11*Math.cos(ang+0.4),y2-11*Math.sin(ang+0.4))
-          ctx.closePath();ctx.fillStyle=bColor+(isHov?"EE":"88");ctx.fill()
+          ctx.lineTo(x2-18*Math.cos(ang-0.42),y2-18*Math.sin(ang-0.42))
+          ctx.lineTo(x2-18*Math.cos(ang+0.42),y2-18*Math.sin(ang+0.42))
+          ctx.closePath();ctx.fillStyle=bColor+(isHov?"FF":"CC");ctx.fill()
         }
       })
 
-      // Animal nodes
+      // Animal nodes — watercolor medallion style
       nodes.forEach(n=>{
         if(n.deleted||n.id===SUN_ID) return
         const def=STATIC_NODES.find(d=>d.id===n.id);if(!def) return
         const isHov=hovId===n.id,isDwelling=dwellRef.current?.nodeId===n.id
-        const color=TROPHIC_COLOR[def.trophic]||"#FFF",r=isHov?NODE_R+4:NODE_R
-        if(n.exploding){
-          const pulse=Math.sin(t*0.008)*0.5+0.5,g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
-          g.addColorStop(0,`rgba(100,255,100,${0.3*pulse})`);g.addColorStop(1,"transparent")
+        const color=TROPHIC_COLOR[def.trophic]||"#8B6B55",r=isHov?NODE_R+4:NODE_R
+
+        // State aura (starving / overpopulated)
+        if(n.starving){
+          const pulse=Math.sin(t*0.01)*0.5+0.5
+          const g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
+          g.addColorStop(0,`rgba(160,82,45,${0.35*pulse})`);g.addColorStop(1,"transparent")
           ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
         }
-        if(n.starving){
-          const pulse=Math.sin(t*0.01)*0.5+0.5,g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
-          g.addColorStop(0,`rgba(255,60,60,${0.35*pulse})`);g.addColorStop(1,"transparent")
+        if(n.exploding){
+          const pulse=Math.sin(t*0.008)*0.5+0.5
+          const g=ctx.createRadialGradient(n.x,n.y,r,n.x,n.y,r*3)
+          g.addColorStop(0,`rgba(107,140,94,${0.3*pulse})`);g.addColorStop(1,"transparent")
           ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
         }
         if(isHov||isDwelling){
-          const g=ctx.createRadialGradient(n.x,n.y,r*0.3,n.x,n.y,r*3)
-          g.addColorStop(0,color+"88");g.addColorStop(1,"transparent")
-          ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*3,0,Math.PI*2);ctx.fill()
+          const g=ctx.createRadialGradient(n.x,n.y,r*0.3,n.x,n.y,r*2.8)
+          g.addColorStop(0,color+"66");g.addColorStop(1,"transparent")
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*2.8,0,Math.PI*2);ctx.fill()
         }
-        const bgEnd=isDay?"#D4EAF7":"#06060F"
-        const bg=ctx.createRadialGradient(n.x-r*0.3,n.y-r*0.3,2,n.x,n.y,r)
-        bg.addColorStop(0,color+(isHov?"66":"33"));bg.addColorStop(1,bgEnd)
-        ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill()
-        ctx.strokeStyle=isDwelling?"#FF3333":n.exploding?"#44FF44":n.starving?"#FF4444":color
-        ctx.lineWidth=isDwelling?3:isHov?2.5:2;ctx.stroke()
-        if(isDwelling&&dwellRef.current){
-          const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
-          ctx.beginPath();ctx.arc(n.x,n.y,r+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
-          ctx.strokeStyle="#FF3333";ctx.lineWidth=4;ctx.stroke()
+
+        const png=nodeImagesRef.current[n.id]
+        const hasPng=!!(png&&png.complete)
+        // PNG size — no circle container, just the image
+        const imgR=isHov?r*1.95:r*1.8
+
+        if(hasPng){
+          // ── PNG node: image only, no circle border ──
+          ctx.drawImage(png,n.x-imgR,n.y-imgR,imgR*2,imgR*2)
+
+          // Dwell progress ring around image extents
+          if(isDwelling&&dwellRef.current){
+            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+            ctx.beginPath();ctx.arc(n.x,n.y,imgR+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
+            ctx.strokeStyle="rgba(160,82,45,0.88)";ctx.lineWidth=3.5;ctx.stroke()
+          }
+        } else {
+          // ── Emoji node: parchment medallion ──
+          const bg=ctx.createRadialGradient(n.x-r*0.3,n.y-r*0.3,3,n.x,n.y,r)
+          bg.addColorStop(0,"rgba(255,252,238,0.95)")
+          bg.addColorStop(1,color+(isHov?"88":"55"))
+          ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill()
+          ctx.font=`${isHov?24:20}px serif`;ctx.textAlign="center";ctx.textBaseline="middle"
+          ctx.fillText(def.emoji,n.x,n.y-1)
+          ctx.strokeStyle=isDwelling?"rgba(160,82,45,0.9)":n.starving?"rgba(160,82,45,0.8)":n.exploding?"rgba(107,140,94,0.8)":color+"CC"
+          ctx.lineWidth=isDwelling?3:isHov?2.2:1.8;ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.stroke()
+          if(isDwelling&&dwellRef.current){
+            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+            ctx.beginPath();ctx.arc(n.x,n.y,r+7,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
+            ctx.strokeStyle="rgba(160,82,45,0.85)";ctx.lineWidth=3.5;ctx.stroke()
+          }
         }
-        ctx.font=`${isHov?24:20}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(def.emoji,n.x,n.y-1)
-        ctx.font=`bold ${isHov?13:11}px Arial, sans-serif`
-        const lbl=def.label.toUpperCase(),tw=ctx.measureText(lbl).width,ly=n.y+r+16
-        ctx.fillStyle=isDay?"rgba(255,255,255,0.75)":"rgba(0,0,0,0.65)"
-        ctx.beginPath();ctx.roundRect(n.x-tw/2-6,ly-8,tw+12,16,8);ctx.fill()
-        ctx.fillStyle=n.exploding?"#44FF44":n.starving?"#FF4444":isHov?(isDay?"#000":"#FFF"):isDay?"#1A3A1A":color
-        ctx.fillText(lbl,n.x,ly)
+
+        // Parchment name tag (below node, accounting for actual size)
+        const nameR=hasPng?imgR:r
+        ctx.font="bold 10px Georgia, serif"
+        const lbl=def.label,tw=ctx.measureText(lbl).width,ly=n.y+nameR+14
+        ctx.fillStyle="rgba(244,237,211,0.90)"
+        ctx.beginPath();ctx.roundRect(n.x-tw/2-7,ly-8,tw+14,16,8);ctx.fill()
+        ctx.fillStyle=n.starving?"rgba(160,82,45,0.9)":n.exploding?"rgba(107,140,94,0.9)":"rgba(44,24,16,0.78)"
+        ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lbl,n.x,ly)
       })
 
       // Fuse sparks
@@ -556,73 +622,115 @@ export default function Game3Page() {
   const unplacedCount=allNodes.filter(n=>!placedIds.has(n.id)).length
   const isDay=sunPresent
 
-  // Shelf panel styles based on day/night
-  const shelfBg=isDay?"rgba(240,248,255,0.95)":"rgba(6,6,15,0.92)"
-  const shelfBorder=isDay?"rgba(0,0,0,0.08)":"rgba(255,255,255,0.08)"
-  const shelfTextColor=isDay?"rgba(0,0,0,0.6)":"rgba(255,255,255,0.5)"
-  const titleColor=isDay?"#1A3A1A":"white"
-
   return(
-    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none"}}>
+    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair"}}>
       <canvas ref={canvasRef} style={{display:"block",touchAction:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}/>
 
-      {/* Shelf */}
+      {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>
         {shelfVisible&&(
           <motion.div initial={{x:-SHELF_W}} animate={{x:0}} exit={{x:-SHELF_W}}
-            transition={{type:"spring",stiffness:300,damping:30}}
-            style={{position:"absolute",top:0,left:0,bottom:0,width:SHELF_W,
-              background:shelfBg,borderRight:`1px solid ${shelfBorder}`,
-              backdropFilter:"blur(12px)",zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-            <div style={{padding:"14px 12px 10px",borderBottom:`1px solid ${shelfBorder}`}}>
-              <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:13,color:shelfTextColor,letterSpacing:"0.12em",textTransform:"uppercase"}}>
-                Animals ({unplacedCount} left)
+            transition={{type:"spring",stiffness:280,damping:28}}
+            style={{
+              position:"absolute",top:0,left:0,bottom:0,width:SHELF_W,
+              background:"rgba(244,237,211,0.92)",
+              backdropFilter:"blur(10px)",
+              borderRight:"1px solid rgba(92,61,46,0.2)",
+              boxShadow:"inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)",
+              zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden",
+            }}>
+
+            {/* Header */}
+            <div style={{padding:"16px 12px 10px",borderBottom:"1px solid rgba(92,61,46,0.15)",background:"rgba(232,216,180,0.55)"}}>
+              <div style={{fontFamily:"var(--font-mansalva), cursive",fontSize:15,color:"rgba(44,24,16,0.82)",marginBottom:8}}>
+                Field Specimens
               </div>
-              <div style={{display:"flex",gap:6,marginTop:10}}>
-                <button onClick={autoFill} style={{flex:1,padding:"6px 0",fontFamily:"system-ui",fontWeight:700,fontSize:11,
-                  color:"#44DD88",background:"rgba(68,221,136,0.1)",border:"1px solid rgba(68,221,136,0.3)",
-                  borderRadius:6,cursor:"pointer",letterSpacing:"0.08em"}}>⚡ Auto Fill</button>
-                <button onClick={()=>setShelfVisible(false)} style={{padding:"6px 10px",fontFamily:"system-ui",fontWeight:700,fontSize:11,
-                  color:shelfTextColor,background:"transparent",border:`1px solid ${shelfBorder}`,
-                  borderRadius:6,cursor:"pointer"}}>Hide</button>
+              <div style={{fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:"rgba(92,61,46,0.55)",marginBottom:10}}>
+                {unplacedCount} awaiting placement
+              </div>
+              <div style={{display:"flex",gap:6}}>
+                <button onClick={autoFill} style={{
+                  flex:1,padding:"6px 0",
+                  fontFamily:"var(--font-mansalva), cursive",fontSize:11,
+                  color:"rgba(107,140,94,0.95)",
+                  background:"rgba(107,140,94,0.12)",
+                  border:"1px solid rgba(107,140,94,0.4)",
+                  borderRadius:"4px 8px 5px 7px / 7px 4px 8px 5px",
+                  cursor:"pointer",
+                }}>⚡ Fill All</button>
+                <button onClick={()=>setShelfVisible(false)} style={{
+                  padding:"6px 10px",
+                  fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
+                  color:"rgba(92,61,46,0.6)",
+                  background:"transparent",
+                  border:"1px solid rgba(92,61,46,0.2)",
+                  borderRadius:"3px 6px 4px 5px / 5px 3px 6px 4px",
+                  cursor:"pointer",
+                }}>Hide</button>
               </div>
             </div>
-            <div style={{flex:1,overflowY:"auto",padding:"6px 0"}}>
+
+            {/* Scrollable specimen list */}
+            <div style={{flex:1,overflowY:"auto",padding:"6px 0",scrollbarWidth:"none"}}>
               {SHELF_ORDER.map(shelf=>{
                 const shelfNodes=allNodes.filter(n=>n.shelf===shelf&&!placedIds.has(n.id))
                 const isSunShelf=shelf==="☀️ Sun"
+                const sectionColor=isSunShelf?"rgba(212,168,71,0.9)":"rgba(92,61,46,0.65)"
                 return(
                   <div key={shelf}>
                     <button onClick={()=>setShelfOpen(p=>({...p,[shelf]:!p[shelf]}))} style={{
                       width:"100%",padding:"7px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
-                      background:"transparent",border:"none",cursor:"pointer",fontFamily:"system-ui",fontWeight:700,
-                      fontSize:12,color:isSunShelf?"#FFB700":shelfTextColor,letterSpacing:"0.08em"}}>
-                      <span>{shelf}</span><span style={{fontSize:9,opacity:0.5}}>{shelfOpen[shelf]?"▲":"▼"}</span>
+                      background:"transparent",border:"none",cursor:"pointer",
+                      fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
+                      color:sectionColor,letterSpacing:"0.04em",
+                    }}>
+                      <span>{shelf}</span>
+                      <span style={{fontSize:8,opacity:0.6}}>{shelfOpen[shelf]?"▲":"▼"}</span>
                     </button>
                     <AnimatePresence>
                       {shelfOpen[shelf]&&(
                         <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
-                          transition={{duration:0.2}} style={{overflow:"hidden"}}>
+                          transition={{duration:0.22}} style={{overflow:"hidden"}}>
                           {shelfNodes.length===0?(
-                            <div style={{padding:"4px 14px 10px",fontFamily:"system-ui",fontSize:11,color:shelfTextColor,fontStyle:"italic",opacity:0.5}}>
-                              {isSunShelf?"Sun is in the sky ☀️":"All placed"}
+                            <div style={{padding:"3px 14px 10px",fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:"rgba(92,61,46,0.4)"}}>
+                              {isSunShelf?"Sun is shining ☀️":"All placed"}
                             </div>
                           ):(
-                            <div style={{padding:"4px 10px 10px",display:"flex",flexWrap:"wrap",gap:6}}>
+                            <div style={{padding:"4px 8px 10px",display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center"}}>
                               {shelfNodes.map(node=>{
-                                const color=node.id===SUN_ID?"#FFD700":TROPHIC_COLOR[node.trophic]||"#FFF"
+                                const color=node.id===SUN_ID?"rgba(212,168,71,0.85)":TROPHIC_COLOR[node.trophic]||"rgba(139,107,85,0.7)"
+                                const pngSrc=NODE_PNG_MAP[node.id]
+                                const isSun=node.id===SUN_ID
                                 return(
-                                  <motion.div key={node.id} whileHover={{scale:1.08}}
-                                    style={{width:node.id===SUN_ID?SHELF_W-28:58,display:"flex",flexDirection:"column",alignItems:"center",
-                                      cursor:"grab",padding:"7px 4px",borderRadius:10,
-                                      border:`1px solid ${color}44`,background:`${color}15`,touchAction:"none"}}
+                                  <motion.div key={node.id} whileHover={{scale:1.06,rotate:1.5}}
+                                    style={{
+                                      width:isSun?SHELF_W-28:62,
+                                      display:"flex",flexDirection:"column",alignItems:"center",
+                                      cursor:"grab",padding:"7px 4px 5px",
+                                      background:"rgba(255,252,238,0.9)",
+                                      border:`1px solid ${color}55`,
+                                      borderRadius:"3px 8px 4px 7px / 6px 3px 8px 4px",
+                                      boxShadow:"0 2px 8px rgba(60,40,10,0.12)",
+                                      touchAction:"none",
+                                    }}
                                     onPointerDown={e=>handleShelfDragStart(e,node.id)}>
-                                    <span style={{fontSize:node.id===SUN_ID?28:22}}>{node.emoji}</span>
-                                    <span style={{fontFamily:"system-ui",fontWeight:700,fontSize:node.id===SUN_ID?10:8,color,
-                                      textAlign:"center",marginTop:3,lineHeight:1.2,letterSpacing:"0.05em"}}>
-                                      {node.label.toUpperCase()}</span>
+                                    {/* Illustration or emoji */}
+                                    {pngSrc?(
+                                      <img src={pngSrc} alt={node.label} aria-label={node.label}
+                                        style={{width:isSun?40:44,height:isSun?40:36,objectFit:"contain",
+                                          filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.22))"}}/>
+                                    ):(
+                                      <span style={{fontSize:isSun?28:22,filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))"}}
+                                        aria-label={node.label}>{node.emoji}</span>
+                                    )}
+                                    {/* Name label */}
+                                    <span style={{
+                                      fontFamily:"var(--font-playfair), serif",fontSize:isSun?10:8,
+                                      color:"rgba(44,24,16,0.72)",textAlign:"center",marginTop:4,
+                                      lineHeight:1.2,letterSpacing:"0.02em",
+                                    }}>{node.label}</span>
                                   </motion.div>
                                 )
                               })}
@@ -635,62 +743,106 @@ export default function Game3Page() {
                 )
               })}
             </div>
+
+            {/* Bottom fade */}
+            <div style={{position:"absolute",bottom:0,left:0,right:0,height:36,pointerEvents:"none",
+              background:"linear-gradient(to top, rgba(244,237,211,0.95), transparent)"}}/>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Show shelf button */}
       <AnimatePresence>
         {!shelfVisible&&(
           <motion.button initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setShelfVisible(true)}
-            style={{position:"absolute",top:20,left:16,zIndex:20,padding:"8px 14px",
-              fontFamily:"system-ui",fontWeight:700,fontSize:13,
-              color:isDay?"rgba(0,0,0,0.6)":"rgba(255,255,255,0.6)",
-              background:isDay?"rgba(240,248,255,0.9)":"rgba(6,6,15,0.8)",
-              border:`1px solid ${isDay?"rgba(0,0,0,0.12)":"rgba(255,255,255,0.12)"}`,
-              borderRadius:8,cursor:"pointer"}}>☰ Animals</motion.button>
+            style={{
+              position:"absolute",top:20,left:16,zIndex:20,padding:"8px 16px",
+              fontFamily:"var(--font-mansalva), cursive",fontSize:13,
+              color:"rgba(44,24,16,0.78)",
+              background:"rgba(244,237,211,0.90)",
+              border:"1px solid rgba(92,61,46,0.25)",
+              borderRadius:"4px 8px 5px 7px / 7px 4px 8px 5px",
+              cursor:"pointer",
+              boxShadow:"0 3px 12px rgba(44,24,16,0.15)",
+            }}>☰ Creatures</motion.button>
         )}
       </AnimatePresence>
 
-      {/* Title */}
+      {/* ── Title ── */}
       <div style={{position:"absolute",top:18,left:"50%",transform:"translateX(-50%)",textAlign:"center",pointerEvents:"none",zIndex:10}}>
-        <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:20,color:titleColor,letterSpacing:"0.2em",
-          textShadow:isDay?"0 1px 8px rgba(255,255,255,0.8)":"0 0 20px rgba(255,255,255,0.3)"}}>
+        <div style={{
+          fontFamily:"var(--font-mansalva), cursive",fontSize:22,
+          color:isDay?"rgba(44,24,16,0.82)":"rgba(220,210,190,0.90)",
+          textShadow:isDay?"1px 2px 0 rgba(255,255,255,0.45)":"0 0 16px rgba(100,80,40,0.4)",
+          letterSpacing:"0.02em",
+        }}>
           {isDay?"🌿":"🌑"} NC Food Web
         </div>
-        <div style={{fontFamily:"system-ui",fontSize:12,color:isDay?"rgba(0,80,0,0.6)":"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginTop:3}}>
-          {isDay?"☀️ The sun is shining — life thrives!":"🌑 Add the sun to begin · Hold 5s to remove"}
+        <div style={{
+          fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
+          color:isDay?"rgba(92,61,46,0.6)":"rgba(180,165,130,0.55)",
+          letterSpacing:"0.05em",marginTop:3,
+        }}>
+          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 5s to remove"}
         </div>
       </div>
 
-      {/* Message */}
+      {/* ── Message bubble ── */}
       <AnimatePresence>
         {message&&(
-          <motion.div style={{position:"absolute",top:"30%",left:"50%",transform:"translateX(-50%)",
-            background:"rgba(0,0,0,0.85)",borderRadius:14,padding:"18px 36px",
-            border:`2px solid ${message.color}`,pointerEvents:"none",backdropFilter:"blur(8px)",zIndex:30}}
-            initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.8,opacity:0}}
+          <motion.div style={{
+            position:"absolute",top:"28%",left:"50%",transform:"translateX(-50%)",
+            background:"rgba(244,237,211,0.94)",
+            borderRadius:"4px 12px 6px 10px / 10px 4px 12px 6px",
+            padding:"16px 32px",
+            border:`1.5px solid ${message.color}88`,
+            boxShadow:`0 8px 32px rgba(44,24,16,0.25), 0 0 0 1px ${message.color}22`,
+            pointerEvents:"none",
+            backdropFilter:"blur(6px)",
+            zIndex:30,
+            maxWidth:"60vw",
+          }}
+            initial={{scale:0.8,opacity:0,y:-10}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.85,opacity:0}}
             transition={{type:"spring",stiffness:300,damping:22}}>
-            <div style={{fontFamily:"system-ui",fontWeight:900,fontSize:24,color:message.color,textAlign:"center"}}>{message.text}</div>
+            <div style={{
+              fontFamily:"var(--font-mansalva), cursive",fontSize:20,
+              color:message.color,textAlign:"center",
+              textShadow:"0 1px 0 rgba(255,255,255,0.4)",
+            }}>{message.text}</div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Shelf drag ghost */}
+      {/* ── Drag ghost ── */}
       <AnimatePresence>
         {shelfDrag&&(()=>{
           const def=allNodes.find(n=>n.id===shelfDrag.nodeId)
-          const color=def?.id===SUN_ID?"#FFD700":TROPHIC_COLOR[def?.trophic||""]||"#FFF"
+          const pngSrc=def?NODE_PNG_MAP[def.id]:null
+          const color=def?.id===SUN_ID?"rgba(212,168,71,0.7)":TROPHIC_COLOR[def?.trophic||""]||"rgba(139,107,85,0.6)"
           return(
             <motion.div style={{
-              position:"fixed",left:shelfDrag.x-32,top:shelfDrag.y-32,
-              width:64,height:64,borderRadius:"50%",
-              background:`${color}22`,border:`2px solid ${color}88`,
+              position:"fixed",left:shelfDrag.x-36,top:shelfDrag.y-36,
+              width:72,height:72,
+              borderRadius:"55% 45% 60% 40% / 50% 50% 45% 55%",
+              background:"rgba(244,237,211,0.92)",
+              border:`1.5px solid ${color}`,
               display:"flex",alignItems:"center",justifyContent:"center",
-              fontSize:28,pointerEvents:"none",zIndex:100,
+              pointerEvents:"none",zIndex:100,
+              boxShadow:"0 8px 24px rgba(44,24,16,0.25)",
+              transform:"rotate(3deg)",
             }}
-              initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.8,opacity:0}}
-            >{def?.emoji}</motion.div>
+              initial={{scale:0.8,opacity:0}} animate={{scale:1.1,opacity:1}} exit={{scale:0.7,opacity:0}}
+            >
+              {pngSrc?(
+                <img src={pngSrc} alt={def?.label} style={{
+                  width:54,height:54,objectFit:"contain",
+                  filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.25))",
+                }}/>
+              ):(
+                <span style={{fontSize:30,filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))"}}>{def?.emoji}</span>
+              )}
+            </motion.div>
           )
         })()}
       </AnimatePresence>
