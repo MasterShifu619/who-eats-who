@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning } from "@/lib/sounds"
+import Tutorial, { shouldShowTutorial } from "@/components/game3/Tutorial"
 
 interface NodeDef {
   id: string; label: string; emoji: string; trophic: string; shelf: string
@@ -113,6 +114,7 @@ export default function Game3Page() {
   const nodeImagesRef = useRef<Record<string,HTMLImageElement>>({})
 
 
+  const [showTutorial, setShowTutorial] = useState(false)
   const [allNodes]   = useState<NodeDef[]>(STATIC_NODES)
   const [placedIds,setPlacedIds]     = useState<Set<string>>(new Set())
   const [message,setMessage]         = useState<{text:string;color:string}|null>(null)
@@ -122,6 +124,9 @@ export default function Game3Page() {
   const [shelfDrag,setShelfDrag]     = useState<{nodeId:string;x:number;y:number}|null>(null)
   const [sunPresent,setSunPresent]   = useState(false)
   const [daytimeBg,setDaytimeBg]     = useState<HTMLImageElement|null>(null)
+
+  // Show tutorial on every page load
+  useEffect(()=>{ setShowTutorial(true) },[])
 
   // Load background + PNG animal images
   useEffect(()=>{
@@ -473,10 +478,23 @@ export default function Game3Page() {
           ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r*2.8,0,Math.PI*2);ctx.fill()
         }
 
+
         const png=nodeImagesRef.current[n.id]
         const hasPng=!!(png&&png.complete)
         // PNG size — no circle container, just the image
         const imgR=isHov?r*1.95:r*1.8
+
+        // Ghost dwell ring — pulses on hover to hint the hold mechanic
+        if(isHov&&!isDwelling){
+          const pulse=Math.sin(t*0.004)*0.5+0.5
+          ctx.beginPath()
+          ctx.arc(n.x,n.y,(hasPng?imgR:r)+8,-Math.PI/2,Math.PI*1.5)
+          ctx.strokeStyle=`rgba(160,82,45,${0.18+pulse*0.28})`
+          ctx.lineWidth=2.5
+          ctx.setLineDash([6,5])
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
 
         if(hasPng){
           // ── PNG node: image only, no circle border ──
@@ -805,6 +823,69 @@ export default function Game3Page() {
         </div>
       </div>
 
+      {/* ── Hold-to-remove hint pill ── fades in once any animal is placed */}
+      <AnimatePresence>
+        {placedIds.size > 0 && (
+          <motion.div
+            initial={{opacity:0, y:10}}
+            animate={{opacity:1, y:0}}
+            exit={{opacity:0, y:10}}
+            transition={{duration:0.6, ease:"easeOut"}}
+            style={{
+              position:"absolute",
+              bottom:28,
+              left:"50%",
+              transform:"translateX(-50%)",
+              pointerEvents:"none",
+              zIndex:10,
+              display:"flex",
+              alignItems:"center",
+              gap:8,
+              padding:"7px 16px",
+              borderRadius:"999px",
+              background:isDay?"rgba(244,237,211,0.78)":"rgba(12,18,28,0.78)",
+              border:isDay?"1px solid rgba(92,61,46,0.18)":"1px solid rgba(255,255,255,0.08)",
+              backdropFilter:"blur(6px)",
+              boxShadow:isDay?"0 2px 12px rgba(44,24,16,0.12)":"0 2px 12px rgba(0,0,0,0.4)",
+            }}
+          >
+            {/* Animated hold icon */}
+            <motion.span
+              animate={{scale:[1, 1.18, 1]}}
+              transition={{duration:1.8, repeat:Infinity, ease:"easeInOut"}}
+              style={{fontSize:14, lineHeight:1}}
+            >
+              ✋
+            </motion.span>
+            <span style={{
+              fontFamily:"var(--font-playfair), serif",
+              fontStyle:"italic",
+              fontSize:11,
+              color:isDay?"rgba(92,61,46,0.75)":"rgba(160,190,230,0.75)",
+              whiteSpace:"nowrap",
+              letterSpacing:"0.03em",
+            }}>
+              Hold any creature for 5 seconds to remove it
+            </span>
+            {/* Dwell ring miniature illustration */}
+            <svg width={18} height={18} viewBox="0 0 18 18" fill="none" style={{flexShrink:0}}>
+              <circle cx={9} cy={9} r={7} stroke={isDay?"rgba(92,61,46,0.25)":"rgba(160,190,230,0.2)"} strokeWidth={1.5} strokeDasharray="3 3"/>
+              <motion.circle
+                cx={9} cy={9} r={7}
+                stroke={isDay?"rgba(160,82,45,0.7)":"rgba(160,120,80,0.7)"}
+                strokeWidth={2}
+                strokeLinecap="round"
+                fill="none"
+                strokeDasharray="44"
+                animate={{strokeDashoffset:[44, 0]}}
+                transition={{duration:2.2, repeat:Infinity, ease:"linear", repeatDelay:0.8}}
+                style={{rotate:"-90deg", transformOrigin:"9px 9px"}}
+              />
+            </svg>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Message bubble ── */}
       <AnimatePresence>
         {message&&(
@@ -862,6 +943,13 @@ export default function Game3Page() {
             </motion.div>
           )
         })()}
+      </AnimatePresence>
+
+      {/* ── Tutorial overlay ── */}
+      <AnimatePresence>
+        {showTutorial && (
+          <Tutorial onDone={() => setShowTutorial(false)} />
+        )}
       </AnimatePresence>
     </div>
   )
