@@ -497,13 +497,23 @@ export default function Tutorial({ onDone }: TutorialProps) {
         transition={{ type: "spring", stiffness: 280, damping: 26 }}
         style={{
           width: "min(520px, 92vw)",
+          position: "relative",
+          boxShadow: "0 32px 80px rgba(20,14,8,0.5), 0 4px 16px rgba(20,14,8,0.2)",
+        }}
+      >
+        {/* Warped parchment background layer — filter here so text is unaffected */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 0,
           background: "linear-gradient(150deg, #FAF5E4 0%, #EDE0BC 100%)",
           borderRadius: "4px 14px 6px 12px / 12px 4px 14px 6px",
           border: "1px solid rgba(139,107,85,0.28)",
-          boxShadow: "0 32px 80px rgba(20,14,8,0.5), 0 4px 16px rgba(20,14,8,0.2)",
+          filter: "url(#watercolor-edge)",
           overflow: "hidden",
-        }}
-      >
+        }} />
+
+        {/* Content sits above the warped background */}
+        <div style={{ position: "relative", zIndex: 1, borderRadius: "4px 14px 6px 12px / 12px 4px 14px 6px", overflow: "hidden" }}>
+
         {/* Demo area */}
         <div style={{
           height: 210,
@@ -624,6 +634,7 @@ export default function Tutorial({ onDone }: TutorialProps) {
             </div>
           </div>
         </div>
+        </div>{/* end content wrapper */}
       </motion.div>
     </motion.div>
   )
