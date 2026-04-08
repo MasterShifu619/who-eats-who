@@ -356,9 +356,9 @@ export default function Game3Page() {
         sunGlow.addColorStop(1,"transparent")
         ctx.fillStyle=sunGlow;ctx.fillRect(0,0,canvas.width,canvas.height)
       } else {
-        // Night: lighter overlay so the lake still shows
-        ctx.globalAlpha=0.40
-        ctx.fillStyle="#1A2535"
+        // Night: dark overlay
+        ctx.globalAlpha=0.72
+        ctx.fillStyle="#0D1520"
         ctx.fillRect(0,0,canvas.width,canvas.height)
         ctx.globalAlpha=1
         // Ink-dot stars
@@ -635,19 +635,26 @@ export default function Game3Page() {
             transition={{type:"spring",stiffness:280,damping:28}}
             style={{
               position:"absolute",top:0,left:0,bottom:0,width:SHELF_W,
-              background:"rgba(244,237,211,0.92)",
+              background:isDay?"rgba(244,237,211,0.92)":"rgba(12,18,28,0.94)",
               backdropFilter:"blur(10px)",
-              borderRight:"1px solid rgba(92,61,46,0.2)",
-              boxShadow:"inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)",
+              borderRight:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.07)",
+              boxShadow:isDay
+                ?"inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)"
+                :"inset -4px 0 20px rgba(0,0,0,0.3), 4px 0 24px rgba(0,0,0,0.4)",
               zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden",
+              transition:"background 0.8s ease, border-color 0.8s ease",
             }}>
 
             {/* Header */}
-            <div style={{padding:"16px 12px 10px",borderBottom:"1px solid rgba(92,61,46,0.15)",background:"rgba(232,216,180,0.55)"}}>
-              <div style={{fontFamily:"var(--font-mansalva), cursive",fontSize:15,color:"rgba(44,24,16,0.82)",marginBottom:8}}>
+            <div style={{
+              padding:"16px 12px 10px",
+              borderBottom:isDay?"1px solid rgba(92,61,46,0.15)":"1px solid rgba(255,255,255,0.07)",
+              background:isDay?"rgba(232,216,180,0.55)":"rgba(8,12,20,0.6)",
+            }}>
+              <div style={{fontFamily:"var(--font-mansalva), cursive",fontSize:15,color:isDay?"rgba(44,24,16,0.82)":"rgba(180,200,230,0.85)",marginBottom:8}}>
                 Field Specimens
               </div>
-              <div style={{fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:"rgba(92,61,46,0.55)",marginBottom:10}}>
+              <div style={{fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:isDay?"rgba(92,61,46,0.55)":"rgba(120,150,190,0.55)",marginBottom:10}}>
                 {unplacedCount} awaiting placement
               </div>
               <div style={{display:"flex",gap:6}}>
@@ -663,9 +670,9 @@ export default function Game3Page() {
                 <button onClick={()=>setShelfVisible(false)} style={{
                   padding:"6px 10px",
                   fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
-                  color:"rgba(92,61,46,0.6)",
+                  color:isDay?"rgba(92,61,46,0.6)":"rgba(120,150,190,0.6)",
                   background:"transparent",
-                  border:"1px solid rgba(92,61,46,0.2)",
+                  border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
                   borderRadius:"3px 6px 4px 5px / 5px 3px 6px 4px",
                   cursor:"pointer",
                 }}>Hide</button>
@@ -677,7 +684,9 @@ export default function Game3Page() {
               {SHELF_ORDER.map(shelf=>{
                 const shelfNodes=allNodes.filter(n=>n.shelf===shelf&&!placedIds.has(n.id))
                 const isSunShelf=shelf==="☀️ Sun"
-                const sectionColor=isSunShelf?"rgba(212,168,71,0.9)":"rgba(92,61,46,0.65)"
+                const sectionColor=isSunShelf
+                  ?"rgba(212,168,71,0.9)"
+                  :isDay?"rgba(92,61,46,0.65)":"rgba(140,165,200,0.65)"
                 return(
                   <div key={shelf}>
                     <button onClick={()=>setShelfOpen(p=>({...p,[shelf]:!p[shelf]}))} style={{
@@ -694,7 +703,8 @@ export default function Game3Page() {
                         <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
                           transition={{duration:0.22}} style={{overflow:"hidden"}}>
                           {shelfNodes.length===0?(
-                            <div style={{padding:"3px 14px 10px",fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:"rgba(92,61,46,0.4)"}}>
+                            <div style={{padding:"3px 14px 10px",fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,
+                              color:isDay?"rgba(92,61,46,0.4)":"rgba(120,150,190,0.4)"}}>
                               {isSunShelf?"Sun is shining ☀️":"All placed"}
                             </div>
                           ):(
@@ -709,10 +719,10 @@ export default function Game3Page() {
                                       width:isSun?SHELF_W-28:62,
                                       display:"flex",flexDirection:"column",alignItems:"center",
                                       cursor:"grab",padding:"7px 4px 5px",
-                                      background:"rgba(255,252,238,0.9)",
+                                      background:isDay?"rgba(255,252,238,0.9)":"rgba(20,30,48,0.85)",
                                       border:`1px solid ${color}55`,
                                       borderRadius:"3px 8px 4px 7px / 6px 3px 8px 4px",
-                                      boxShadow:"0 2px 8px rgba(60,40,10,0.12)",
+                                      boxShadow:isDay?"0 2px 8px rgba(60,40,10,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
                                       touchAction:"none",
                                     }}
                                     onPointerDown={e=>handleShelfDragStart(e,node.id)}>
@@ -720,15 +730,20 @@ export default function Game3Page() {
                                     {pngSrc?(
                                       <img src={pngSrc} alt={node.label} aria-label={node.label}
                                         style={{width:isSun?40:44,height:isSun?40:36,objectFit:"contain",
-                                          filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.22))"}}/>
+                                          filter:isDay
+                                            ?"drop-shadow(1px 2px 4px rgba(60,40,10,0.22))"
+                                            :"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}/>
                                     ):(
-                                      <span style={{fontSize:isSun?28:22,filter:"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))"}}
+                                      <span style={{fontSize:isSun?28:22,filter:isDay
+                                        ?"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))"
+                                        :"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}
                                         aria-label={node.label}>{node.emoji}</span>
                                     )}
                                     {/* Name label */}
                                     <span style={{
                                       fontFamily:"var(--font-playfair), serif",fontSize:isSun?10:8,
-                                      color:"rgba(44,24,16,0.72)",textAlign:"center",marginTop:4,
+                                      color:isDay?"rgba(44,24,16,0.72)":"rgba(160,190,230,0.8)",
+                                      textAlign:"center",marginTop:4,
                                       lineHeight:1.2,letterSpacing:"0.02em",
                                     }}>{node.label}</span>
                                   </motion.div>
@@ -746,7 +761,9 @@ export default function Game3Page() {
 
             {/* Bottom fade */}
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:36,pointerEvents:"none",
-              background:"linear-gradient(to top, rgba(244,237,211,0.95), transparent)"}}/>
+              background:isDay
+                ?"linear-gradient(to top, rgba(244,237,211,0.95), transparent)"
+                :"linear-gradient(to top, rgba(12,18,28,0.95), transparent)"}}/>
           </motion.div>
         )}
       </AnimatePresence>
@@ -759,12 +776,12 @@ export default function Game3Page() {
             style={{
               position:"absolute",top:20,left:16,zIndex:20,padding:"8px 16px",
               fontFamily:"var(--font-mansalva), cursive",fontSize:13,
-              color:"rgba(44,24,16,0.78)",
-              background:"rgba(244,237,211,0.90)",
-              border:"1px solid rgba(92,61,46,0.25)",
+              color:isDay?"rgba(44,24,16,0.78)":"rgba(160,190,230,0.85)",
+              background:isDay?"rgba(244,237,211,0.90)":"rgba(12,18,28,0.88)",
+              border:isDay?"1px solid rgba(92,61,46,0.25)":"1px solid rgba(255,255,255,0.1)",
               borderRadius:"4px 8px 5px 7px / 7px 4px 8px 5px",
               cursor:"pointer",
-              boxShadow:"0 3px 12px rgba(44,24,16,0.15)",
+              boxShadow:isDay?"0 3px 12px rgba(44,24,16,0.15)":"0 3px 12px rgba(0,0,0,0.4)",
             }}>☰ Creatures</motion.button>
         )}
       </AnimatePresence>
