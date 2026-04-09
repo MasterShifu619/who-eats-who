@@ -22,7 +22,7 @@ interface Particle {
   size: number; color: string; alpha: number; rotation: number; rotSpeed: number
 }
 
-const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
+const DWELL_MS=3000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
 const SHELF_W = typeof window !== "undefined" ? Math.max(180, Math.min(280, window.innerWidth * 0.20)) : 220
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
 
@@ -38,64 +38,64 @@ const TROPHIC_COLOR: Record<string,string>={
 
 // PNGs that replace emojis on canvas
 const NODE_PNG_MAP: Record<string,string> = {
-  "Butterfly": "/Butterfly.svg",
-  "Crab":      "/Crab.svg",
-  "Dragonfly": "/Dragonfly.svg",
-  "Fish":      "/Fish.svg",
-  "Frog":      "/Frog.svg",
+  "Monarch Butterfly": "/Butterfly.svg",
+  "Atlantic Blue Crab":      "/Crab.svg",
+  "Blue Dasher": "/Dragonfly.svg",
+  "Bluegill":      "/Fish.svg",
+  "American Toad":      "/Frog.svg",
 }
 
 const SUN_ID = "Sun"
 
 const SHELF_MAP: Record<string,string>={
   "Sun":        "☀️ Sun",
-  "Fruit":      "🌱 Plants",
-  "Worm":       "🐛 Bugs","Butterfly":"🐛 Bugs","Beetle":"🐛 Bugs",
-  "Grasshopper":"🐛 Bugs","Ant":"🐛 Bugs","Dragonfly":"🐛 Bugs","Spider":"🐛 Bugs",
-  "Fish":       "🐟 Water Animals","Crab":"🐟 Water Animals",
-  "Frog":       "🐸 Land Animals","Rat":"🐸 Land Animals",
-  "Lizard":     "🦎 Reptiles","Snake":"🦎 Reptiles",
+  "Persimmon Tree":      "🌱 Plants",
+  "Earthworm":       "🐛 Bugs","Monarch Butterfly":"🐛 Bugs","Green June Beetle":"🐛 Bugs",
+  "Fall Field Cricket":"🐛 Bugs","Black Carpenter Ant":"🐛 Bugs","Blue Dasher":"🐛 Bugs","Yellow Garden Spider":"🐛 Bugs",
+  "Bluegill":       "🐟 Water Animals","Atlantic Blue Crab":"🐟 Water Animals",
+  "American Toad":       "🐸 Land Animals","White-footed Mouse":"🐸 Land Animals",
+  "Green Anole lizard":     "🦎 Reptiles","Eastern Ratsnake":"🦎 Reptiles",
   "Blue Heron": "🐦 Birds",
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
 // All feeding edges [prey, predator]
 const ALL_EDGES: [string,string][]=[
-  ["Fruit","Grasshopper"],["Fruit","Butterfly"],["Fruit","Worm"],["Fruit","Ant"],["Fruit","Rat"],
-  ["Fruit","Beetle"],  // Beetle eats Fruit
-  ["Worm","Frog"],["Worm","Snake"],["Worm","Fish"],["Worm","Blue Heron"],
-  ["Worm","Crab"],     // Crab eats Worm
-  ["Butterfly","Dragonfly"],["Butterfly","Spider"],["Butterfly","Frog"],["Butterfly","Lizard"],
-  ["Beetle","Frog"],["Beetle","Spider"],["Beetle","Rat"],
-  ["Grasshopper","Dragonfly"],["Grasshopper","Frog"],["Grasshopper","Snake"],["Grasshopper","Lizard"],["Grasshopper","Blue Heron"],
-  ["Dragonfly","Frog"],["Dragonfly","Fish"],["Dragonfly","Spider"],["Dragonfly","Lizard"],
-  ["Ant","Frog"],["Ant","Spider"],["Ant","Lizard"],
-  ["Spider","Frog"],["Spider","Snake"],["Spider","Lizard"],
-  ["Crab","Blue Heron"],["Crab","Fish"],["Crab","Snake"],
-  ["Fish","Blue Heron"],["Fish","Snake"],["Fish","Lizard"],
-  ["Fish","Crab"],     // Crab eats Fish
-  ["Frog","Snake"],["Frog","Blue Heron"],["Frog","Lizard"],
-  ["Rat","Snake"],["Rat","Blue Heron"],["Rat","Lizard"],
-  ["Snake","Blue Heron"],["Lizard","Blue Heron"],["Lizard","Snake"],
+  ["Persimmon Tree","Fall Field Cricket"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
+  ["Persimmon Tree","Green June Beetle"],  // Green June Beetle eats Persimmon Tree
+  ["Earthworm","American Toad"],["Earthworm","Eastern Ratsnake"],["Earthworm","Bluegill"],["Earthworm","Blue Heron"],
+  ["Earthworm","Atlantic Blue Crab"],     // Atlantic Blue Crab eats Earthworm
+  ["Monarch Butterfly","Blue Dasher"],["Monarch Butterfly","Yellow Garden Spider"],["Monarch Butterfly","American Toad"],["Monarch Butterfly","Green Anole lizard"],
+  ["Green June Beetle","American Toad"],["Green June Beetle","Yellow Garden Spider"],["Green June Beetle","White-footed Mouse"],
+  ["Fall Field Cricket","Blue Dasher"],["Fall Field Cricket","American Toad"],["Fall Field Cricket","Eastern Ratsnake"],["Fall Field Cricket","Green Anole lizard"],["Fall Field Cricket","Blue Heron"],
+  ["Blue Dasher","American Toad"],["Blue Dasher","Bluegill"],["Blue Dasher","Yellow Garden Spider"],["Blue Dasher","Green Anole lizard"],
+  ["Black Carpenter Ant","American Toad"],["Black Carpenter Ant","Yellow Garden Spider"],["Black Carpenter Ant","Green Anole lizard"],
+  ["Yellow Garden Spider","American Toad"],["Yellow Garden Spider","Eastern Ratsnake"],["Yellow Garden Spider","Green Anole lizard"],
+  ["Atlantic Blue Crab","Blue Heron"],["Atlantic Blue Crab","Bluegill"],["Atlantic Blue Crab","Eastern Ratsnake"],
+  ["Bluegill","Blue Heron"],["Bluegill","Eastern Ratsnake"],["Bluegill","Green Anole lizard"],
+  ["Bluegill","Atlantic Blue Crab"],     // Atlantic Blue Crab eats Bluegill
+  ["American Toad","Eastern Ratsnake"],["American Toad","Blue Heron"],["American Toad","Green Anole lizard"],
+  ["White-footed Mouse","Eastern Ratsnake"],["White-footed Mouse","Blue Heron"],["White-footed Mouse","Green Anole lizard"],
+  ["Eastern Ratsnake","Blue Heron"],["Green Anole lizard","Blue Heron"],["Green Anole lizard","Eastern Ratsnake"],
 ]
 
 // Static node definitions — no backend needed for game3
 const STATIC_NODES: NodeDef[] = [
   { id:"Sun",        label:"Sun",         emoji:"☀️", trophic:"sun",       shelf:"☀️ Sun" },
-  { id:"Fruit",      label:"Fruit",       emoji:"🍎", trophic:"producer",  shelf:"🌱 Plants" },
-  { id:"Worm",       label:"Worm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Butterfly",  label:"Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Beetle",     label:"Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Grasshopper",label:"Grasshopper", emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Ant",        label:"Ant",         emoji:"🐜", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Dragonfly",  label:"Dragonfly",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Spider",     label:"Spider",      emoji:"🕷️", trophic:"secondary", shelf:"🐛 Bugs" },
-  { id:"Fish",       label:"Fish",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
-  { id:"Crab",       label:"Crab",        emoji:"🦀", trophic:"secondary", shelf:"🐟 Water Animals" },
-  { id:"Frog",       label:"Frog",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
-  { id:"Rat",        label:"Rat",         emoji:"🐀", trophic:"secondary", shelf:"🐸 Land Animals" },
-  { id:"Lizard",     label:"Lizard",      emoji:"🦎", trophic:"tertiary",  shelf:"🦎 Reptiles" },
-  { id:"Snake",      label:"Snake",       emoji:"🐍", trophic:"tertiary",  shelf:"🦎 Reptiles" },
+  { id:"Persimmon Tree",      label:"Persimmon Tree",       emoji:"🍎", trophic:"producer",  shelf:"🌱 Plants" },
+  { id:"Earthworm",       label:"Earthworm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Monarch Butterfly",  label:"Monarch Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Green June Beetle",     label:"Green June Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Fall Field Cricket",label:"Fall Field Cricket", emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Black Carpenter Ant",        label:"Black Carpenter Ant",         emoji:"🐜", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Blue Dasher",  label:"Blue Dasher",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Yellow Garden Spider",     label:"Yellow Garden Spider",      emoji:"🕷️", trophic:"secondary", shelf:"🐛 Bugs" },
+  { id:"Bluegill",       label:"Bluegill",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
+  { id:"Atlantic Blue Crab",       label:"Atlantic Blue Crab",        emoji:"🦀", trophic:"secondary", shelf:"🐟 Water Animals" },
+  { id:"American Toad",       label:"American Toad",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
+  { id:"White-footed Mouse",        label:"White-footed Mouse",         emoji:"🐀", trophic:"secondary", shelf:"🐸 Land Animals" },
+  { id:"Green Anole lizard",     label:"Green Anole lizard",      emoji:"🦎", trophic:"tertiary",  shelf:"🦎 Reptiles" },
+  { id:"Eastern Ratsnake",      label:"Eastern Ratsnake",       emoji:"🐍", trophic:"tertiary",  shelf:"🦎 Reptiles" },
   { id:"Blue Heron", label:"Blue Heron",  emoji:"🦤", trophic:"apex",      shelf:"🐦 Birds" },
 ]
 
@@ -252,10 +252,26 @@ export default function Game3Page() {
     particlesRef.current=[...particlesRef.current,...newP]
   }
 
+  // const triggerCascade=useCallback(async(removedId:string)=>{
+  //   const presentIds=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID).map(n=>n.id))
+  //   const starving:string[]=[],exploding:string[]=[]
+  //   presentIds.forEach(id=>{
+  //     const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+  //     const myPreds=ALL_EDGES.filter(([prey])=>prey===id).map(([,pred])=>pred)
+  //     if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
+  //     if(myPreds.length>0&&myPreds.every(p=>!presentIds.has(p))) exploding.push(id)
+  //   })
   const triggerCascade=useCallback(async(removedId:string)=>{
     const presentIds=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID).map(n=>n.id))
     const starving:string[]=[],exploding:string[]=[]
-    presentIds.forEach(id=>{
+
+    // Only check species that directly depended on removedId
+    const directDependents=ALL_EDGES
+      .filter(([prey])=>prey===removedId)
+      .map(([,pred])=>pred)
+      .filter(id=>presentIds.has(id))
+
+    directDependents.forEach(id=>{
       const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
       const myPreds=ALL_EDGES.filter(([prey])=>prey===id).map(([,pred])=>pred)
       if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
@@ -819,7 +835,7 @@ export default function Game3Page() {
           color:isDay?"rgba(92,61,46,0.6)":"rgba(180,165,130,0.55)",
           letterSpacing:"0.05em",marginTop:3,
         }}>
-          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 5s to remove"}
+          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 3s to remove"}
         </div>
       </div>
 
@@ -865,7 +881,7 @@ export default function Game3Page() {
               whiteSpace:"nowrap",
               letterSpacing:"0.03em",
             }}>
-              Hold any creature for 5 seconds to remove it
+              Hold any creature for 3 seconds to remove it
             </span>
             {/* Dwell ring miniature illustration */}
             <svg width={18} height={18} viewBox="0 0 18 18" fill="none" style={{flexShrink:0}}>

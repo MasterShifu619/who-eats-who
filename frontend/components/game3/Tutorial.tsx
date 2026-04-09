@@ -457,7 +457,7 @@ const STEPS = [
   },
   {
     title: "Hold to Remove",
-    body: "Press and hold any creature for 5 seconds to remove it. Watch the cascade — losing one species can collapse others that depend on it.",
+    body: "Press and hold any creature for 3 seconds to remove it. Watch the cascade — losing one species can collapse others that depend on it.",
     demo: <HoldDemo />,
   },
 ]
