@@ -106,8 +106,8 @@ export default function Game3Page() {
   const particlesRef = useRef<Particle[]>([])
   const fusesRef     = useRef<FuseParticle[]>([])
   const animRef      = useRef<number|null>(null)
-  const dwellRef     = useRef<{nodeId:string;startTime:number;timerId:ReturnType<typeof setTimeout>|null}|null>(null)
-  const dragRef      = useRef<{nodeId:string;fromShelf:boolean;offsetX:number;offsetY:number}|null>(null)
+  const dwellRef     = useRef<Map<number,{nodeId:string;startTime:number;timerId:ReturnType<typeof setTimeout>|null}>>(new Map())
+  const dragRef      = useRef<Map<number,{nodeId:string;fromShelf:boolean;offsetX:number;offsetY:number}>>(new Map())
   const hoveredRef   = useRef<string|null>(null)
   const sunPresentRef = useRef(false)
   const placedIdsRef = useRef<Set<string>>(new Set())
@@ -234,7 +234,7 @@ export default function Game3Page() {
     })
     const cx=SHELF_W+(w-SHELF_W)/2,cy=h/2
     nodes.forEach(n=>{
-      if(dragRef.current?.nodeId===n.id) return
+      if([...dragRef.current.values()].some(d=>d.nodeId===n.id)) return
       if(n.pinned){n.vx=0;n.vy=0;return}
       n.vx+=(cx-n.x)*0.001;n.vy+=(cy-n.y)*0.001
       n.vx*=DAMPING;n.vy*=DAMPING;n.x+=n.vx;n.y+=n.vy
@@ -416,8 +416,9 @@ export default function Game3Page() {
         ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R,0,Math.PI*2)
         ctx.fillStyle=snFill;ctx.fill()
         ctx.strokeStyle="rgba(212,168,71,0.85)";ctx.lineWidth=2.5;ctx.stroke()
-        if(dwellRef.current?.nodeId===SUN_ID){
-          const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+        const sunDwell=[...dwellRef.current.values()].find(d=>d.nodeId===SUN_ID)
+        if(sunDwell){
+          const pct=(Date.now()-sunDwell.startTime)/DWELL_MS
           ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
           ctx.strokeStyle="rgba(160,82,45,0.9)";ctx.lineWidth=3.5;ctx.stroke()
         }
@@ -472,7 +473,7 @@ export default function Game3Page() {
       nodes.forEach(n=>{
         if(n.deleted||n.id===SUN_ID) return
         const def=STATIC_NODES.find(d=>d.id===n.id);if(!def) return
-        const isHov=hovId===n.id,isDwelling=dwellRef.current?.nodeId===n.id
+        const isHov=hovId===n.id,isDwelling=[...dwellRef.current.values()].some(d=>d.nodeId===n.id)
         const color=TROPHIC_COLOR[def.trophic]||"#8B6B55",r=isHov?NODE_R+4:NODE_R
 
         // State aura (starving / overpopulated)
@@ -497,6 +498,7 @@ export default function Game3Page() {
 
         const png=nodeImagesRef.current[n.id]
         const hasPng=!!(png&&png.complete)
+        const dwellEntry=[...dwellRef.current.values()].find(d=>d.nodeId===n.id)
         // PNG size — no circle container, just the image
         const imgR=isHov?r*1.95:r*1.8
 
@@ -515,10 +517,8 @@ export default function Game3Page() {
         if(hasPng){
           // ── PNG node: image only, no circle border ──
           ctx.drawImage(png,n.x-imgR,n.y-imgR,imgR*2,imgR*2)
-
-          // Dwell progress ring around image extents
-          if(isDwelling&&dwellRef.current){
-            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+          if(isDwelling&&dwellEntry){
+            const pct=(Date.now()-dwellEntry.startTime)/DWELL_MS
             ctx.beginPath();ctx.arc(n.x,n.y,imgR+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
             ctx.strokeStyle="rgba(160,82,45,0.88)";ctx.lineWidth=3.5;ctx.stroke()
           }
@@ -532,8 +532,8 @@ export default function Game3Page() {
           ctx.fillText(def.emoji,n.x,n.y-1)
           ctx.strokeStyle=isDwelling?"rgba(160,82,45,0.9)":n.starving?"rgba(160,82,45,0.8)":n.exploding?"rgba(107,140,94,0.8)":color+"CC"
           ctx.lineWidth=isDwelling?3:isHov?2.2:1.8;ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.stroke()
-          if(isDwelling&&dwellRef.current){
-            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+          if(isDwelling&&dwellEntry){
+            const pct=(Date.now()-dwellEntry.startTime)/DWELL_MS
             ctx.beginPath();ctx.arc(n.x,n.y,r+7,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
             ctx.strokeStyle="rgba(160,82,45,0.85)";ctx.lineWidth=3.5;ctx.stroke()
           }
@@ -595,59 +595,79 @@ export default function Game3Page() {
 
   const getPlacedNode=(x:number,y:number)=>placedRef.current.find(n=>!n.deleted&&Math.hypot(x-n.x,y-n.y)<NODE_R+8)
 
-  const startDwell=useCallback((nodeId:string)=>{
-    if(dwellRef.current?.nodeId===nodeId) return
-    if(dwellRef.current?.timerId) clearTimeout(dwellRef.current.timerId)
-    const timerId=setTimeout(async()=>{dwellRef.current=null;await deleteNodeAnimated(nodeId)},DWELL_MS)
-    dwellRef.current={nodeId,startTime:Date.now(),timerId}
+  const startDwell=useCallback((pointerId:number, nodeId:string)=>{
+    const existing=dwellRef.current.get(pointerId)
+    if(existing?.nodeId===nodeId) return
+    if(existing?.timerId) clearTimeout(existing.timerId)
+    const timerId=setTimeout(async()=>{
+      dwellRef.current.delete(pointerId)
+      await deleteNodeAnimated(nodeId)
+    },DWELL_MS)
+    dwellRef.current.set(pointerId,{nodeId,startTime:Date.now(),timerId})
   },[deleteNodeAnimated])
 
-  const cancelDwell=useCallback(()=>{if(dwellRef.current?.timerId)clearTimeout(dwellRef.current.timerId);dwellRef.current=null},[])
+  const cancelDwell=useCallback((pointerId:number)=>{
+    const d=dwellRef.current.get(pointerId)
+    if(d?.timerId) clearTimeout(d.timerId)
+    dwellRef.current.delete(pointerId)
+  },[])
 
   const handlePointerDown=useCallback((e:React.PointerEvent)=>{
     const canvas=canvasRef.current;if(!canvas) return
     const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
     const node=getPlacedNode(x,y)
     if(node){
-      dragRef.current={nodeId:node.id,fromShelf:false,offsetX:node.x-x,offsetY:node.y-y}
-      hoveredRef.current=node.id;startDwell(node.id)
+      dragRef.current.set(e.pointerId,{nodeId:node.id,fromShelf:false,offsetX:node.x-x,offsetY:node.y-y})
+      hoveredRef.current=node.id
+      startDwell(e.pointerId,node.id)
     }
   },[startDwell])
 
   const handlePointerMove=useCallback((e:React.PointerEvent)=>{
     const canvas=canvasRef.current;if(!canvas) return
     const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
-    if(dragRef.current&&!dragRef.current.fromShelf){
-      const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId)
-      if(n){n.x=x+dragRef.current.offsetX;n.y=y+dragRef.current.offsetY;n.vx=0;n.vy=0}
-      if(dwellRef.current&&getPlacedNode(x,y)?.id!==dwellRef.current.nodeId)cancelDwell()
+    const drag=dragRef.current.get(e.pointerId)
+    if(drag&&!drag.fromShelf){
+      const n=placedRef.current.find(n=>n.id===drag.nodeId)
+      if(n){n.x=x+drag.offsetX;n.y=y+drag.offsetY;n.vx=0;n.vy=0}
+      const dwell=dwellRef.current.get(e.pointerId)
+      if(dwell&&getPlacedNode(x,y)?.id!==dwell.nodeId) cancelDwell(e.pointerId)
     } else {
       hoveredRef.current=getPlacedNode(x,y)?.id||null
     }
   },[cancelDwell])
 
-  const handlePointerUp=useCallback(()=>{
-    if(dragRef.current?.fromShelf){return} // shelf drags handled by window listener
-    if(dragRef.current){const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId);if(n&&n.id!==SUN_ID){n.pinned=true;n.vx=0;n.vy=0}}
-    dragRef.current=null;cancelDwell()
+  const handlePointerUp=useCallback((e:React.PointerEvent)=>{
+    const drag=dragRef.current.get(e.pointerId)
+    if(drag?.fromShelf){return}
+    if(drag){
+      const n=placedRef.current.find(n=>n.id===drag.nodeId)
+      if(n&&n.id!==SUN_ID){n.pinned=true;n.vx=0;n.vy=0}
+    }
+    dragRef.current.delete(e.pointerId)
+    cancelDwell(e.pointerId)
   },[cancelDwell])
 
   const handleShelfDragStart=useCallback((e:React.PointerEvent,nodeId:string)=>{
     e.preventDefault()
-    dragRef.current={nodeId,fromShelf:true,offsetX:0,offsetY:0}
-    const onMove=(ev:PointerEvent)=>setShelfDrag({nodeId,x:ev.clientX,y:ev.clientY})
+    const pointerId=e.pointerId
+    dragRef.current.set(pointerId,{nodeId,fromShelf:true,offsetX:0,offsetY:0})
+    const onMove=(ev:PointerEvent)=>{
+      if(ev.pointerId!==pointerId) return
+      setShelfDrag({nodeId,x:ev.clientX,y:ev.clientY})
+    }
     const onUp=(ev:PointerEvent)=>{
-      console.log("onUp fired", nodeId, ev.clientX, ev.clientY)
+      if(ev.pointerId!==pointerId) return
       window.removeEventListener("pointermove",onMove)
       window.removeEventListener("pointerup",onUp)
       setShelfDrag(null)
-      if(!dragRef.current?.fromShelf){dragRef.current=null;return}
-      const canvas=canvasRef.current;if(!canvas){dragRef.current=null;return}
+      const drag=dragRef.current.get(pointerId)
+      if(!drag?.fromShelf){dragRef.current.delete(pointerId);return}
+      const canvas=canvasRef.current;if(!canvas){dragRef.current.delete(pointerId);return}
       const rect=canvas.getBoundingClientRect()
       const x=ev.clientX-rect.left,y=ev.clientY-rect.top
-      console.log("about to place", nodeId, x, SHELF_W, x>SHELF_W)
       if(x>SHELF_W) placeAnimal(nodeId,x,y)
-      dragRef.current=null
+      dragRef.current.delete(pointerId)
     }
     window.addEventListener("pointermove",onMove)
     window.addEventListener("pointerup",onUp)
@@ -660,7 +680,7 @@ export default function Game3Page() {
     <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair"}}>
       <canvas ref={canvasRef} style={{display:"block",touchAction:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}/>
+        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}/>
 
       {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>
