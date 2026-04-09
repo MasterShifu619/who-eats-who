@@ -1,8 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import AnimalBlob from "@/components/ui/AnimalBlob"
 import type { Species } from "@/lib/types"
+import { getLocalAnimalImage, } from "@/components/game1/AnimalShelf"
 
 interface DropZoneProps {
   zoneId: "A" | "B"
@@ -12,119 +13,213 @@ interface DropZoneProps {
   onClear: () => void
 }
 
+// Two slightly different blob shapes for A & B
+const BLOB_SHAPES = {
+  A: {
+    idle:  "60% 40% 55% 45% / 45% 55% 40% 60%",
+    hover: "50% 50% 60% 40% / 55% 45% 50% 50%",
+    mid:   "45% 55% 50% 50% / 60% 40% 55% 45%",
+  },
+  B: {
+    idle:  "45% 55% 60% 40% / 55% 45% 50% 50%",
+    hover: "60% 40% 50% 50% / 45% 55% 60% 40%",
+    mid:   "55% 45% 45% 55% / 50% 50% 55% 45%",
+  },
+}
+
+// Trophic-level background washes for placed animals
+const ZONE_COLORS = {
+  A: { idle: "rgba(244,237,211,0.80)", hover: "rgba(212,168,71,0.28)", filled: "rgba(232,216,176,0.88)" },
+  B: { idle: "rgba(244,237,211,0.80)", hover: "rgba(212,168,71,0.28)", filled: "rgba(232,216,176,0.88)" },
+}
+
 export default function DropZone({ zoneId, species, isOver, label, onClear }: DropZoneProps) {
-  const size = 180
+  const [hoverInner, setHoverInner] = useState(false)
+  const size = 168
+
+  const shape = BLOB_SHAPES[zoneId]
+  const colors = ZONE_COLORS[zoneId]
+
+  const bg = isOver
+    ? colors.hover
+    : species
+    ? colors.filled
+    : colors.idle
+
+  const borderRadius = isOver ? shape.hover : shape.idle
+
+  const localImg = species ? getLocalAnimalImage(species) : null
 
   return (
-    <div className="relative flex flex-col items-center gap-3">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
       {/* Zone label */}
       <span
         style={{
-          fontFamily: "'Cinzel', serif",
-          fontSize: 11,
-          letterSpacing: "0.25em",
-          color: "#4A3D2A",
-          textTransform: "uppercase",
+          fontFamily: "var(--font-playfair), serif",
+          fontStyle: "italic",
+          fontSize: 12,
+          color: "rgba(92,61,46,0.65)",
+          letterSpacing: "0.04em",
         }}
       >
-        {label}
+        {species ? (species.common_name || species.scientific_name) : label}
       </span>
 
-      {/* Drop circle */}
+      {/* Blob drop zone */}
       <motion.div
-        className="relative flex items-center justify-center rounded-full"
+        className={isOver ? "wc-blob-animate" : ""}
         style={{
           width: size,
           height: size,
-          background: isOver
-            ? "radial-gradient(circle, #2A1F0F 0%, #1A1208 100%)"
-            : "radial-gradient(circle, #1E1609 0%, #120D06 100%)",
+          borderRadius,
+          background: bg,
+          backdropFilter: "blur(4px)",
+          border: isOver
+            ? "2px solid rgba(212,168,71,0.6)"
+            : species
+            ? "1.5px solid rgba(92,61,46,0.3)"
+            : "1.5px dashed rgba(92,61,46,0.25)",
+          boxShadow: isOver
+            ? "0 6px 28px rgba(212,168,71,0.22), inset 0 2px 12px rgba(212,168,71,0.08)"
+            : species
+            ? "0 4px 20px rgba(60,40,10,0.16), inset 0 1px 6px rgba(255,255,255,0.3)"
+            : "0 2px 12px rgba(60,40,10,0.10), inset 0 1px 4px rgba(255,255,255,0.2)",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "border-radius 0.35s ease-in-out, background 0.35s ease-in-out, border 0.3s ease, box-shadow 0.3s ease",
+          filter: "url(#watercolor-edge)",
         }}
         animate={{
-          boxShadow: isOver
-            ? "0 0 40px rgba(200, 169, 110, 0.25), inset 0 0 30px rgba(0,0,0,0.5)"
-            : species
-            ? "0 0 20px rgba(200, 169, 110, 0.1), inset 0 0 20px rgba(0,0,0,0.5)"
-            : "inset 0 0 20px rgba(0,0,0,0.5)",
+          borderRadius: isOver
+            ? [shape.idle, shape.hover, shape.mid, shape.hover]
+            : shape.idle,
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: isOver ? 2 : 0.4, repeat: isOver ? Infinity : 0, ease: "easeInOut" }}
+        onPointerEnter={() => setHoverInner(true)}
+        onPointerLeave={() => setHoverInner(false)}
       >
-        {/* Dashed border ring */}
-        <svg
-          className="absolute inset-0"
-          width={size}
-          height={size}
-          viewBox={`0 0 ${size} ${size}`}
-          style={{ overflow: "visible" }}
-        >
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={size / 2 - 4}
-            fill="none"
-            stroke={isOver ? "#C8A96E" : species ? "#5C4A2A" : "#2E2010"}
-            strokeWidth={isOver ? 2 : 1.5}
-            strokeDasharray={isOver ? "0" : "6 4"}
-            style={{ transition: "all 0.3s ease" }}
-          />
-
-          {/* Glowing ring when over */}
-          {isOver && (
-            <motion.circle
-              cx={size / 2}
-              cy={size / 2}
-              r={size / 2 - 2}
-              fill="none"
-              stroke="#C8A96E"
-              strokeWidth={1}
-              initial={{ opacity: 0.6, scale: 1 }}
-              animate={{ opacity: 0, scale: 1.08 }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              style={{ transformOrigin: `${size / 2}px ${size / 2}px` }}
-            />
-          )}
-        </svg>
-
-        {/* Empty state hint */}
+        {/* Empty state */}
         <AnimatePresence>
           {!species && !isOver && (
             <motion.div
-              className="flex flex-col items-center gap-2"
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <svg width={32} height={32} viewBox="0 0 32 32" fill="none">
-                <circle cx={16} cy={16} r={14} stroke="#2E2010" strokeWidth={1.5} strokeDasharray="3 3" />
-                <path d="M16 10v12M10 16h12" stroke="#2E2010" strokeWidth={1.5} strokeLinecap="round" />
+              {/* Organic + icon */}
+              <svg width={36} height={36} viewBox="0 0 36 36" fill="none">
+                <circle
+                  cx={18} cy={18} r={15}
+                  stroke="rgba(92,61,46,0.25)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 3"
+                />
+                <path
+                  d="M18 11v14M11 18h14"
+                  stroke="rgba(92,61,46,0.22)"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                />
               </svg>
               <span
                 style={{
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: 9,
-                  color: "#2E2010",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
+                  fontFamily: "var(--font-playfair), serif",
+                  fontStyle: "italic",
+                  fontSize: 10,
+                  color: "rgba(92,61,46,0.4)",
+                  letterSpacing: "0.05em",
+                  textAlign: "center",
+                  maxWidth: 100,
+                  lineHeight: 1.4,
                 }}
               >
-                Drop here
+                Drop a creature here…
               </span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Dropped animal */}
+        {/* Over state hint */}
+        <AnimatePresence>
+          {isOver && !species && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-mansalva), cursive",
+                  fontSize: 24,
+                  color: "rgba(160,82,45,0.6)",
+                }}
+              >
+                ✦
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Placed animal */}
         <AnimatePresence>
           {species && (
             <motion.div
               key={species.scientific_name}
-              initial={{ scale: 0.3, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.3, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="flex items-center justify-center"
+              initial={{ scale: 0.3, opacity: 0, rotate: -8 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              exit={{ scale: 0.3, opacity: 0, rotate: 8 }}
+              transition={{ type: "spring", stiffness: 380, damping: 22 }}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}
             >
-              <AnimalBlob species={species} size={120} selected />
+              {localImg ? (
+                <img
+                  src={localImg}
+                  alt={species.common_name || species.scientific_name}
+                  aria-label={species.common_name || species.scientific_name}
+                  style={{
+                    width: 90,
+                    height: 90,
+                    objectFit: "contain",
+                    
+                    filter: "drop-shadow(2px 4px 8px rgba(60,40,10,0.28))",
+                  }}
+                />
+              ) : species.thumbnail_url ? (
+                <img
+                  src={species.thumbnail_url}
+                  alt={species.common_name || species.scientific_name}
+                  aria-label={species.common_name || species.scientific_name}
+                  style={{
+                    width: 90,
+                    height: 90,
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    filter: "drop-shadow(2px 4px 8px rgba(60,40,10,0.28))",
+                    opacity: 0.92,
+                  }}
+                />
+              ) : (
+                <span
+                  style={{
+                    fontSize: 56,
+                    filter: "drop-shadow(2px 4px 8px rgba(60,40,10,0.28))",
+                  }}
+                  aria-label={species.common_name || species.scientific_name}
+                >
+                  🐾
+                </span>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -132,17 +227,26 @@ export default function DropZone({ zoneId, species, isOver, label, onClear }: Dr
         {/* Clear button */}
         {species && (
           <motion.button
-            className="absolute top-2 right-2 rounded-full flex items-center justify-center"
             style={{
-              width: 20,
-              height: 20,
-              background: "#1A1208",
-              border: "1px solid #3E3020",
+              position: "absolute",
+              top: 10,
+              right: 10,
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: "rgba(244,237,211,0.9)",
+              border: "1px solid rgba(92,61,46,0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(60,40,10,0.15)",
             }}
-            whileHover={{ scale: 1.2, borderColor: "#C8A96E" }}
+            whileHover={{ scale: 1.2, borderColor: "rgba(160,82,45,0.6)" }}
             onClick={onClear}
+            aria-label="Clear animal"
           >
-            <span style={{ color: "#6B5A3E", fontSize: 10, lineHeight: 1 }}>✕</span>
+            <span style={{ color: "rgba(92,61,46,0.7)", fontSize: 10, lineHeight: 1 }}>✕</span>
           </motion.button>
         )}
       </motion.div>

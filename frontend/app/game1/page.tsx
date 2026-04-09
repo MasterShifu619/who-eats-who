@@ -15,6 +15,7 @@ interface DragState {
   y: number
   startX: number
   startY: number
+  localImage: string | null
 }
 
 export default function Game1Page() {
@@ -36,9 +37,7 @@ export default function Game1Page() {
     setChecking(true)
 
     checkWhoEatsWhom(zoneA.scientific_name, zoneB.scientific_name)
-      .then((res) => {
-        setResult(res)
-      })
+      .then((res) => { setResult(res) })
       .catch((err) => {
         console.error("API error:", err)
         setResult({
@@ -52,71 +51,43 @@ export default function Game1Page() {
       .finally(() => setChecking(false))
   }, [zoneA, zoneB])
 
-  // Add confirmed pair to network
   const handleAddToNetwork = useCallback(() => {
     if (!result || result.direction === "none" || !zoneA || !zoneB) return
-
     const relationship = result.relationship_a_eats_b || result.relationship_b_eats_a
     if (!relationship) return
 
     const predatorSpecies = result.direction === "a_eats_b" ? zoneA : zoneB
-    const preySpecies = result.direction === "a_eats_b" ? zoneB : zoneA
+    const preySpecies     = result.direction === "a_eats_b" ? zoneB : zoneA
 
     setNetworkNodes((prev) => {
       const names = new Set(prev.map((n) => n.scientific_name))
       const toAdd: NetworkNode[] = []
-      if (!names.has(predatorSpecies.scientific_name)) {
-        toAdd.push({
-          scientific_name: predatorSpecies.scientific_name,
-          common_name: predatorSpecies.common_name,
-          taxon_class: predatorSpecies.taxon_class,
-          thumbnail_url: predatorSpecies.thumbnail_url,
-        })
-      }
-      if (!names.has(preySpecies.scientific_name)) {
-        toAdd.push({
-          scientific_name: preySpecies.scientific_name,
-          common_name: preySpecies.common_name,
-          taxon_class: preySpecies.taxon_class,
-          thumbnail_url: preySpecies.thumbnail_url,
-        })
-      }
+      if (!names.has(predatorSpecies.scientific_name))
+        toAdd.push({ scientific_name: predatorSpecies.scientific_name, common_name: predatorSpecies.common_name, taxon_class: predatorSpecies.taxon_class, thumbnail_url: predatorSpecies.thumbnail_url })
+      if (!names.has(preySpecies.scientific_name))
+        toAdd.push({ scientific_name: preySpecies.scientific_name, common_name: preySpecies.common_name, taxon_class: preySpecies.taxon_class, thumbnail_url: preySpecies.thumbnail_url })
       return [...prev, ...toAdd]
     })
 
     setNetworkLinks((prev) => {
       const key = `${predatorSpecies.scientific_name}-${preySpecies.scientific_name}`
       if (prev.some((l) => `${l.predator_scientific}-${l.prey_scientific}` === key)) return prev
-      return [
-        ...prev,
-        {
-          predator_scientific: predatorSpecies.scientific_name,
-          prey_scientific: preySpecies.scientific_name,
-          type_of_feeding: relationship.type_of_feeding,
-          image_url: relationship.image_url,
-        },
-      ]
+      return [...prev, { predator_scientific: predatorSpecies.scientific_name, prey_scientific: preySpecies.scientific_name, type_of_feeding: relationship.type_of_feeding, image_url: relationship.image_url }]
     })
   }, [result, zoneA, zoneB])
 
-  // Pointer drag logic
-  const handleDragStart = useCallback((species: Species, originEl: HTMLElement) => {
+  const handleDragStart = useCallback((species: Species, originEl: HTMLElement, localImage: string | null) => {
     const rect = originEl.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
 
     const onMove = (e: PointerEvent) => {
-      setDrag((prev) =>
-        prev ? { ...prev, x: e.clientX - cx, y: e.clientY - cy } : null
-      )
-
+      setDrag((prev) => prev ? { ...prev, x: e.clientX - cx, y: e.clientY - cy } : null)
       const aRect = zoneARef.current?.getBoundingClientRect()
       const bRect = zoneBRef.current?.getBoundingClientRect()
-
       const inZone = (r: DOMRect) =>
         e.clientX >= r.left && e.clientX <= r.right &&
-        e.clientY >= r.top && e.clientY <= r.bottom
-
+        e.clientY >= r.top  && e.clientY <= r.bottom
       if (aRect && inZone(aRect)) setOverZone("A")
       else if (bRect && inZone(bRect)) setOverZone("B")
       else setOverZone(null)
@@ -125,67 +96,97 @@ export default function Game1Page() {
     const onUp = (e: PointerEvent) => {
       window.removeEventListener("pointermove", onMove)
       window.removeEventListener("pointerup", onUp)
-
       const aRect = zoneARef.current?.getBoundingClientRect()
       const bRect = zoneBRef.current?.getBoundingClientRect()
-
       const inZone = (r: DOMRect) =>
         e.clientX >= r.left && e.clientX <= r.right &&
-        e.clientY >= r.top && e.clientY <= r.bottom
-
+        e.clientY >= r.top  && e.clientY <= r.bottom
       if (aRect && inZone(aRect) && !zoneA) setZoneA(species)
       else if (bRect && inZone(bRect) && !zoneB) setZoneB(species)
-
       setDrag(null)
       setOverZone(null)
     }
 
-    setDrag({ species, x: 0, y: 0, startX: cx, startY: cy })
+    setDrag({ species, x: 0, y: 0, startX: cx, startY: cy, localImage })
     window.addEventListener("pointermove", onMove)
     window.addEventListener("pointerup", onUp)
   }, [zoneA, zoneB])
 
-  const placedSpecies = [
-    zoneA?.scientific_name,
-    zoneB?.scientific_name,
-  ].filter(Boolean) as string[]
+  const placedSpecies = [zoneA?.scientific_name, zoneB?.scientific_name].filter(Boolean) as string[]
 
   return (
     <div
-      className="flex w-full h-screen overflow-hidden"
-      style={{ background: "#0E0A05", userSelect: "none" }}
+      className="flex w-full h-screen overflow-hidden wc-cursor"
+      style={{ userSelect: "none", position: "relative" }}
     >
-      {/* Left shelf */}
-      <AnimalShelf onDragStart={handleDragStart} placedSpecies={placedSpecies} />
+      {/* ── Watercolor lake background ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "url('/watercolor-lake-background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          zIndex: 0,
+        }}
+      />
+      {/* Warm parchment overlay to soften and unify */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(244, 237, 211, 0.18)",
+          zIndex: 1,
+        }}
+      />
 
-      {/* Main canvas area */}
+      {/* ── Left shelf ── */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <AnimalShelf onDragStart={handleDragStart} placedSpecies={placedSpecies} />
+      </div>
+
+      {/* ── Main canvas area ── */}
       <div
         style={{
           flex: 1,
           minWidth: 0,
-          width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          position: "relative",
+          zIndex: 5,
         }}
       >
         {/* Title */}
-        <div style={{ flexShrink: 0, padding: "24px 32px 8px" }}>
+        <div style={{ flexShrink: 0, padding: "20px 36px 6px", display: "flex", alignItems: "baseline", gap: 12 }}>
           <h1
             style={{
-              fontFamily: "'Cinzel', serif",
-              fontSize: 13,
-              letterSpacing: "0.3em",
-              color: "#3E2E18",
-              textTransform: "uppercase",
+              fontFamily: "var(--font-mansalva), cursive",
+              fontSize: 28,
+              color: "rgba(44, 24, 16, 0.82)",
               margin: 0,
+              letterSpacing: "0.02em",
+              textShadow: "1px 2px 0 rgba(255,255,255,0.4)",
+              filter: "url(#ink-wash)",
             }}
           >
-            Who Eats Whom
+            Who Eats Whom?
           </h1>
+          <span
+            style={{
+              fontFamily: "var(--font-playfair), serif",
+              fontStyle: "italic",
+              fontSize: 12,
+              color: "rgba(92, 61, 46, 0.65)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            a naturalist field study
+          </span>
         </div>
 
-        {/* Network canvas — takes all remaining vertical space */}
+        {/* Network canvas */}
         <div style={{ flex: 1, minHeight: 0, width: "100%", position: "relative" }}>
           <NetworkCanvas nodes={networkNodes} links={networkLinks} />
         </div>
@@ -197,34 +198,30 @@ export default function Game1Page() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 96,
-            padding: "24px 32px",
+            gap: 80,
+            padding: "20px 32px 28px",
             position: "relative",
           }}
         >
+          {/* Checking indicator */}
           <AnimatePresence>
             {checking && (
               <motion.div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                }}
+                style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)" }}
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
               >
                 <span
                   style={{
-                    fontFamily: "'Cinzel', serif",
-                    fontSize: 10,
-                    color: "#6B5A3E",
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
+                    fontFamily: "var(--font-playfair), serif",
+                    fontStyle: "italic",
+                    fontSize: 12,
+                    color: "rgba(92, 61, 46, 0.75)",
+                    letterSpacing: "0.06em",
                   }}
                 >
-                  Searching the web of life...
+                  Searching the web of life…
                 </span>
               </motion.div>
             )}
@@ -235,31 +232,24 @@ export default function Game1Page() {
               zoneId="A"
               species={zoneA}
               isOver={overZone === "A"}
-              label="Animal One"
+              label="First Creature"
               onClear={() => setZoneA(null)}
             />
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
-            <div style={{ width: 1, height: 24, background: "#2E2010" }} />
+          {/* Separator */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 1, height: 20, background: "rgba(92,61,46,0.3)" }} />
             <span
               style={{
-                fontFamily: "'Cinzel', serif",
-                fontSize: 10,
-                color: "#3E2E18",
-                letterSpacing: "0.2em",
+                fontFamily: "var(--font-mansalva), cursive",
+                fontSize: 18,
+                color: "rgba(92, 61, 46, 0.55)",
               }}
             >
-              &
+              &amp;
             </span>
-            <div style={{ width: 1, height: 24, background: "#2E2010" }} />
+            <div style={{ width: 1, height: 20, background: "rgba(92,61,46,0.3)" }} />
           </div>
 
           <div ref={zoneBRef}>
@@ -267,74 +257,85 @@ export default function Game1Page() {
               zoneId="B"
               species={zoneB}
               isOver={overZone === "B"}
-              label="Animal Two"
+              label="Second Creature"
               onClear={() => setZoneB(null)}
             />
           </div>
         </div>
       </div>
 
-      {/* Dragging ghost */}
+      {/* ── Drag ghost ── */}
       <AnimatePresence>
         {drag && (
           <motion.div
             style={{
               position: "fixed",
-              left: drag.startX - 40,
-              top: drag.startY - 40,
+              left: drag.startX - 44,
+              top: drag.startY - 44,
               x: drag.x,
               y: drag.y,
               pointerEvents: "none",
-              zIndex: 50,
+              zIndex: 100,
             }}
-            initial={{ scale: 0.9, opacity: 0.8 }}
-            animate={{ scale: 1.1, opacity: 0.9 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0.8, rotate: 0 }}
+            animate={{ scale: 1.12, opacity: 0.95, rotate: 3 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
             <div
               style={{
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
+                width: 88,
+                height: 88,
+                borderRadius: "55% 45% 60% 40% / 50% 50% 45% 55%",
                 overflow: "hidden",
-                border: "2px solid #C8A96E",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.8), 0 0 20px rgba(200,169,110,0.2)",
+                background: "rgba(244, 237, 211, 0.92)",
+                border: "1.5px solid rgba(92,61,46,0.5)",
+                filter: "url(#specimen-shadow)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {drag.species.thumbnail_url && (
+              {drag.localImage ? (
+                <img
+                  src={drag.localImage}
+                  alt={drag.species.common_name}
+                  style={{
+                    width: 72,
+                    height: 72,
+                    objectFit: "contain",
+                    mixBlendMode: "multiply",
+                    filter: "drop-shadow(1px 2px 4px rgba(60,40,10,0.25))",
+                  }}
+                />
+              ) : drag.species.thumbnail_url ? (
                 <img
                   src={drag.species.thumbnail_url}
                   alt={drag.species.common_name}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    opacity: 0.85,
-                  }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.88 }}
                 />
+              ) : (
+                <span style={{
+                  fontFamily: "var(--font-mansalva), cursive",
+                  fontSize: 32,
+                  color: "rgba(92,61,46,0.7)",
+                }}>
+                  {(drag.species.common_name || drag.species.scientific_name)[0]}
+                </span>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Photo result modal */}
+      {/* ── Photo result modal ── */}
       {result && zoneA && zoneB && (
         <PhotoModal
           result={result}
           speciesAName={zoneA.common_name || zoneA.scientific_name}
           speciesBName={zoneB.common_name || zoneB.scientific_name}
-          onClose={() => {
-            setResult(null)
-            setZoneA(null)
-            setZoneB(null)
-          }}
-          onAddToNetwork={() => {
-            handleAddToNetwork()
-            setResult(null)
-            setZoneA(null)
-            setZoneB(null)
-          }}
+          onClose={() => { setResult(null); setZoneA(null); setZoneB(null) }}
+          onAddToNetwork={() => { handleAddToNetwork(); setResult(null); setZoneA(null); setZoneB(null) }}
         />
       )}
     </div>

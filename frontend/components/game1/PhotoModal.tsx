@@ -12,17 +12,28 @@ interface PhotoModalProps {
 }
 
 const FEEDING_TYPE_LABELS: Record<string, string> = {
-  "Pollination": "pollinator of",
-  "Parasitism": "parasite of",
-  "Scavenging": "scavenges",
+  "Pollination":       "pollinates",
+  "Parasitism":        "is a parasite of",
+  "Scavenging":        "scavenges",
   "No, none of these": "eats",
-  "": "eats",
+  "":                  "eats",
 }
 
 function getRelationshipLabel(feedingType: string, predator: string, prey: string): string {
   const verb = FEEDING_TYPE_LABELS[feedingType] ?? "interacts with"
   return `${predator} ${verb} ${prey}`
 }
+
+// Falling leaf shapes for success animation
+const LEAVES = [
+  { emoji: "🍂", x: "15%",  delay: 0,    duration: 2.8 },
+  { emoji: "🍃", x: "30%",  delay: 0.3,  duration: 3.2 },
+  { emoji: "🍁", x: "55%",  delay: 0.15, duration: 2.6 },
+  { emoji: "🍃", x: "70%",  delay: 0.5,  duration: 3.5 },
+  { emoji: "🍂", x: "85%",  delay: 0.1,  duration: 2.9 },
+  { emoji: "✿",  x: "42%",  delay: 0.4,  duration: 3.1 },
+  { emoji: "❋",  x: "60%",  delay: 0.6,  duration: 2.7 },
+]
 
 export default function PhotoModal({
   result,
@@ -34,7 +45,7 @@ export default function PhotoModal({
   if (!result) return null
 
   const hasRelationship = result.direction !== "none"
-  const relationship = result.relationship_a_eats_b || result.relationship_b_eats_a
+  const relationship    = result.relationship_a_eats_b || result.relationship_b_eats_a
   const predatorName =
     result.direction === "a_eats_b" ? speciesAName
     : result.direction === "b_eats_a" ? speciesBName
@@ -51,115 +62,129 @@ export default function PhotoModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        style={{ background: "rgba(8, 6, 2, 0.85)", backdropFilter: "blur(4px)" }}
+        style={{
+          background: "rgba(44, 24, 16, 0.55)",
+          backdropFilter: "blur(6px)",
+        }}
         onClick={onClose}
       >
+        {/* Falling leaves — only on success */}
+        {hasRelationship && LEAVES.map((leaf, i) => (
+          <div
+            key={i}
+            style={{
+              position: "fixed",
+              top: "-10px",
+              left: leaf.x,
+              fontSize: 20,
+              animation: `fall-leaf ${leaf.duration}s ${leaf.delay}s ease-in forwards`,
+              pointerEvents: "none",
+              zIndex: 60,
+            }}
+          >
+            {leaf.emoji}
+          </div>
+        ))}
+
+        {/* Modal card — parchment */}
         <motion.div
           className="relative flex flex-col overflow-hidden"
           style={{
-            width: 480,
-            maxWidth: "90vw",
-            background: "linear-gradient(160deg, #1E1609 0%, #120D06 100%)",
-            border: "1px solid #3E3020",
-            borderRadius: 4,
-            boxShadow: "0 40px 80px rgba(0,0,0,0.8), 0 0 60px rgba(200,169,110,0.05)",
+            width: 500,
+            maxWidth: "92vw",
+            background: "linear-gradient(150deg, #FAF5E4 0%, #EDE0BC 100%)",
+            borderRadius: "4px 12px 6px 10px / 10px 5px 12px 4px",
+            border: "1px solid rgba(139,107,85,0.3)",
+            boxShadow: "0 24px 72px rgba(44,24,16,0.35), 0 4px 16px rgba(44,24,16,0.15)",
+            filter: "url(#watercolor-edge)",
           }}
-          initial={{ scale: 0.85, y: 40, opacity: 0 }}
-          animate={{ scale: 1, y: 0, opacity: 1 }}
-          exit={{ scale: 0.85, y: 40, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
+          initial={{ scale: 0.82, y: 48, opacity: 0, rotate: -1 }}
+          animate={{ scale: 1, y: 0, opacity: 1, rotate: 0 }}
+          exit={{ scale: 0.82, y: 48, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 280, damping: 24 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Corner decorations */}
-          {["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"].map((pos) => (
-            <div
-              key={pos}
-              className={`absolute ${pos} w-4 h-4`}
-              style={{
-                borderTop: pos.includes("top") ? "1px solid #6B5A3E" : "none",
-                borderBottom: pos.includes("bottom") ? "1px solid #6B5A3E" : "none",
-                borderLeft: pos.includes("left") ? "1px solid #6B5A3E" : "none",
-                borderRight: pos.includes("right") ? "1px solid #6B5A3E" : "none",
-              }}
-            />
-          ))}
+          {/* Corner ink flourishes */}
+          <CornerFlourishes />
 
           {hasRelationship && relationship?.image_url ? (
             <>
               {/* Photo */}
-              <div className="relative w-full" style={{ height: 260 }}>
+              <div style={{ position: "relative", width: "100%", height: 240, overflow: "hidden" }}>
                 <img
                   src={relationship.image_url}
                   alt="Feeding interaction"
-                  className="w-full h-full object-cover"
-                  style={{ opacity: 0.9 }}
-                />
-                {/* Dark gradient overlay */}
-                <div
-                  className="absolute inset-0"
                   style={{
-                    background:
-                      "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(18,13,6,0.95) 100%)",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    opacity: 0.88,
+                    
+                    borderRadius: "3px 10px 0 0",
+                  }}
+                />
+                {/* Parchment gradient overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to bottom, rgba(244,237,211,0.1) 0%, rgba(232,216,176,0.92) 100%)",
                   }}
                 />
 
                 {/* iNaturalist badge */}
                 <div
-                  className="absolute top-3 right-3 px-2 py-1"
                   style={{
-                    background: "rgba(18,13,6,0.8)",
-                    border: "1px solid #3E3020",
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    background: "rgba(244,237,211,0.88)",
+                    border: "1px solid rgba(92,61,46,0.25)",
                     borderRadius: 2,
+                    padding: "3px 8px",
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: "'Cinzel', serif",
-                      fontSize: 8,
-                      color: "#6B5A3E",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
+                  <span style={{
+                    fontFamily: "var(--font-playfair), serif",
+                    fontStyle: "italic",
+                    fontSize: 9,
+                    color: "rgba(92,61,46,0.75)",
+                    letterSpacing: "0.05em",
+                  }}>
                     iNaturalist
                   </span>
                 </div>
 
-                {/* Relationship text overlaid on photo */}
-                <div className="absolute bottom-0 left-0 right-0 px-5 pb-4">
+                {/* Relationship text */}
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 20px 16px" }}>
                   <motion.p
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ delay: 0.25 }}
                     style={{
-                      fontFamily: "'Cinzel', serif",
-                      fontSize: 18,
-                      color: "#C8A96E",
-                      letterSpacing: "0.05em",
-                      lineHeight: 1.4,
+                      fontFamily: "var(--font-mansalva), cursive",
+                      fontSize: 20,
+                      color: "rgba(44, 24, 16, 0.88)",
+                      margin: "0 0 4px",
+                      lineHeight: 1.35,
+                      textShadow: "0 1px 0 rgba(255,255,255,0.4)",
                     }}
                   >
-                    {getRelationshipLabel(
-                      relationship.type_of_feeding,
-                      predatorName,
-                      preyName
-                    )}
+                    {getRelationshipLabel(relationship.type_of_feeding, predatorName, preyName)}
                   </motion.p>
 
                   {relationship.observed_on && (
-                    <p
-                      style={{
-                        fontFamily: "'Cinzel', serif",
-                        fontSize: 9,
-                        color: "#4A3D2A",
-                        marginTop: 4,
-                        letterSpacing: "0.1em",
-                      }}
-                    >
+                    <p style={{
+                      fontFamily: "var(--font-playfair), serif",
+                      fontStyle: "italic",
+                      fontSize: 10,
+                      color: "rgba(92,61,46,0.65)",
+                      margin: 0,
+                      letterSpacing: "0.04em",
+                    }}>
                       Observed{" "}
                       {new Date(relationship.observed_on).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
+                        year: "numeric", month: "long", day: "numeric",
                       })}
                       {relationship.place_state ? ` · ${relationship.place_state}` : ""}
                     </p>
@@ -168,29 +193,29 @@ export default function PhotoModal({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 px-5 py-4">
+              <div style={{ display: "flex", gap: 10, padding: "14px 18px 18px" }}>
                 <motion.button
-                  className="flex-1 py-2.5"
                   style={{
-                    fontFamily: "'Cinzel', serif",
-                    fontSize: 10,
-                    letterSpacing: "0.15em",
-                    color: "#C8A96E",
-                    background: "transparent",
-                    border: "1px solid #5C4A2A",
-                    borderRadius: 2,
-                    textTransform: "uppercase",
+                    flex: 1,
+                    padding: "10px 0",
+                    fontFamily: "var(--font-mansalva), cursive",
+                    fontSize: 13,
+                    color: "rgba(44,24,16,0.85)",
+                    background: "rgba(200,133,26,0.18)",
+                    border: "1.5px solid rgba(200,133,26,0.4)",
+                    borderRadius: "3px 8px 4px 7px / 6px 3px 8px 4px",
                     cursor: "pointer",
+                    letterSpacing: "0.02em",
+                    transition: "all 0.3s ease",
                   }}
                   whileHover={{
-                    background: "rgba(92, 74, 42, 0.3)",
-                    borderColor: "#C8A96E",
+                    background: "rgba(200,133,26,0.30)",
+                    borderColor: "rgba(200,133,26,0.7)",
+                    scale: 1.02,
                   }}
-                  onClick={() => {
-                    onAddToNetwork()
-                  }}
+                  onClick={onAddToNetwork}
                 >
-                  Add to Network
+                  Add to Field Guide
                 </motion.button>
 
                 {relationship.observation_url && (
@@ -198,18 +223,20 @@ export default function PhotoModal({
                     href={relationship.observation_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 flex items-center"
                     style={{
-                      fontFamily: "'Cinzel', serif",
-                      fontSize: 10,
-                      letterSpacing: "0.15em",
-                      color: "#6B5A3E",
-                      border: "1px solid #2E2010",
-                      borderRadius: 2,
-                      textTransform: "uppercase",
+                      padding: "10px 16px",
+                      display: "flex",
+                      alignItems: "center",
+                      fontFamily: "var(--font-playfair), serif",
+                      fontStyle: "italic",
+                      fontSize: 11,
+                      color: "rgba(92,61,46,0.65)",
+                      border: "1px solid rgba(92,61,46,0.25)",
+                      borderRadius: "4px 3px 8px 5px / 5px 8px 3px 4px",
                       textDecoration: "none",
+                      transition: "all 0.3s ease",
                     }}
-                    whileHover={{ borderColor: "#5C4A2A", color: "#8B7355" }}
+                    whileHover={{ borderColor: "rgba(92,61,46,0.5)", color: "rgba(92,61,46,0.9)" }}
                   >
                     Source ↗
                   </motion.a>
@@ -217,57 +244,65 @@ export default function PhotoModal({
               </div>
             </>
           ) : (
-            /* No relationship state */
-            <div className="flex flex-col items-center px-8 py-10 gap-4">
+            /* No relationship — wax seal "not found" */
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "36px 32px 32px", gap: 16 }}>
+              {/* Wax seal style badge */}
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
+                initial={{ scale: 1.6, rotate: -8, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle at 38% 38%, rgba(160,82,45,0.9) 0%, rgba(120,50,20,0.95) 100%)",
+                  border: "2px solid rgba(160,82,45,0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 18px rgba(44,24,16,0.3), inset 0 1px 4px rgba(255,200,150,0.2)",
+                  flexShrink: 0,
+                }}
               >
-                <svg width={64} height={64} viewBox="0 0 64 64" fill="none">
-                  <circle cx={32} cy={32} r={30} stroke="#2E2010" strokeWidth={1.5} strokeDasharray="4 4" />
-                  <path d="M20 20l24 24M44 20L20 44" stroke="#3E2E18" strokeWidth={2} strokeLinecap="round" />
-                </svg>
+                <span style={{ fontSize: 32, filter: "grayscale(0.3)" }}>✕</span>
               </motion.div>
 
-              <p
-                style={{
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: 16,
-                  color: "#6B5A3E",
-                  letterSpacing: "0.05em",
-                  textAlign: "center",
-                }}
-              >
-                No relationship found
+              <p style={{
+                fontFamily: "var(--font-mansalva), cursive",
+                fontSize: 20,
+                color: "rgba(92,61,46,0.85)",
+                margin: 0,
+                textAlign: "center",
+              }}>
+                No record found
               </p>
-              <p
-                style={{
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: 11,
-                  color: "#3E2E18",
-                  letterSpacing: "0.05em",
-                  textAlign: "center",
-                  lineHeight: 1.6,
-                }}
-              >
-                {speciesAName} and {speciesBName} have no documented feeding relationship in the database.
+              <p style={{
+                fontFamily: "var(--font-playfair), serif",
+                fontStyle: "italic",
+                fontSize: 12,
+                color: "rgba(92,61,46,0.6)",
+                margin: 0,
+                textAlign: "center",
+                lineHeight: 1.6,
+                maxWidth: 320,
+              }}>
+                {speciesAName} and {speciesBName} have no documented feeding
+                relationship in our field records.
               </p>
 
               <motion.button
-                className="mt-2 px-6 py-2.5"
                 style={{
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: 10,
-                  letterSpacing: "0.15em",
-                  color: "#6B5A3E",
+                  marginTop: 4,
+                  padding: "10px 28px",
+                  fontFamily: "var(--font-mansalva), cursive",
+                  fontSize: 13,
+                  color: "rgba(92,61,46,0.8)",
                   background: "transparent",
-                  border: "1px solid #2E2010",
-                  borderRadius: 2,
-                  textTransform: "uppercase",
+                  border: "1.5px solid rgba(92,61,46,0.3)",
+                  borderRadius: "4px 8px 5px 7px / 7px 4px 8px 5px",
                   cursor: "pointer",
                 }}
-                whileHover={{ borderColor: "#5C4A2A", color: "#8B7355" }}
+                whileHover={{ borderColor: "rgba(92,61,46,0.6)", background: "rgba(92,61,46,0.06)" }}
                 onClick={onClose}
               >
                 Try another pair
@@ -277,5 +312,45 @@ export default function PhotoModal({
         </motion.div>
       </motion.div>
     </AnimatePresence>
+  )
+}
+
+// ── Corner ink flourishes ─────────────────────────────────────────────────────
+function CornerFlourishes() {
+  return (
+    <>
+      {/* Top-left */}
+      <svg
+        style={{ position: "absolute", top: 6, left: 6, pointerEvents: "none" }}
+        width={28} height={28} viewBox="0 0 28 28" fill="none"
+      >
+        <path d="M4 24 L4 4 L24 4" stroke="rgba(92,61,46,0.35)" strokeWidth={1.2} strokeLinecap="round" />
+        <circle cx={4} cy={4} r={2} fill="rgba(92,61,46,0.25)" />
+      </svg>
+      {/* Top-right */}
+      <svg
+        style={{ position: "absolute", top: 6, right: 6, pointerEvents: "none" }}
+        width={28} height={28} viewBox="0 0 28 28" fill="none"
+      >
+        <path d="M24 24 L24 4 L4 4" stroke="rgba(92,61,46,0.35)" strokeWidth={1.2} strokeLinecap="round" />
+        <circle cx={24} cy={4} r={2} fill="rgba(92,61,46,0.25)" />
+      </svg>
+      {/* Bottom-left */}
+      <svg
+        style={{ position: "absolute", bottom: 6, left: 6, pointerEvents: "none" }}
+        width={28} height={28} viewBox="0 0 28 28" fill="none"
+      >
+        <path d="M4 4 L4 24 L24 24" stroke="rgba(92,61,46,0.35)" strokeWidth={1.2} strokeLinecap="round" />
+        <circle cx={4} cy={24} r={2} fill="rgba(92,61,46,0.25)" />
+      </svg>
+      {/* Bottom-right */}
+      <svg
+        style={{ position: "absolute", bottom: 6, right: 6, pointerEvents: "none" }}
+        width={28} height={28} viewBox="0 0 28 28" fill="none"
+      >
+        <path d="M24 4 L24 24 L4 24" stroke="rgba(92,61,46,0.35)" strokeWidth={1.2} strokeLinecap="round" />
+        <circle cx={24} cy={24} r={2} fill="rgba(92,61,46,0.25)" />
+      </svg>
+    </>
   )
 }

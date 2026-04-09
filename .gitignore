@@ -14,10 +14,6 @@ env/
 .env/
 .venv/
 
-# Database (generated — run parse_csv.py to recreate)
-backend/who_eats_whom.db
-*.db
-
 # Static JSON fallback (generated — run parse_csv.py to recreate)
 backend/static_json/
 
