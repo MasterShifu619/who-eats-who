@@ -412,7 +412,7 @@ def list_taxon_classes():
     return rows_to_list(rows)
 
 
-# ── Game 3: NC Food Web ───────────────────────────────────────────────────────
+# ── Game 3: Who Eats Whom ───────────────────────────────────────────────────────
 
 @app.get("/game/foodweb/nc")
 def get_nc_foodweb():
@@ -454,7 +454,7 @@ def get_nc_foodweb():
     }
 
     EMOJI = {
-        "Fruit": "🍎", "Worm": "🪱", "Butterfly": "🦋",
+        "Fruit": "🍊", "Worm": "🪱", "Butterfly": "🦋",
         "Beetle": "🪲", "Grasshopper": "🦗", "Ant": "🐜",
         "Crab": "🦀", "Dragonfly": "🪰", "Spider": "🕷️",
         "Fish": "🐟", "Frog": "🐸", "Rat": "🐀",

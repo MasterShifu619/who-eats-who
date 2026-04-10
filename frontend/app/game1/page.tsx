@@ -131,33 +131,13 @@ export default function Game1Page() {
           zIndex: 0,
         }}
       />
-      {/* White overlay to reduce background dominance */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(255, 255, 255, 0.35)",
-          zIndex: 1,
-        }}
-      />
       {/* Warm parchment overlay to soften and unify */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(244, 237, 211, 0.15)",
-          zIndex: 2,
-        }}
-      />
-      {/* Contrast overlay — sits above all content, pointer-events off */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(20, 12, 4, 0.07)",
-          mixBlendMode: "multiply",
-          pointerEvents: "none",
-          zIndex: 500,
+          background: "rgba(244, 237, 211, 0.18)",
+          zIndex: 1,
         }}
       />
 
@@ -188,6 +168,7 @@ export default function Game1Page() {
               margin: 0,
               letterSpacing: "0.02em",
               textShadow: "1px 2px 0 rgba(255,255,255,0.4)",
+              filter: "url(#ink-wash)",
             }}
           >
             Who Eats Whom?

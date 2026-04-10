@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning } from "@/lib/sounds"
 import Tutorial, { shouldShowTutorial } from "@/components/game3/Tutorial"
 
+// Test 
 interface NodeDef {
   id: string; label: string; emoji: string; trophic: string; shelf: string
 }
@@ -22,7 +23,7 @@ interface Particle {
   size: number; color: string; alpha: number; rotation: number; rotSpeed: number
 }
 
-const DWELL_MS=5000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
+const DWELL_MS=3000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
 const SHELF_W = typeof window !== "undefined" ? Math.max(180, Math.min(280, window.innerWidth * 0.20)) : 220
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
 
@@ -38,73 +39,93 @@ const TROPHIC_COLOR: Record<string,string>={
 
 // PNGs that replace emojis on canvas
 const NODE_PNG_MAP: Record<string,string> = {
-  "Butterfly":  "/Butterfly.svg",
-  "Crab":       "/Crab.svg",
-  "Dragonfly":  "/Dragonfly.svg",
-  "Fish":       "/Fish.svg",
-  "Frog":       "/Frog.svg",
-  "Ant":        "/ant.svg",
-  "Beetle":     "/beetle.svg",
-  "Grasshopper":"/grasshopper.svg",
-  "Lizard":     "/lizard.svg",
-  "Rat":        "/mouse.svg",
-  "Snake":      "/rattlesnake.svg",
-  "Spider":     "/spider.svg",
-  "Worm":       "/worm.svg",
-  "Fruit":      "/persimmon.svg",
+  "Monarch Butterfly": "/Butterfly.svg",
+  "Atlantic Blue Crab":      "/Crab.svg",
+  "Blue Dasher": "/Dragonfly.svg",
+  "Bluegill":      "/Fish.svg",
+  "American Toad":      "/Frog.svg",
 }
 
 const SUN_ID = "Sun"
 
 const SHELF_MAP: Record<string,string>={
   "Sun":        "☀️ Sun",
-  "Fruit":      "🌱 Plants",
-  "Worm":       "🐛 Bugs","Butterfly":"🐛 Bugs","Beetle":"🐛 Bugs",
-  "Grasshopper":"🐛 Bugs","Ant":"🐛 Bugs","Dragonfly":"🐛 Bugs","Spider":"🐛 Bugs",
-  "Fish":       "🐟 Water Animals","Crab":"🐟 Water Animals",
-  "Frog":       "🐸 Land Animals","Rat":"🐸 Land Animals",
-  "Lizard":     "🦎 Reptiles","Snake":"🦎 Reptiles",
+  "Persimmon Tree":      "🌱 Plants",
+  "Earthworm":       "🐛 Bugs","Monarch Butterfly":"🐛 Bugs","Green June Beetle":"🐛 Bugs",
+  "Fall Field Cricket":"🐛 Bugs","Black Carpenter Ant":"🐛 Bugs","Blue Dasher":"🐛 Bugs","Yellow Garden Spider":"🐛 Bugs",
+  "Bluegill":       "🐟 Water Animals","Atlantic Blue Crab":"🐟 Water Animals",
+  "American Toad":       "🐸 Land Animals","White-footed Mouse":"🐸 Land Animals",
+  "Green Anole lizard":     "🦎 Reptiles","Eastern Ratsnake":"🦎 Reptiles",
   "Blue Heron": "🐦 Birds",
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
+const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DELETED_CASCADE" ) => {
+  fetch("https://api.ipify.org?format=json")
+    .then(r => r.json())
+    .then(ipData => {
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          animal,
+          action,
+          browser: navigator.userAgent,
+          ip: ipData.ip,
+        }),
+      }).catch(() => {})
+    })
+    .catch(() => {
+      // fallback without IP
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          animal,
+          action,
+          browser: navigator.userAgent,
+          ip: "unknown",
+        }),
+      }).catch(() => {})
+    })
+}
+
 // All feeding edges [prey, predator]
 const ALL_EDGES: [string,string][]=[
-  ["Fruit","Grasshopper"],["Fruit","Butterfly"],["Fruit","Worm"],["Fruit","Ant"],["Fruit","Rat"],
-  ["Fruit","Beetle"],  // Beetle eats Fruit
-  ["Worm","Frog"],["Worm","Snake"],["Worm","Fish"],["Worm","Blue Heron"],
-  ["Worm","Crab"],     // Crab eats Worm
-  ["Butterfly","Dragonfly"],["Butterfly","Spider"],["Butterfly","Frog"],["Butterfly","Lizard"],
-  ["Beetle","Frog"],["Beetle","Spider"],["Beetle","Rat"],
-  ["Grasshopper","Dragonfly"],["Grasshopper","Frog"],["Grasshopper","Snake"],["Grasshopper","Lizard"],["Grasshopper","Blue Heron"],
-  ["Dragonfly","Frog"],["Dragonfly","Fish"],["Dragonfly","Spider"],["Dragonfly","Lizard"],
-  ["Ant","Frog"],["Ant","Spider"],["Ant","Lizard"],
-  ["Spider","Frog"],["Spider","Snake"],["Spider","Lizard"],
-  ["Crab","Blue Heron"],["Crab","Fish"],["Crab","Snake"],
-  ["Fish","Blue Heron"],["Fish","Snake"],["Fish","Lizard"],
-  ["Fish","Crab"],     // Crab eats Fish
-  ["Frog","Snake"],["Frog","Blue Heron"],["Frog","Lizard"],
-  ["Rat","Snake"],["Rat","Blue Heron"],["Rat","Lizard"],
-  ["Snake","Blue Heron"],["Lizard","Blue Heron"],["Lizard","Snake"],
+  ["Persimmon Tree","Fall Field Cricket"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
+  ["Persimmon Tree","Green June Beetle"],  // Green June Beetle eats Persimmon Tree
+  ["Earthworm","American Toad"],["Earthworm","Eastern Ratsnake"],["Earthworm","Bluegill"],["Earthworm","Blue Heron"],
+  ["Earthworm","Atlantic Blue Crab"],     // Atlantic Blue Crab eats Earthworm
+  ["Monarch Butterfly","Blue Dasher"],["Monarch Butterfly","Yellow Garden Spider"],["Monarch Butterfly","American Toad"],["Monarch Butterfly","Green Anole lizard"],
+  ["Green June Beetle","American Toad"],["Green June Beetle","Yellow Garden Spider"],["Green June Beetle","White-footed Mouse"],
+  ["Fall Field Cricket","Blue Dasher"],["Fall Field Cricket","American Toad"],["Fall Field Cricket","Eastern Ratsnake"],["Fall Field Cricket","Green Anole lizard"],["Fall Field Cricket","Blue Heron"],
+  ["Blue Dasher","American Toad"],["Blue Dasher","Bluegill"],["Blue Dasher","Yellow Garden Spider"],["Blue Dasher","Green Anole lizard"],
+  ["Black Carpenter Ant","American Toad"],["Black Carpenter Ant","Yellow Garden Spider"],["Black Carpenter Ant","Green Anole lizard"],
+  ["Yellow Garden Spider","American Toad"],["Yellow Garden Spider","Eastern Ratsnake"],["Yellow Garden Spider","Green Anole lizard"],
+  ["Atlantic Blue Crab","Blue Heron"],["Atlantic Blue Crab","Bluegill"],["Atlantic Blue Crab","Eastern Ratsnake"],
+  ["Bluegill","Blue Heron"],["Bluegill","Eastern Ratsnake"],["Bluegill","Green Anole lizard"],
+  ["American Toad","Eastern Ratsnake"],["American Toad","Blue Heron"],["American Toad","Green Anole lizard"],
+  ["White-footed Mouse","Eastern Ratsnake"],["White-footed Mouse","Blue Heron"],["White-footed Mouse","Green Anole lizard"],
+  ["Eastern Ratsnake","Blue Heron"],["Green Anole lizard","Blue Heron"],["Green Anole lizard","Eastern Ratsnake"],
 ]
 
 // Static node definitions — no backend needed for game3
 const STATIC_NODES: NodeDef[] = [
   { id:"Sun",        label:"Sun",         emoji:"☀️", trophic:"sun",       shelf:"☀️ Sun" },
-  { id:"Fruit",      label:"Fruit",       emoji:"🍎", trophic:"producer",  shelf:"🌱 Plants" },
-  { id:"Worm",       label:"Worm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Butterfly",  label:"Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Beetle",     label:"Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Grasshopper",label:"Grasshopper", emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Ant",        label:"Ant",         emoji:"🐜", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Dragonfly",  label:"Dragonfly",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Spider",     label:"Spider",      emoji:"🕷️", trophic:"secondary", shelf:"🐛 Bugs" },
-  { id:"Fish",       label:"Fish",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
-  { id:"Crab",       label:"Crab",        emoji:"🦀", trophic:"secondary", shelf:"🐟 Water Animals" },
-  { id:"Frog",       label:"Frog",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
-  { id:"Rat",        label:"Rat",         emoji:"🐀", trophic:"secondary", shelf:"🐸 Land Animals" },
-  { id:"Lizard",     label:"Lizard",      emoji:"🦎", trophic:"tertiary",  shelf:"🦎 Reptiles" },
-  { id:"Snake",      label:"Snake",       emoji:"🐍", trophic:"tertiary",  shelf:"🦎 Reptiles" },
+  { id:"Persimmon Tree",      label:"Persimmon Tree",       emoji:"🍊", trophic:"producer",  shelf:"🌱 Plants" },
+  { id:"Earthworm",       label:"Earthworm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Monarch Butterfly",  label:"Monarch Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Green June Beetle",     label:"Green June Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Fall Field Cricket",label:"Fall Field Cricket", emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Black Carpenter Ant",        label:"Black Carpenter Ant",         emoji:"🐜", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Blue Dasher",  label:"Blue Dasher",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Yellow Garden Spider",     label:"Yellow Garden Spider",      emoji:"🕷️", trophic:"secondary", shelf:"🐛 Bugs" },
+  { id:"Bluegill",       label:"Bluegill",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
+  { id:"Atlantic Blue Crab",       label:"Atlantic Blue Crab",        emoji:"🦀", trophic:"secondary", shelf:"🐟 Water Animals" },
+  { id:"American Toad",       label:"American Toad",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
+  { id:"White-footed Mouse",        label:"White-footed Mouse",         emoji:"🐀", trophic:"secondary", shelf:"🐸 Land Animals" },
+  { id:"Green Anole lizard",     label:"Green Anole lizard",      emoji:"🦎", trophic:"tertiary",  shelf:"🦎 Reptiles" },
+  { id:"Eastern Ratsnake",      label:"Eastern Ratsnake",       emoji:"🐍", trophic:"tertiary",  shelf:"🦎 Reptiles" },
   { id:"Blue Heron", label:"Blue Heron",  emoji:"🦤", trophic:"apex",      shelf:"🐦 Birds" },
 ]
 
@@ -115,8 +136,8 @@ export default function Game3Page() {
   const particlesRef = useRef<Particle[]>([])
   const fusesRef     = useRef<FuseParticle[]>([])
   const animRef      = useRef<number|null>(null)
-  const dwellRef     = useRef<{nodeId:string;startTime:number;timerId:ReturnType<typeof setTimeout>|null}|null>(null)
-  const dragRef      = useRef<{nodeId:string;fromShelf:boolean;offsetX:number;offsetY:number}|null>(null)
+  const dwellRef     = useRef<Map<number,{nodeId:string;startTime:number;timerId:ReturnType<typeof setTimeout>|null}>>(new Map())
+  const dragRef      = useRef<Map<number,{nodeId:string;fromShelf:boolean;offsetX:number;offsetY:number}>>(new Map())
   const hoveredRef   = useRef<string|null>(null)
   const sunPresentRef = useRef(false)
   const placedIdsRef = useRef<Set<string>>(new Set())
@@ -135,7 +156,10 @@ export default function Game3Page() {
   const [daytimeBg,setDaytimeBg]     = useState<HTMLImageElement|null>(null)
 
   // Show tutorial on every page load
-  useEffect(()=>{ setShowTutorial(true) },[])
+  useEffect(()=>{
+  setShowTutorial(true)
+  logEvent("SESSION", "STARTED")
+},[])
 
   // Load background + PNG animal images
   useEffect(()=>{
@@ -155,7 +179,8 @@ export default function Game3Page() {
   const isSunPlaced = useCallback(()=>sunPresentRef.current,[])
 
   const placeAnimal=useCallback((id:string,x:number,y:number)=>{
-    console.log("placeAnimal called", id, x, y)
+    console.log("placedIdsRef has Sun:", placedIdsRef.current.has("Sun"), [...placedIdsRef.current])
+    console.log("passed placedIds check for", id)
     if(placedIdsRef.current.has(id)) return
 
     // Block non-sun animals if sun is not present
@@ -184,14 +209,46 @@ export default function Game3Page() {
       return
     }
 
+    // Check if animal has at least one food source in play area
+    if(id !== SUN_ID) {
+      const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+      const present=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==id).map(n=>n.id))
+      if(myPrey.length>0 && myPrey.every(p=>!present.has(p))){
+        const def=STATIC_NODES.find(n=>n.id===id)
+        const px=Math.max(SHELF_W+60,Math.min(dims.w-60,x))
+        const py=Math.max(60,Math.min(dims.h-60,y))
+        placedRef.current=placedRef.current.filter(n=>n.id!==id)
+        placedRef.current.push({id,x:px,y:py,vx:0,vy:0,deleted:false,exploding:false,starving:true,pinned:true})
+        setPlacedIds(prev=>new Set([...prev,id]))
+        placedIdsRef.current.add(id)
+        setMessage({text:`🍽️ No food for ${def?.emoji} ${id} — add its prey first!`,color:"#FF4444"})
+        setTimeout(async()=>{
+          const node=placedRef.current.find(n=>n.id===id)
+          if(node){
+            spawnParticles(node.x,node.y,TROPHIC_COLOR[def?.trophic||""]||"#FFF")
+            node.deleted=true
+          }
+          setTimeout(()=>{
+            placedRef.current=placedRef.current.filter(n=>n.id!==id)
+            setPlacedIds(prev=>{const s=new Set(prev);s.delete(id);return s})
+            placedIdsRef.current.delete(id)
+            setMessage(null)
+          },600)
+        },1800)
+        return
+      }
+    }
+
     const px=Math.max(SHELF_W+60,Math.min(dims.w-60,x))
     const py=Math.max(60,Math.min(dims.h-60,y))
+    console.log("reached placement code for", id)
     placedRef.current=placedRef.current.filter(n=>n.id!==id)
     placedRef.current.push({id,x:px,y:py,vx:0,vy:0,deleted:false,exploding:false,starving:false,pinned:false})
-
+    placedIdsRef.current.add(id)
     if(id===SUN_ID){
       sunPresentRef.current=true
       setSunPresent(true)
+      console.log("sun placed, sunPresentRef:", sunPresentRef.current, "placedRef count:", placedRef.current.filter(n=>!n.deleted).length)
     } else {
       const present=new Set(placedRef.current.filter(n=>!n.deleted).map(n=>n.id))
       ALL_EDGES.forEach(([prey,pred])=>{
@@ -205,13 +262,15 @@ export default function Game3Page() {
 
     setPlacedIds(prev=>new Set([...prev,id]))
     placedRef.current.forEach(n=>{if(n.id!==SUN_ID){n.exploding=false;n.starving=false}})
-    playPlaceSound(id)
+    logEvent(id,"ADDED")
+    preloadSound(id).then(() => playPlaceSound(id))
     playPlaceChime()
   },[placedIds,dims,isSunPlaced])
 
   const returnToShelf=useCallback((id:string)=>{
     placedRef.current=placedRef.current.filter(n=>n.id!==id)
     edgesRef.current=edgesRef.current.filter(e=>e.prey!==id&&e.predator!==id)
+    placedIdsRef.current.delete(id)
     setPlacedIds(prev=>{const s=new Set(prev);s.delete(id);return s})
     if(id===SUN_ID){sunPresentRef.current=false;setSunPresent(false)}
   },[])
@@ -243,7 +302,7 @@ export default function Game3Page() {
     })
     const cx=SHELF_W+(w-SHELF_W)/2,cy=h/2
     nodes.forEach(n=>{
-      if(dragRef.current?.nodeId===n.id) return
+      if([...dragRef.current.values()].some(d=>d.nodeId===n.id)) return
       if(n.pinned){n.vx=0;n.vy=0;return}
       n.vx+=(cx-n.x)*0.001;n.vy+=(cy-n.y)*0.001
       n.vx*=DAMPING;n.vy*=DAMPING;n.x+=n.vx;n.y+=n.vy
@@ -261,10 +320,26 @@ export default function Game3Page() {
     particlesRef.current=[...particlesRef.current,...newP]
   }
 
+  // const triggerCascade=useCallback(async(removedId:string)=>{
+  //   const presentIds=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID).map(n=>n.id))
+  //   const starving:string[]=[],exploding:string[]=[]
+  //   presentIds.forEach(id=>{
+  //     const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+  //     const myPreds=ALL_EDGES.filter(([prey])=>prey===id).map(([,pred])=>pred)
+  //     if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
+  //     if(myPreds.length>0&&myPreds.every(p=>!presentIds.has(p))) exploding.push(id)
+  //   })
   const triggerCascade=useCallback(async(removedId:string)=>{
     const presentIds=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID).map(n=>n.id))
     const starving:string[]=[],exploding:string[]=[]
-    presentIds.forEach(id=>{
+
+    // Only check species that directly depended on removedId
+    const directDependents=ALL_EDGES
+      .filter(([prey])=>prey===removedId)
+      .map(([,pred])=>pred)
+      .filter(id=>presentIds.has(id))
+
+    directDependents.forEach(id=>{
       const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
       const myPreds=ALL_EDGES.filter(([prey])=>prey===id).map(([,pred])=>pred)
       if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
@@ -299,6 +374,7 @@ export default function Game3Page() {
       await sleep(600)
       spawnParticles(node.x,node.y,color)
       node.deleted=true
+      logEvent(node.id,"DELETED")
       playRemoveSound(node.id)
       setTimeout(()=>returnToShelf(node.id),500)
     }
@@ -313,6 +389,7 @@ export default function Game3Page() {
     // Sun deletion — kill everything
     if(nodeId===SUN_ID){
       node.deleted=true
+      logEvent(SUN_ID,"DELETED")
       sunPresentRef.current=false;setSunPresent(false)
       setTimeout(()=>returnToShelf(SUN_ID),500)
       await killAllAnimals()
@@ -334,6 +411,7 @@ export default function Game3Page() {
       fusesRef.current=fusesRef.current.filter(f=>f.edgeKey!==`${edge.prey}-${edge.predator}`)
     }
     await sleep(800);spawnParticles(node.x,node.y,color);node.deleted=true
+    logEvent(nodeId, isCascade ? "DELETED_CASCADE" : "DELETED")
     playRemoveSound(nodeId)
     setTimeout(()=>returnToShelf(nodeId),500)
     if(!isCascade){
@@ -359,13 +437,8 @@ export default function Game3Page() {
         ctx.fillRect(0,0,canvas.width,canvas.height)
       }
       if(isDay){
-        // White overlay to reduce background dominance
-        ctx.globalAlpha=0.38
-        ctx.fillStyle="#FFFFFF"
-        ctx.fillRect(0,0,canvas.width,canvas.height)
-        ctx.globalAlpha=1
-        // Parchment wash
-        ctx.globalAlpha=0.12
+        // Very faint parchment wash — let the lake show through
+        ctx.globalAlpha=0.10
         ctx.fillStyle="#F4EDD3"
         ctx.fillRect(0,0,canvas.width,canvas.height)
         ctx.globalAlpha=1
@@ -414,8 +487,9 @@ export default function Game3Page() {
         ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R,0,Math.PI*2)
         ctx.fillStyle=snFill;ctx.fill()
         ctx.strokeStyle="rgba(212,168,71,0.85)";ctx.lineWidth=2.5;ctx.stroke()
-        if(dwellRef.current?.nodeId===SUN_ID){
-          const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+        const sunDwell=[...dwellRef.current.values()].find(d=>d.nodeId===SUN_ID)
+        if(sunDwell){
+          const pct=(Date.now()-sunDwell.startTime)/DWELL_MS
           ctx.beginPath();ctx.arc(sunNode.x,sunNode.y,NODE_R+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
           ctx.strokeStyle="rgba(160,82,45,0.9)";ctx.lineWidth=3.5;ctx.stroke()
         }
@@ -470,7 +544,7 @@ export default function Game3Page() {
       nodes.forEach(n=>{
         if(n.deleted||n.id===SUN_ID) return
         const def=STATIC_NODES.find(d=>d.id===n.id);if(!def) return
-        const isHov=hovId===n.id,isDwelling=dwellRef.current?.nodeId===n.id
+        const isHov=hovId===n.id,isDwelling=[...dwellRef.current.values()].some(d=>d.nodeId===n.id)
         const color=TROPHIC_COLOR[def.trophic]||"#8B6B55",r=isHov?NODE_R+4:NODE_R
 
         // State aura (starving / overpopulated)
@@ -495,6 +569,7 @@ export default function Game3Page() {
 
         const png=nodeImagesRef.current[n.id]
         const hasPng=!!(png&&png.complete)
+        const dwellEntry=[...dwellRef.current.values()].find(d=>d.nodeId===n.id)
         // PNG size — no circle container, just the image
         const imgR=isHov?r*1.95:r*1.8
 
@@ -513,10 +588,8 @@ export default function Game3Page() {
         if(hasPng){
           // ── PNG node: image only, no circle border ──
           ctx.drawImage(png,n.x-imgR,n.y-imgR,imgR*2,imgR*2)
-
-          // Dwell progress ring around image extents
-          if(isDwelling&&dwellRef.current){
-            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+          if(isDwelling&&dwellEntry){
+            const pct=(Date.now()-dwellEntry.startTime)/DWELL_MS
             ctx.beginPath();ctx.arc(n.x,n.y,imgR+8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
             ctx.strokeStyle="rgba(160,82,45,0.88)";ctx.lineWidth=3.5;ctx.stroke()
           }
@@ -530,38 +603,10 @@ export default function Game3Page() {
           ctx.fillText(def.emoji,n.x,n.y-1)
           ctx.strokeStyle=isDwelling?"rgba(160,82,45,0.9)":n.starving?"rgba(160,82,45,0.8)":n.exploding?"rgba(107,140,94,0.8)":color+"CC"
           ctx.lineWidth=isDwelling?3:isHov?2.2:1.8;ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.stroke()
-          if(isDwelling&&dwellRef.current){
-            const pct=(Date.now()-dwellRef.current.startTime)/DWELL_MS
+          if(isDwelling&&dwellEntry){
+            const pct=(Date.now()-dwellEntry.startTime)/DWELL_MS
             ctx.beginPath();ctx.arc(n.x,n.y,r+7,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
             ctx.strokeStyle="rgba(160,82,45,0.85)";ctx.lineWidth=3.5;ctx.stroke()
-          }
-        }
-
-        // Mini-animal spawns for overpopulated nodes
-        if(n.exploding){
-          const miniCount=3
-          const miniPulse=Math.sin(t*0.008)*0.5+0.5
-          const miniAlpha=0.55+miniPulse*0.3
-          for(let mi=0;mi<miniCount;mi++){
-            const angle=(mi/miniCount)*Math.PI*2+t*0.0006
-            const dist=(hasPng?imgR:r)*1.55
-            const mx2=n.x+Math.cos(angle)*dist
-            const my2=n.y+Math.sin(angle)*dist
-            const miniR=(hasPng?imgR:r)*0.45
-            ctx.save()
-            ctx.globalAlpha=miniAlpha
-            if(hasPng){
-              ctx.drawImage(png,mx2-miniR,my2-miniR,miniR*2,miniR*2)
-            } else {
-              const mbg=ctx.createRadialGradient(mx2-miniR*0.3,my2-miniR*0.3,2,mx2,my2,miniR)
-              mbg.addColorStop(0,"rgba(255,252,238,0.95)")
-              mbg.addColorStop(1,color+"55")
-              ctx.beginPath();ctx.arc(mx2,my2,miniR,0,Math.PI*2);ctx.fillStyle=mbg;ctx.fill()
-              ctx.strokeStyle="rgba(107,140,94,0.65)";ctx.lineWidth=1;ctx.stroke()
-              ctx.font=`${Math.round(miniR*1.1)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle"
-              ctx.fillText(def.emoji,mx2,my2-1)
-            }
-            ctx.restore()
           }
         }
 
@@ -621,59 +666,79 @@ export default function Game3Page() {
 
   const getPlacedNode=(x:number,y:number)=>placedRef.current.find(n=>!n.deleted&&Math.hypot(x-n.x,y-n.y)<NODE_R+8)
 
-  const startDwell=useCallback((nodeId:string)=>{
-    if(dwellRef.current?.nodeId===nodeId) return
-    if(dwellRef.current?.timerId) clearTimeout(dwellRef.current.timerId)
-    const timerId=setTimeout(async()=>{dwellRef.current=null;await deleteNodeAnimated(nodeId)},DWELL_MS)
-    dwellRef.current={nodeId,startTime:Date.now(),timerId}
+  const startDwell=useCallback((pointerId:number, nodeId:string)=>{
+    const existing=dwellRef.current.get(pointerId)
+    if(existing?.nodeId===nodeId) return
+    if(existing?.timerId) clearTimeout(existing.timerId)
+    const timerId=setTimeout(async()=>{
+      dwellRef.current.delete(pointerId)
+      await deleteNodeAnimated(nodeId)
+    },DWELL_MS)
+    dwellRef.current.set(pointerId,{nodeId,startTime:Date.now(),timerId})
   },[deleteNodeAnimated])
 
-  const cancelDwell=useCallback(()=>{if(dwellRef.current?.timerId)clearTimeout(dwellRef.current.timerId);dwellRef.current=null},[])
+  const cancelDwell=useCallback((pointerId:number)=>{
+    const d=dwellRef.current.get(pointerId)
+    if(d?.timerId) clearTimeout(d.timerId)
+    dwellRef.current.delete(pointerId)
+  },[])
 
   const handlePointerDown=useCallback((e:React.PointerEvent)=>{
     const canvas=canvasRef.current;if(!canvas) return
     const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
     const node=getPlacedNode(x,y)
     if(node){
-      dragRef.current={nodeId:node.id,fromShelf:false,offsetX:node.x-x,offsetY:node.y-y}
-      hoveredRef.current=node.id;startDwell(node.id)
+      dragRef.current.set(e.pointerId,{nodeId:node.id,fromShelf:false,offsetX:node.x-x,offsetY:node.y-y})
+      hoveredRef.current=node.id
+      startDwell(e.pointerId,node.id)
     }
   },[startDwell])
 
   const handlePointerMove=useCallback((e:React.PointerEvent)=>{
     const canvas=canvasRef.current;if(!canvas) return
     const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top
-    if(dragRef.current&&!dragRef.current.fromShelf){
-      const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId)
-      if(n){n.x=x+dragRef.current.offsetX;n.y=y+dragRef.current.offsetY;n.vx=0;n.vy=0}
-      if(dwellRef.current&&getPlacedNode(x,y)?.id!==dwellRef.current.nodeId)cancelDwell()
+    const drag=dragRef.current.get(e.pointerId)
+    if(drag&&!drag.fromShelf){
+      const n=placedRef.current.find(n=>n.id===drag.nodeId)
+      if(n){n.x=x+drag.offsetX;n.y=y+drag.offsetY;n.vx=0;n.vy=0}
+      const dwell=dwellRef.current.get(e.pointerId)
+      if(dwell&&getPlacedNode(x,y)?.id!==dwell.nodeId) cancelDwell(e.pointerId)
     } else {
       hoveredRef.current=getPlacedNode(x,y)?.id||null
     }
   },[cancelDwell])
 
-  const handlePointerUp=useCallback(()=>{
-    if(dragRef.current?.fromShelf){return} // shelf drags handled by window listener
-    if(dragRef.current){const n=placedRef.current.find(n=>n.id===dragRef.current!.nodeId);if(n&&n.id!==SUN_ID){n.pinned=true;n.vx=0;n.vy=0}}
-    dragRef.current=null;cancelDwell()
+  const handlePointerUp=useCallback((e:React.PointerEvent)=>{
+    const drag=dragRef.current.get(e.pointerId)
+    if(drag?.fromShelf){return}
+    if(drag){
+      const n=placedRef.current.find(n=>n.id===drag.nodeId)
+      if(n&&n.id!==SUN_ID){n.pinned=true;n.vx=0;n.vy=0}
+    }
+    dragRef.current.delete(e.pointerId)
+    cancelDwell(e.pointerId)
   },[cancelDwell])
 
   const handleShelfDragStart=useCallback((e:React.PointerEvent,nodeId:string)=>{
     e.preventDefault()
-    dragRef.current={nodeId,fromShelf:true,offsetX:0,offsetY:0}
-    const onMove=(ev:PointerEvent)=>setShelfDrag({nodeId,x:ev.clientX,y:ev.clientY})
+    const pointerId=e.pointerId
+    dragRef.current.set(pointerId,{nodeId,fromShelf:true,offsetX:0,offsetY:0})
+    const onMove=(ev:PointerEvent)=>{
+      if(ev.pointerId!==pointerId) return
+      setShelfDrag({nodeId,x:ev.clientX,y:ev.clientY})
+    }
     const onUp=(ev:PointerEvent)=>{
-      console.log("onUp fired", nodeId, ev.clientX, ev.clientY)
+      if(ev.pointerId!==pointerId) return
       window.removeEventListener("pointermove",onMove)
       window.removeEventListener("pointerup",onUp)
       setShelfDrag(null)
-      if(!dragRef.current?.fromShelf){dragRef.current=null;return}
-      const canvas=canvasRef.current;if(!canvas){dragRef.current=null;return}
+      const drag=dragRef.current.get(pointerId)
+      if(!drag?.fromShelf){dragRef.current.delete(pointerId);return}
+      const canvas=canvasRef.current;if(!canvas){dragRef.current.delete(pointerId);return}
       const rect=canvas.getBoundingClientRect()
       const x=ev.clientX-rect.left,y=ev.clientY-rect.top
-      console.log("about to place", nodeId, x, SHELF_W, x>SHELF_W)
       if(x>SHELF_W) placeAnimal(nodeId,x,y)
-      dragRef.current=null
+      dragRef.current.delete(pointerId)
     }
     window.addEventListener("pointermove",onMove)
     window.addEventListener("pointerup",onUp)
@@ -683,12 +748,11 @@ export default function Game3Page() {
   const isDay=sunPresent
 
   return(
-    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair"}}>
-      <canvas ref={canvasRef} style={{display:"block",touchAction:"none"}}
+    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+      <canvas ref={canvasRef} style={{display:"block",touchAction:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}/>
-      {/* Contrast overlay — sits above all content, pointer-events off */}
-      <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"rgba(20,12,4,0.07)",mixBlendMode:"multiply",zIndex:500}}/>
+        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}
+        onContextMenu={e=>e.preventDefault()}/>
 
       {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>
@@ -856,14 +920,14 @@ export default function Game3Page() {
           textShadow:isDay?"1px 2px 0 rgba(255,255,255,0.45)":"0 0 16px rgba(100,80,40,0.4)",
           letterSpacing:"0.02em",
         }}>
-          {isDay?"🌿":"🌑"} NC Food Web
+          {isDay?"🌿":"🌑"} Who Eats Whom
         </div>
         <div style={{
           fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
           color:isDay?"rgba(92,61,46,0.6)":"rgba(180,165,130,0.55)",
           letterSpacing:"0.05em",marginTop:3,
         }}>
-          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 5s to remove"}
+          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 3s to remove"}
         </div>
       </div>
 
@@ -909,7 +973,7 @@ export default function Game3Page() {
               whiteSpace:"nowrap",
               letterSpacing:"0.03em",
             }}>
-              Hold any creature for 5 seconds to remove it
+              Hold any creature for 3 seconds to remove it
             </span>
             {/* Dwell ring miniature illustration */}
             <svg width={18} height={18} viewBox="0 0 18 18" fill="none" style={{flexShrink:0}}>

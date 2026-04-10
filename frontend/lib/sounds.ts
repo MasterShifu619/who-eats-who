@@ -4,21 +4,22 @@ const FREESOUND_KEY = process.env.NEXT_PUBLIC_FREESOUND_KEY || ""
 
 // Search queries per animal — tuned for short, recognizable sounds
 const ANIMAL_QUERIES: Record<string, string> = {
-  "Fruit":       "apple bite crunch",
-  "Worm":        "worm squirm soil",
-  "Butterfly":   "butterfly wings flutter",
-  "Beetle":      "beetle click insect",
-  "Grasshopper": "grasshopper chirp",
-  "Ant":         "ant insect small",
-  "Dragonfly":   "dragonfly buzz wings",
-  "Spider":      "spider hiss",
-  "Crab":        "crab claw snap",
-  "Fish":        "fish splash water",
-  "Frog":        "frog ribbit",
-  "Rat":         "rat squeak",
-  "Snake":       "snake hiss",
-  "Lizard":      "lizard scuttle",
-  "Blue Heron":  "heron bird call",
+  "Sun":                  "birds chirping ai",
+  "Persimmon Tree":       "leaves crunching",
+  "Earthworm":            "video game squeak",
+  "Monarch Butterfly":    "butterfly flying loop",
+  "Green June Beetle":    "beetle",
+  "Fall Field Cricket":   "cricket chirp",
+  "Black Carpenter Ant":  "ant",
+  "Blue Dasher":          "fly buzz wings",
+  "Yellow Garden Spider": "spider hiss",
+  "Bluegill":             "fish splash water",
+  "Atlantic Blue Crab":   "crab",
+  "American Toad":        "frog ribbit",
+  "White-footed Mouse":   "rat squeak",
+  "Green Anole lizard":   "Small Dragon cry",
+  "Eastern Ratsnake":     "snake hiss",
+  "Blue Heron":           "heron bird call",
 }
 
 // Cache: animalId -> { place: Howl, remove: Howl }
@@ -27,9 +28,11 @@ const fetchingSet = new Set<string>()
 
 async function fetchSoundUrl(query: string): Promise<string | null> {
   try {
+    // console.log("Fetching sound, key:", FREESOUND_KEY ? "present" : "MISSING")
     const url = `https://freesound.org/apiv2/search/text/?query=${encodeURIComponent(query)}&fields=id,name,previews,duration&filter=duration:[0+TO+4]&page_size=5&token=${FREESOUND_KEY}`
     const res = await fetch(url)
     const data = await res.json()
+    // console.log("Freesound response for", query, data)
     if (data.results && data.results.length > 0) {
       // Pick first result with a preview
       const result = data.results.find((r: any) => r.previews?.["preview-lq-mp3"])
@@ -59,6 +62,7 @@ export async function preloadSound(animalId: string): Promise<void> {
 }
 
 export function playPlaceSound(animalId: string) {
+  console.log("cache for", animalId, soundCache[animalId])
   soundCache[animalId]?.place?.play()
 }
 

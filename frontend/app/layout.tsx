@@ -1,6 +1,14 @@
 import type { Metadata } from "next"
 import { Cinzel, Mansalva, Playfair_Display } from "next/font/google"
 import "./globals.css"
+import type { Viewport } from "next"
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -39,6 +47,13 @@ export default function RootLayout({
       className={`${cinzel.variable} ${mansalva.variable} ${playfair.variable}`}
     >
       <body style={{ margin: 0, padding: 0, overflow: "hidden", background: "#0E0A05" }}>
+        <head>
+  <script dangerouslySetInnerHTML={{__html: `
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('touchmove', function(e) { if(e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  `}} />
+</head>
         {/* Global SVG filter definitions for watercolor wobbly edges */}
         <svg
           aria-hidden="true"

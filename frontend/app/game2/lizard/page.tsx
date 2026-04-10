@@ -11,7 +11,7 @@ const REPEL_R     = 200
 const STRIKE_R    = 100
 const BUBBLE_SIZE = 88
 const LIZARD_SIZE = 240
-const MOUTH_SVG   = { x: 18, y: 138 }
+const MOUTH_SVG   = { x: 18, y: 138 } // anchor in SVG viewBox
 
 const BUBBLES: BubbleSpecies[] = [
   { scientific_name:"Anolis sagrei",            common_name:"Brown Anole",          thumbnail_url:"https://static.inaturalist.org/photos/12983784/medium.jpg",                   is_prey:true  },
@@ -166,6 +166,7 @@ export default function LizardPage() {
         setSwallowPos({x:sx+(mouth.x-sx)*t, y:sy+(mouth.y-sy)*t})
         await sleep(700/steps)
       }
+      // Vanish
       setBScale(0); setBOpacity(0)
       await sleep(300)
       bRef.current=bRef.current.map(b=>b.sci===sp.scientific_name?{...b,eaten:true}:b)
@@ -338,6 +339,7 @@ export default function LizardPage() {
             animate={{pathLength: gs==="RESULT_VALID" ? 0 : 1}}
             transition={{duration:0.42,ease:"easeOut"}}
           />
+          {/* Path B — C-hook over bubble — higher z rendered last */}
           <motion.path
             d={`M ${tongueEnd.x+BUBBLE_SIZE*0.38} ${tongueEnd.y-BUBBLE_SIZE*0.32} C ${tongueEnd.x+BUBBLE_SIZE*0.7} ${tongueEnd.y-BUBBLE_SIZE*0.58} ${tongueEnd.x+BUBBLE_SIZE*0.7} ${tongueEnd.y+BUBBLE_SIZE*0.48} ${tongueEnd.x+BUBBLE_SIZE*0.08} ${tongueEnd.y+BUBBLE_SIZE*0.4}`}
             stroke="#D81818" strokeWidth={7} strokeLinecap="round" fill="none"
@@ -444,7 +446,7 @@ export default function LizardPage() {
         )
       })}
 
-      {/* ── Feedback toast ── */}
+      {/* ── FEEDBACK ── */}
       <AnimatePresence>
         {fb&&(
           <motion.div style={{
@@ -481,7 +483,7 @@ export default function LizardPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Win screen ── */}
+      {/* ── WIN ── */}
       <AnimatePresence>
         {score===TOTAL_PREY&&score>0&&(
           <motion.div style={{
@@ -550,6 +552,18 @@ export default function LizardPage() {
                 }}
               >Play again →</motion.button>
             </motion.div>
+            <motion.button style={{marginTop:36,padding:"14px 48px",fontFamily:"system-ui,sans-serif",fontWeight:800,fontSize:18,color:"#5D3A1A",background:"#F5A623",border:"none",borderRadius:50,cursor:"pointer"}}
+              whileHover={{scale:1.08}} whileTap={{scale:0.96}}
+              initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5}}
+              onClick={()=>{
+                const m=getMouth()
+                const b=initBubbles(dims.w,dims.h,m.x,m.y)
+                bRef.current=b; setBubbles([...b])
+                setScore(0); gsRef.current="IDLE"; setGs("IDLE")
+                setLzState("idle"); setTongueEnd(null); setDragSp(null)
+                setBScale(1); setBOpacity(1); setSwallowPos(null); setEyeTarget(null)
+              }}
+            >🔄 Play Again</motion.button>
           </motion.div>
         )}
       </AnimatePresence>

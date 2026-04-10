@@ -96,6 +96,7 @@ export default function PhotoModal({
             borderRadius: "4px 12px 6px 10px / 10px 5px 12px 4px",
             border: "1px solid rgba(139,107,85,0.3)",
             boxShadow: "0 24px 72px rgba(44,24,16,0.35), 0 4px 16px rgba(44,24,16,0.15)",
+            filter: "url(#watercolor-edge)",
           }}
           initial={{ scale: 0.82, y: 48, opacity: 0, rotate: -1 }}
           animate={{ scale: 1, y: 0, opacity: 1, rotate: 0 }}
