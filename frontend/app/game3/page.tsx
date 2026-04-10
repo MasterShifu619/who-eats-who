@@ -620,6 +620,34 @@ export default function Game3Page() {
           }
         }
 
+        // Mini-animal spawns for overpopulated nodes
+        if(n.exploding){
+          const miniCount=3
+          const miniPulse=Math.sin(t*0.008)*0.5+0.5
+          const miniAlpha=0.55+miniPulse*0.3
+          for(let mi=0;mi<miniCount;mi++){
+            const angle=(mi/miniCount)*Math.PI*2+t*0.0006
+            const dist=(hasPng?imgR:r)*1.55
+            const mx2=n.x+Math.cos(angle)*dist
+            const my2=n.y+Math.sin(angle)*dist
+            const miniR=(hasPng?imgR:r)*0.45
+            ctx.save()
+            ctx.globalAlpha=miniAlpha
+            if(hasPng){
+              ctx.drawImage(png,mx2-miniR,my2-miniR,miniR*2,miniR*2)
+            } else {
+              const mbg=ctx.createRadialGradient(mx2-miniR*0.3,my2-miniR*0.3,2,mx2,my2,miniR)
+              mbg.addColorStop(0,"rgba(255,252,238,0.95)")
+              mbg.addColorStop(1,color+"55")
+              ctx.beginPath();ctx.arc(mx2,my2,miniR,0,Math.PI*2);ctx.fillStyle=mbg;ctx.fill()
+              ctx.strokeStyle="rgba(107,140,94,0.65)";ctx.lineWidth=1;ctx.stroke()
+              ctx.font=`${Math.round(miniR*1.1)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle"
+              ctx.fillText(def.emoji,mx2,my2-1)
+            }
+            ctx.restore()
+          }
+        }
+
         // Parchment name tag (below node, accounting for actual size)
         const nameR=hasPng?imgR:r
         ctx.font="bold 10px Georgia, serif"
