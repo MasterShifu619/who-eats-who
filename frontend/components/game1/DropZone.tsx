@@ -96,7 +96,6 @@ export default function DropZone({ zoneId, species, isOver, label, onClear }: Dr
           alignItems: "center",
           justifyContent: "center",
           transition: "border-radius 0.35s ease-in-out, background 0.35s ease-in-out, border 0.3s ease, box-shadow 0.3s ease",
-          filter: "url(#watercolor-edge)",
         }}
         animate={{
           borderRadius: isOver

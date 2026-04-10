@@ -24,15 +24,16 @@ function getFloatAnim(seed: string) {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
   return {
-    x: 10 + (Math.abs(hash) % 18),
-    y: 8  + (Math.abs(hash >> 4) % 14),
-    duration: 5 + (Math.abs(hash >> 8) % 4),   // slower: 5-9s
+    x: 8 + (Math.abs(hash) % 14),
+    y: 6 + (Math.abs(hash >> 4) % 10),
+    duration: 5 + (Math.abs(hash >> 8) % 4),
     delay: (Math.abs(hash >> 12) % 30) * 0.15,
+    rotate: (Math.abs(hash >> 16) % 3) - 1.5,
   }
 }
 
 export default function FloatingBubble({
-  species, initialX, initialY, size = 96,
+  species, initialX, initialY, size = 88,
   onDragStart, spit = false, onSpitDone,
 }: FloatingBubbleProps) {
   const controls = useAnimationControls()
@@ -43,7 +44,7 @@ export default function FloatingBubble({
     controls.start({
       x: [0, f.x, -f.x * 0.5, f.x * 0.3, 0],
       y: [0, -f.y, f.y * 0.6, -f.y * 0.3, 0],
-      rotate: [0, 2, -1.5, 1, 0],
+      rotate: [f.rotate, f.rotate + 1.5, f.rotate - 1, f.rotate + 0.5, f.rotate],
       transition: { duration: f.duration, delay: f.delay, repeat: Infinity, ease: "easeInOut" },
     })
   }
@@ -54,9 +55,9 @@ export default function FloatingBubble({
     if (!spit) return
     controls.start({
       x: [null, 0], y: [null, 0],
-      scale: [1.3, 0.7, 1.1, 1],
-      rotate: [null, 0],
-      transition: { duration: 0.6, ease: "backOut" },
+      scale: [1.2, 0.75, 1.05, 1],
+      rotate: [null, f.rotate],
+      transition: { duration: 0.55, ease: "backOut" },
     }).then(() => {
       onSpitDone?.()
       startFloat()
@@ -72,65 +73,79 @@ export default function FloatingBubble({
         left: initialX - size / 2,
         top: initialY - size / 2,
         width: size,
-        height: size + 30,
         cursor: "grab",
         touchAction: "none",
         zIndex: 10,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 6,
       }}
-      whileHover={{ scale: 1.12 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.07, rotate: f.rotate + 2 }}
+      whileTap={{ scale: 0.96 }}
       onPointerDown={(e) => {
         e.preventDefault()
         if (ref.current) onDragStart(species, ref.current)
       }}
     >
-      {/* Bubble */}
-      <div style={{ position: "relative", width: size, height: size }}>
-        {/* Subtle outer glow — neutral, no color hint */}
+      {/* Parchment specimen card */}
+      <div style={{
+        width: size,
+        background: "rgba(255,252,238,0.93)",
+        borderRadius: "3px 10px 5px 8px / 8px 3px 10px 5px",
+        border: "1px solid rgba(92,61,46,0.2)",
+        padding: "6px 5px 5px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4,
+        boxShadow: "0 3px 12px rgba(60,40,10,0.16), 1px 1px 0 rgba(255,255,255,0.55)",
+      }}>
+        {/* Photo panel */}
         <div style={{
-          position: "absolute", inset: -3, borderRadius: "50%",
-          border: "2px solid rgba(255,255,255,0.18)",
-          boxShadow: "0 0 14px rgba(255,255,255,0.06)",
-        }} />
-
-        {/* Main circle */}
-        <div style={{
-          width: size, height: size, borderRadius: "50%",
+          width: size - 12,
+          height: size - 16,
+          borderRadius: "2px 6px 3px 5px / 5px 2px 6px 3px",
           overflow: "hidden",
-          background: "radial-gradient(circle at 35% 30%, #2A4A6A, #0A1525)",
-          border: "2px solid rgba(255,255,255,0.22)",
-          boxShadow: "0 8px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)",
-          position: "relative",
+          background: "rgba(200,185,145,0.3)",
+          flexShrink: 0,
         }}>
           {species.thumbnail_url && (
-            <img src={species.thumbnail_url} alt={species.common_name}
-              style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.88, pointerEvents: "none" }}
+            <img
+              src={species.thumbnail_url}
+              alt={species.common_name}
+              style={{
+                width: "100%", height: "100%",
+                objectFit: "cover",
+                filter: "saturate(0.82) contrast(1.04)",
+                pointerEvents: "none",
+              }}
             />
           )}
-          {/* Shine */}
-          <div style={{
-            position: "absolute", top: 7, left: 12, width: 22, height: 14,
-            borderRadius: "50%", background: "rgba(255,255,255,0.18)", transform: "rotate(-25deg)",
-          }} />
         </div>
-      </div>
 
-      {/* Label */}
-      <div style={{
-        fontFamily: "system-ui, sans-serif", fontWeight: 800,
-        fontSize: 11, color: "white",
-        textAlign: "center",
-        textShadow: "0 2px 6px rgba(0,0,0,0.9)",
-        letterSpacing: "0.02em",
-        maxWidth: size + 16,
-        lineHeight: 1.2,
-        pointerEvents: "none",
-      }}>
-        {species.common_name}
+        {/* Specimen label */}
+        <div style={{
+          width: "100%",
+          borderTop: "1px solid rgba(92,61,46,0.1)",
+          paddingTop: 3,
+          textAlign: "center",
+        }}>
+          <span style={{
+            fontFamily: "var(--font-playfair), serif",
+            fontStyle: "italic",
+            fontSize: 9,
+            color: "rgba(44,24,16,0.72)",
+            letterSpacing: "0.03em",
+            lineHeight: 1.25,
+            display: "block",
+            maxWidth: size - 8,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}>
+            {species.common_name}
+          </span>
+        </div>
       </div>
     </motion.div>
   )
