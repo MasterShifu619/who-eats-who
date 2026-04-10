@@ -59,6 +59,13 @@ const SHELF_MAP: Record<string,string>={
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
+const logEvent = (animal: string, action: "ADDED" | "DELETED" | "DELETED_CASCADE") => {  fetch("/api/log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ animal, action }),
+  }).catch(() => {}) // silent fail — don't break game on log failure
+}
+
 // All feeding edges [prey, predator]
 const ALL_EDGES: [string,string][]=[
   ["Persimmon Tree","Fall Field Cricket"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
@@ -126,7 +133,14 @@ export default function Game3Page() {
   const [daytimeBg,setDaytimeBg]     = useState<HTMLImageElement|null>(null)
 
   // Show tutorial on every page load
-  useEffect(()=>{ setShowTutorial(true) },[])
+  useEffect(()=>{
+    setShowTutorial(true)
+    fetch("/api/log",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({animal:"SESSION",action:"STARTED"}),
+    }).catch(()=>{})
+  },[])
 
   // Load background + PNG animal images
   useEffect(()=>{
@@ -146,7 +160,6 @@ export default function Game3Page() {
   const isSunPlaced = useCallback(()=>sunPresentRef.current,[])
 
   const placeAnimal=useCallback((id:string,x:number,y:number)=>{
-    console.log("placeAnimal called", id, x, y)
     if(placedIdsRef.current.has(id)) return
 
     // Block non-sun animals if sun is not present
@@ -196,7 +209,8 @@ export default function Game3Page() {
 
     setPlacedIds(prev=>new Set([...prev,id]))
     placedRef.current.forEach(n=>{if(n.id!==SUN_ID){n.exploding=false;n.starving=false}})
-    playPlaceSound(id)
+    logEvent(id,"ADDED")
+      playPlaceSound(id)
     playPlaceChime()
   },[placedIds,dims,isSunPlaced])
 
@@ -306,6 +320,7 @@ export default function Game3Page() {
       await sleep(600)
       spawnParticles(node.x,node.y,color)
       node.deleted=true
+      logEvent(node.id,"DELETED")
       playRemoveSound(node.id)
       setTimeout(()=>returnToShelf(node.id),500)
     }
@@ -320,6 +335,7 @@ export default function Game3Page() {
     // Sun deletion — kill everything
     if(nodeId===SUN_ID){
       node.deleted=true
+      logEvent(SUN_ID,"DELETED")
       sunPresentRef.current=false;setSunPresent(false)
       setTimeout(()=>returnToShelf(SUN_ID),500)
       await killAllAnimals()
@@ -341,6 +357,7 @@ export default function Game3Page() {
       fusesRef.current=fusesRef.current.filter(f=>f.edgeKey!==`${edge.prey}-${edge.predator}`)
     }
     await sleep(800);spawnParticles(node.x,node.y,color);node.deleted=true
+    logEvent(nodeId, isCascade ? "DELETED_CASCADE" : "DELETED")
     playRemoveSound(nodeId)
     setTimeout(()=>returnToShelf(nodeId),500)
     if(!isCascade){
@@ -677,10 +694,11 @@ export default function Game3Page() {
   const isDay=sunPresent
 
   return(
-    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair"}}>
-      <canvas ref={canvasRef} style={{display:"block",touchAction:"none"}}
+    <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+      <canvas ref={canvasRef} style={{display:"block",touchAction:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}/>
+        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}
+        onContextMenu={e=>e.preventDefault()}/>
 
       {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>
