@@ -3,7 +3,14 @@
     "allow": [
       "Bash(npx next:*)",
       "Bash(npm install:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(ls:*)",
+      "Bash(cp \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\assets\\\\ant.svg\" \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\frontend\\\\public\\\\ant.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\assets\\\\beetle.svg\" \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\frontend\\\\public\\\\beetle.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\assets\\\\grasshopper.svg\" \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\frontend\\\\public\\\\grasshopper.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\assets\\\\lizard.svg\" \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\frontend\\\\public\\\\lizard.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\assets\\\\mouse.svg\" \"C:\\\\Users\\\\moksh\\\\OneDrive\\\\Documents\\\\GitHub\\\\who-eats-who\\\\frontend\\\\public\\\\mouse.svg\")",
+      "Bash(grep -E \"\\\\.\\(svg\\)$\")"
     ]
   }
 }

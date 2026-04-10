@@ -437,6 +437,95 @@ function HoldDemo() {
   )
 }
 
+function OverpopulationDemo() {
+  const [pulse, setPulse] = useState(0)
+  const [miniAngle, setMiniAngle] = useState(0)
+
+  useEffect(() => {
+    let frame: number
+    let start: number
+    const animate = (ts: number) => {
+      if (!start) start = ts
+      const t = ts - start
+      setPulse(Math.sin(t * 0.008) * 0.5 + 0.5)
+      setMiniAngle(t * 0.0006)
+      frame = requestAnimationFrame(animate)
+    }
+    frame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  const centerX = 130, centerY = 105
+  const nodeR = 34
+  const miniCount = 3
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+      <svg width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
+        {/* Pulsing green glow */}
+        <radialGradient id="popGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(107,140,94,1)" stopOpacity={0.28 * pulse} />
+          <stop offset="100%" stopColor="rgba(107,140,94,0)" stopOpacity={0} />
+        </radialGradient>
+        <ellipse cx={centerX} cy={centerY} rx={nodeR * 3} ry={nodeR * 3} fill="url(#popGlow)" />
+
+        {/* Mini animal orbits */}
+        {Array.from({ length: miniCount }).map((_, i) => {
+          const angle = (i / miniCount) * Math.PI * 2 + miniAngle
+          const dist = nodeR * 3.2
+          const mx = centerX + Math.cos(angle) * dist
+          const my = centerY + Math.sin(angle) * dist
+          const miniR = nodeR * 0.44
+          return (
+            <g key={i} opacity={0.6 + pulse * 0.3}>
+              <circle cx={mx} cy={my} r={miniR} fill="rgba(255,252,238,0.88)" stroke="rgba(107,140,94,0.6)" strokeWidth={1} />
+              <text x={mx} y={my + 1} fontSize={miniR * 1.1} textAnchor="middle" dominantBaseline="middle">🦋</text>
+            </g>
+          )
+        })}
+      </svg>
+
+      {/* Main node */}
+      <div style={{
+        position: "absolute",
+        left: centerX - nodeR, top: centerY - nodeR,
+        width: nodeR * 2, height: nodeR * 2,
+        borderRadius: "50%",
+        background: `radial-gradient(circle at 35% 35%, rgba(255,252,238,0.96) 0%, rgba(107,140,94,0.55) 100%)`,
+        border: `2px solid rgba(107,140,94,${0.6 + pulse * 0.35})`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 26,
+        boxShadow: `0 0 ${16 + pulse * 12}px rgba(107,140,94,0.45)`,
+        transition: "box-shadow 0.05s",
+      }}>🦋</div>
+
+      {/* Label */}
+      <div style={{
+        position: "absolute",
+        left: centerX - 40, top: centerY + nodeR + 10,
+        width: 80, textAlign: "center",
+        fontFamily: "var(--font-mansalva), cursive",
+        fontSize: 11, color: "rgba(107,140,94,0.9)",
+        fontWeight: "bold",
+      }}>Overpopulating!</div>
+
+      {/* Info badge */}
+      <div style={{
+        position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)",
+        background: "rgba(107,140,94,0.12)",
+        border: "1.5px solid rgba(107,140,94,0.4)",
+        borderRadius: 8, padding: "8px 12px",
+        fontFamily: "var(--font-playfair), serif",
+        fontStyle: "italic", fontSize: 10,
+        color: "rgba(44,24,16,0.72)",
+        maxWidth: 120, lineHeight: 1.5,
+      }}>
+        No predators left — the species runs wild
+      </div>
+    </div>
+  )
+}
+
 // ─── Step definitions ─────────────────────────────────────────────────────────
 
 const STEPS = [
@@ -459,6 +548,11 @@ const STEPS = [
     title: "Hold to Remove",
     body: "Press and hold any creature for 3 seconds to remove it. Watch the cascade — losing one species can collapse others that depend on it.",
     demo: <HoldDemo />,
+  },
+  {
+    title: "Overpopulation 🌿",
+    body: "When a species has no predators in the web, it overpopulates! You'll see a green glow and tiny copies spawning around it. Add a predator to restore balance.",
+    demo: <OverpopulationDemo />,
   },
 ]
 
