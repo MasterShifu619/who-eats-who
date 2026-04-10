@@ -160,6 +160,8 @@ export default function Game3Page() {
   const isSunPlaced = useCallback(()=>sunPresentRef.current,[])
 
   const placeAnimal=useCallback((id:string,x:number,y:number)=>{
+    console.log("placedIdsRef has Sun:", placedIdsRef.current.has("Sun"), [...placedIdsRef.current])
+    console.log("passed placedIds check for", id)
     if(placedIdsRef.current.has(id)) return
 
     // Block non-sun animals if sun is not present
@@ -188,14 +190,46 @@ export default function Game3Page() {
       return
     }
 
+    // Check if animal has at least one food source in play area
+    if(id !== SUN_ID) {
+      const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+      const present=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==id).map(n=>n.id))
+      if(myPrey.length>0 && myPrey.every(p=>!present.has(p))){
+        const def=STATIC_NODES.find(n=>n.id===id)
+        const px=Math.max(SHELF_W+60,Math.min(dims.w-60,x))
+        const py=Math.max(60,Math.min(dims.h-60,y))
+        placedRef.current=placedRef.current.filter(n=>n.id!==id)
+        placedRef.current.push({id,x:px,y:py,vx:0,vy:0,deleted:false,exploding:false,starving:true,pinned:true})
+        setPlacedIds(prev=>new Set([...prev,id]))
+        placedIdsRef.current.add(id)
+        setMessage({text:`🍽️ No food for ${def?.emoji} ${id} — add its prey first!`,color:"#FF4444"})
+        setTimeout(async()=>{
+          const node=placedRef.current.find(n=>n.id===id)
+          if(node){
+            spawnParticles(node.x,node.y,TROPHIC_COLOR[def?.trophic||""]||"#FFF")
+            node.deleted=true
+          }
+          setTimeout(()=>{
+            placedRef.current=placedRef.current.filter(n=>n.id!==id)
+            setPlacedIds(prev=>{const s=new Set(prev);s.delete(id);return s})
+            placedIdsRef.current.delete(id)
+            setMessage(null)
+          },600)
+        },1800)
+        return
+      }
+    }
+
     const px=Math.max(SHELF_W+60,Math.min(dims.w-60,x))
     const py=Math.max(60,Math.min(dims.h-60,y))
+    console.log("reached placement code for", id)
     placedRef.current=placedRef.current.filter(n=>n.id!==id)
     placedRef.current.push({id,x:px,y:py,vx:0,vy:0,deleted:false,exploding:false,starving:false,pinned:false})
-
+    placedIdsRef.current.add(id)
     if(id===SUN_ID){
       sunPresentRef.current=true
       setSunPresent(true)
+      console.log("sun placed, sunPresentRef:", sunPresentRef.current, "placedRef count:", placedRef.current.filter(n=>!n.deleted).length)
     } else {
       const present=new Set(placedRef.current.filter(n=>!n.deleted).map(n=>n.id))
       ALL_EDGES.forEach(([prey,pred])=>{
@@ -217,6 +251,7 @@ export default function Game3Page() {
   const returnToShelf=useCallback((id:string)=>{
     placedRef.current=placedRef.current.filter(n=>n.id!==id)
     edgesRef.current=edgesRef.current.filter(e=>e.prey!==id&&e.predator!==id)
+    placedIdsRef.current.delete(id)
     setPlacedIds(prev=>{const s=new Set(prev);s.delete(id);return s})
     if(id===SUN_ID){sunPresentRef.current=false;setSunPresent(false)}
   },[])
