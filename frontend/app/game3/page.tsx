@@ -343,17 +343,25 @@ export default function Game3Page() {
     const presentIds=new Set(placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID).map(n=>n.id))
     const starving:string[]=[],exploding:string[]=[]
 
-    // Only check species that directly depended on removedId
-    const directDependents=ALL_EDGES
+    // Species that removedId was eating — they might now explode (no predators)
+    const preyOfRemoved=ALL_EDGES
+      .filter(([,pred])=>pred===removedId)
+      .map(([prey])=>prey)
+      .filter(id=>presentIds.has(id))
+
+    // Species that were eating removedId — they might now starve (no food)
+    const predatorsOfRemoved=ALL_EDGES
       .filter(([prey])=>prey===removedId)
       .map(([,pred])=>pred)
       .filter(id=>presentIds.has(id))
 
-    directDependents.forEach(id=>{
-      const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+    preyOfRemoved.forEach(id=>{
       const myPreds=ALL_EDGES.filter(([prey])=>prey===id).map(([,pred])=>pred)
-      if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
       if(myPreds.length>0&&myPreds.every(p=>!presentIds.has(p))) exploding.push(id)
+    })
+    predatorsOfRemoved.forEach(id=>{
+      const myPrey=ALL_EDGES.filter(([,pred])=>pred===id).map(([prey])=>prey)
+      if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
     })
     if(starving.length===0&&exploding.length===0) return
     setMessage({text:"⚠️ Watch the cascade...",color:"#FFAA00"})
