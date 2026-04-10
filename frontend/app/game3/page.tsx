@@ -244,7 +244,7 @@ export default function Game3Page() {
     setPlacedIds(prev=>new Set([...prev,id]))
     placedRef.current.forEach(n=>{if(n.id!==SUN_ID){n.exploding=false;n.starving=false}})
     logEvent(id,"ADDED")
-      playPlaceSound(id)
+    preloadSound(id).then(() => playPlaceSound(id))
     playPlaceChime()
   },[placedIds,dims,isSunPlaced])
 
