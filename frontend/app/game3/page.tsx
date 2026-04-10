@@ -80,7 +80,6 @@ const ALL_EDGES: [string,string][]=[
   ["Yellow Garden Spider","American Toad"],["Yellow Garden Spider","Eastern Ratsnake"],["Yellow Garden Spider","Green Anole lizard"],
   ["Atlantic Blue Crab","Blue Heron"],["Atlantic Blue Crab","Bluegill"],["Atlantic Blue Crab","Eastern Ratsnake"],
   ["Bluegill","Blue Heron"],["Bluegill","Eastern Ratsnake"],["Bluegill","Green Anole lizard"],
-  ["Bluegill","Atlantic Blue Crab"],     // Atlantic Blue Crab eats Bluegill
   ["American Toad","Eastern Ratsnake"],["American Toad","Blue Heron"],["American Toad","Green Anole lizard"],
   ["White-footed Mouse","Eastern Ratsnake"],["White-footed Mouse","Blue Heron"],["White-footed Mouse","Green Anole lizard"],
   ["Eastern Ratsnake","Blue Heron"],["Green Anole lizard","Blue Heron"],["Green Anole lizard","Eastern Ratsnake"],
