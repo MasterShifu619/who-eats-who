@@ -39,24 +39,34 @@ const TROPHIC_COLOR: Record<string,string>={
 
 // PNGs that replace emojis on canvas
 const NODE_PNG_MAP: Record<string,string> = {
-  "Monarch Butterfly": "/Butterfly.svg",
-  "Atlantic Blue Crab":      "/Crab.svg",
-  "Blue Dasher": "/Dragonfly.svg",
-  "Bluegill":      "/Fish.svg",
-  "American Toad":      "/Frog.svg",
+  "Monarch Butterfly":    "/Butterfly.svg",
+  "Atlantic Blue Crab":   "/Crab.svg",
+  "Pondhawk Dragonfly":   "/Dragonfly.svg",
+  "Green Sunfish":        "/Fish.svg",
+  "Tree Frog":            "/Frog.svg",
+  "Green Anole lizard":   "/lizard.svg",
+  "Eastern Ratsnake":     "/rattlesnake.svg",
+  "White-footed Mouse":   "/mouse.svg",
+  "Yellow Garden Spider": "/spider.svg",
+  "Black Carpenter Ant":  "/ant.svg",
+  "Grasshopper":          "/grasshopper.svg",
+  "Green June Beetle":    "/beetle.svg",
+  "Earthworm":            "/worm.svg",
+  "Persimmon Tree":       "/persimmon.svg",
+  "Blue Heron":           "/BlueHeron.svg",
 }
 
 const SUN_ID = "Sun"
 
 const SHELF_MAP: Record<string,string>={
-  "Sun":        "☀️ Sun",
-  "Persimmon Tree":      "🌱 Plants",
-  "Earthworm":       "🐛 Bugs","Monarch Butterfly":"🐛 Bugs","Green June Beetle":"🐛 Bugs",
-  "Fall Field Cricket":"🐛 Bugs","Black Carpenter Ant":"🐛 Bugs","Blue Dasher":"🐛 Bugs","Yellow Garden Spider":"🐛 Bugs",
-  "Bluegill":       "🐟 Water Animals","Atlantic Blue Crab":"🐟 Water Animals",
-  "American Toad":       "🐸 Land Animals","White-footed Mouse":"🐸 Land Animals",
-  "Green Anole lizard":     "🦎 Reptiles","Eastern Ratsnake":"🦎 Reptiles",
-  "Blue Heron": "🐦 Birds",
+  "Sun":                  "☀️ Sun",
+  "Persimmon Tree":       "🌱 Plants",
+  "Earthworm":            "🐛 Bugs","Monarch Butterfly":"🐛 Bugs","Green June Beetle":"🐛 Bugs",
+  "Grasshopper":          "🐛 Bugs","Black Carpenter Ant":"🐛 Bugs","Pondhawk Dragonfly":"🐛 Bugs","Yellow Garden Spider":"🐛 Bugs",
+  "Green Sunfish":        "🐟 Water Animals","Atlantic Blue Crab":"🐟 Water Animals",
+  "Tree Frog":            "🐸 Land Animals","White-footed Mouse":"🐸 Land Animals",
+  "Green Anole lizard":   "🦎 Reptiles","Eastern Ratsnake":"🦎 Reptiles",
+  "Blue Heron":           "🐦 Birds",
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
@@ -92,19 +102,19 @@ const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DEL
 
 // All feeding edges [prey, predator]
 const ALL_EDGES: [string,string][]=[
-  ["Persimmon Tree","Fall Field Cricket"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
-  ["Persimmon Tree","Green June Beetle"],  // Green June Beetle eats Persimmon Tree
-  ["Earthworm","American Toad"],["Earthworm","Eastern Ratsnake"],["Earthworm","Bluegill"],["Earthworm","Blue Heron"],
-  ["Earthworm","Atlantic Blue Crab"],     // Atlantic Blue Crab eats Earthworm
-  ["Monarch Butterfly","Blue Dasher"],["Monarch Butterfly","Yellow Garden Spider"],["Monarch Butterfly","American Toad"],["Monarch Butterfly","Green Anole lizard"],
-  ["Green June Beetle","American Toad"],["Green June Beetle","Yellow Garden Spider"],["Green June Beetle","White-footed Mouse"],
-  ["Fall Field Cricket","Blue Dasher"],["Fall Field Cricket","American Toad"],["Fall Field Cricket","Eastern Ratsnake"],["Fall Field Cricket","Green Anole lizard"],["Fall Field Cricket","Blue Heron"],
-  ["Blue Dasher","American Toad"],["Blue Dasher","Bluegill"],["Blue Dasher","Yellow Garden Spider"],["Blue Dasher","Green Anole lizard"],
-  ["Black Carpenter Ant","American Toad"],["Black Carpenter Ant","Yellow Garden Spider"],["Black Carpenter Ant","Green Anole lizard"],
-  ["Yellow Garden Spider","American Toad"],["Yellow Garden Spider","Eastern Ratsnake"],["Yellow Garden Spider","Green Anole lizard"],
-  ["Atlantic Blue Crab","Blue Heron"],["Atlantic Blue Crab","Bluegill"],["Atlantic Blue Crab","Eastern Ratsnake"],
-  ["Bluegill","Blue Heron"],["Bluegill","Eastern Ratsnake"],["Bluegill","Green Anole lizard"],
-  ["American Toad","Eastern Ratsnake"],["American Toad","Blue Heron"],["American Toad","Green Anole lizard"],
+  ["Persimmon Tree","Grasshopper"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
+  ["Persimmon Tree","Green June Beetle"],
+  ["Earthworm","Tree Frog"],["Earthworm","Eastern Ratsnake"],["Earthworm","Green Sunfish"],["Earthworm","Blue Heron"],
+  ["Earthworm","Atlantic Blue Crab"],
+  ["Monarch Butterfly","Pondhawk Dragonfly"],["Monarch Butterfly","Yellow Garden Spider"],["Monarch Butterfly","Tree Frog"],["Monarch Butterfly","Green Anole lizard"],
+  ["Green June Beetle","Tree Frog"],["Green June Beetle","Yellow Garden Spider"],["Green June Beetle","White-footed Mouse"],
+  ["Grasshopper","Pondhawk Dragonfly"],["Grasshopper","Tree Frog"],["Grasshopper","Eastern Ratsnake"],["Grasshopper","Green Anole lizard"],["Grasshopper","Blue Heron"],
+  ["Pondhawk Dragonfly","Tree Frog"],["Pondhawk Dragonfly","Green Sunfish"],["Pondhawk Dragonfly","Yellow Garden Spider"],["Pondhawk Dragonfly","Green Anole lizard"],
+  ["Black Carpenter Ant","Tree Frog"],["Black Carpenter Ant","Yellow Garden Spider"],["Black Carpenter Ant","Green Anole lizard"],
+  ["Yellow Garden Spider","Tree Frog"],["Yellow Garden Spider","Eastern Ratsnake"],["Yellow Garden Spider","Green Anole lizard"],
+  ["Atlantic Blue Crab","Blue Heron"],["Atlantic Blue Crab","Green Sunfish"],["Atlantic Blue Crab","Eastern Ratsnake"],
+  ["Green Sunfish","Blue Heron"],["Green Sunfish","Eastern Ratsnake"],["Green Sunfish","Green Anole lizard"],
+  ["Tree Frog","Eastern Ratsnake"],["Tree Frog","Blue Heron"],["Tree Frog","Green Anole lizard"],
   ["White-footed Mouse","Eastern Ratsnake"],["White-footed Mouse","Blue Heron"],["White-footed Mouse","Green Anole lizard"],
   ["Eastern Ratsnake","Blue Heron"],["Green Anole lizard","Blue Heron"],["Green Anole lizard","Eastern Ratsnake"],
 ]
@@ -116,13 +126,13 @@ const STATIC_NODES: NodeDef[] = [
   { id:"Earthworm",       label:"Earthworm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Monarch Butterfly",  label:"Monarch Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Green June Beetle",     label:"Green June Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Fall Field Cricket",label:"Fall Field Cricket", emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Grasshopper",       label:"Grasshopper",        emoji:"🦗", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Black Carpenter Ant",        label:"Black Carpenter Ant",         emoji:"🐜", trophic:"primary",   shelf:"🐛 Bugs" },
-  { id:"Blue Dasher",  label:"Blue Dasher",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
+  { id:"Pondhawk Dragonfly",  label:"Pondhawk Dragonfly",   emoji:"🪰", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Yellow Garden Spider",     label:"Yellow Garden Spider",      emoji:"🕷️", trophic:"secondary", shelf:"🐛 Bugs" },
-  { id:"Bluegill",       label:"Bluegill",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
+  { id:"Green Sunfish",       label:"Green Sunfish",        emoji:"🐟", trophic:"secondary", shelf:"🐟 Water Animals" },
   { id:"Atlantic Blue Crab",       label:"Atlantic Blue Crab",        emoji:"🦀", trophic:"secondary", shelf:"🐟 Water Animals" },
-  { id:"American Toad",       label:"American Toad",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
+  { id:"Tree Frog",       label:"Tree Frog",        emoji:"🐸", trophic:"secondary", shelf:"🐸 Land Animals" },
   { id:"White-footed Mouse",        label:"White-footed Mouse",         emoji:"🐀", trophic:"secondary", shelf:"🐸 Land Animals" },
   { id:"Green Anole lizard",     label:"Green Anole lizard",      emoji:"🦎", trophic:"tertiary",  shelf:"🦎 Reptiles" },
   { id:"Eastern Ratsnake",      label:"Eastern Ratsnake",       emoji:"🐍", trophic:"tertiary",  shelf:"🦎 Reptiles" },

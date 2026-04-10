@@ -8,8 +8,8 @@ type LizardState = "idle" | "tongue_out" | "catching" | "swallow" | "lick" | "sp
 const REPEL_R     = 200
 const STRIKE_R    = 100
 const CARD_SIZE   = 130
-const LIZARD_SIZE = 240
-const MOUTH_SVG   = { x: 30, y: 95 }
+const LIZARD_SIZE = 340
+const MOUTH_SVG   = { x: 43, y: 135 }
 
 interface AnimalCard {
   id: string
@@ -20,25 +20,25 @@ interface AnimalCard {
 
 const ANIMALS: AnimalCard[] = [
   // ── Prey ──
-  { id: "Ant",         label: "Ant",         svgSrc: "/ant.svg",          is_prey: true  },
-  { id: "Spider",      label: "Spider",      svgSrc: "/spider.svg",       is_prey: true  },
-  { id: "Dragonfly",   label: "Dragonfly",   svgSrc: "/Dragonfly.svg",    is_prey: true  },
-  { id: "Frog",        label: "Frog",        svgSrc: "/Frog.svg",         is_prey: true  },
-  { id: "Butterfly",   label: "Butterfly",   svgSrc: "/Butterfly.svg",    is_prey: true  },
+  { id: "Ant",         label: "Black Carpenter Ant",  svgSrc: "/ant.svg",          is_prey: true  },
+  { id: "Spider",      label: "Yellow Garden Spider", svgSrc: "/spider.svg",       is_prey: true  },
+  { id: "Dragonfly",   label: "Pondhawk Dragonfly",   svgSrc: "/Dragonfly.svg",    is_prey: true  },
+  { id: "Frog",        label: "Tree Frog",            svgSrc: "/Frog.svg",         is_prey: true  },
+  { id: "Butterfly",   label: "Monarch Butterfly",    svgSrc: "/Butterfly.svg",    is_prey: true  },
   // ── Decoys ──
-  { id: "Worm",        label: "Worm",        svgSrc: "/worm.svg",         is_prey: false },
-  { id: "Beetle",      label: "Beetle",      svgSrc: "/beetle.svg",       is_prey: false },
-  { id: "Grasshopper", label: "Grasshopper", svgSrc: "/grasshopper.svg",  is_prey: false },
-  { id: "Fish",        label: "Fish",        svgSrc: "/Fish.svg",         is_prey: false },
-  { id: "Crab",        label: "Crab",        svgSrc: "/Crab.svg",         is_prey: false },
-  { id: "Snake",       label: "Snake",       svgSrc: "/rattlesnake.svg",  is_prey: false },
-  { id: "Rat",         label: "Rat",         svgSrc: "/mouse.svg",        is_prey: false },
-  { id: "Fruit",       label: "Fruit",       svgSrc: "/persimmon.svg",    is_prey: false },
+  { id: "Worm",        label: "Earthworm",            svgSrc: "/worm.svg",         is_prey: false },
+  { id: "Beetle",      label: "Green June Beetle",    svgSrc: "/beetle.svg",       is_prey: false },
+  { id: "Grasshopper", label: "Grasshopper",          svgSrc: "/grasshopper.svg",  is_prey: false },
+  { id: "Fish",        label: "Green Sunfish",        svgSrc: "/Fish.svg",         is_prey: false },
+  { id: "Crab",        label: "Atlantic Blue Crab",   svgSrc: "/Crab.svg",         is_prey: false },
+  { id: "Snake",       label: "Eastern Ratsnake",     svgSrc: "/rattlesnake.svg",  is_prey: false },
+  { id: "Rat",         label: "White-footed Mouse",   svgSrc: "/mouse.svg",        is_prey: false },
+  { id: "Fruit",       label: "Persimmon Tree",       svgSrc: "/persimmon.svg",    is_prey: false },
 ]
 
 const TOTAL_PREY = ANIMALS.filter(a => a.is_prey).length
 
-type GameState = "IDLE" | "DRAGGING" | "TONGUE_STRIKE" | "EVALUATING" | "RESULT_VALID" | "RESULT_INVALID"
+type GameState = "IDLE" | "DRAGGING" | "EVALUATING" | "RESULT_VALID" | "RESULT_INVALID"
 
 interface Bubble { id: string; x: number; y: number; vx: number; vy: number; eaten: boolean }
 
@@ -69,7 +69,6 @@ export default function LizardPage() {
   const [score, setScore]           = useState(0)
   const [feedback, setFeedback]     = useState<"valid" | "invalid" | null>(null)
   const [lzState, setLzState]       = useState<LizardState>("idle")
-  const [tongueEnd, setTongueEnd]   = useState<{ x: number; y: number } | null>(null)
   const [dragId, setDragId]         = useState<string | null>(null)
   const [dragPos, setDragPos]       = useState<{ x: number; y: number } | null>(null)
   const [swallowPos, setSwallowPos] = useState<{ x: number; y: number } | null>(null)
@@ -83,15 +82,14 @@ export default function LizardPage() {
 
   const getMouth = useCallback((): { x: number; y: number } => {
     const lr = lzRef.current?.getBoundingClientRect()
-    if (!lr) return { x: dims.w - 60, y: dims.h / 2 }
-    const sc = LIZARD_SIZE / 240
-    return { x: lr.left + MOUTH_SVG.x * sc, y: lr.top + MOUTH_SVG.y * sc }
+    if (!lr) return { x: dims.w - LIZARD_SIZE + MOUTH_SVG.x, y: dims.h / 2 - LIZARD_SIZE / 2 + MOUTH_SVG.y }
+    return { x: lr.left + MOUTH_SVG.x, y: lr.top + MOUTH_SVG.y }
   }, [dims])
 
   useEffect(() => {
     const w = window.innerWidth, h = window.innerHeight
     setDims({ w, h })
-    const mX = w - LIZARD_SIZE + MOUTH_SVG.x, mY = h / 2 + MOUTH_SVG.y * (LIZARD_SIZE / 240)
+    const mX = w - LIZARD_SIZE + MOUTH_SVG.x, mY = h / 2 - LIZARD_SIZE / 2 + MOUTH_SVG.y
     const b = initBubbles(w, h, mX, mY)
     bRef.current = b; setBubbles([...b])
   }, [])
@@ -149,14 +147,10 @@ export default function LizardPage() {
 
   const capture = useCallback(async (animal: AnimalCard, bx: number, by: number) => {
     capturedId.current = animal.id
-    gsRef.current = "TONGUE_STRIKE"; setGs("TONGUE_STRIKE")
-    setLzState("tongue_out"); setTongueEnd({ x: bx, y: by })
-    setDragPos(null); setDragId(null)
+    gsRef.current = "EVALUATING"; setGs("EVALUATING")
+    setLzState("catching"); setDragPos(null); setDragId(null)
     setBScale(1); setBOpacity(1); setSwallowPos({ x: bx, y: by })
-    await sleep(550)
-
-    gsRef.current = "EVALUATING"; setGs("EVALUATING"); setLzState("catching")
-    await sleep(1400)
+    await sleep(900)
 
     if (animal.is_prey) {
       gsRef.current = "RESULT_VALID"; setGs("RESULT_VALID")
@@ -172,13 +166,13 @@ export default function LizardPage() {
       await sleep(300)
       bRef.current = bRef.current.map(b => b.id === animal.id ? { ...b, eaten: true } : b)
       setBubbles([...bRef.current])
-      setTongueEnd(null); setSwallowPos(null); setScore(s => s + 1)
+      setSwallowPos(null); setScore(s => s + 1)
       await sleep(500); setLzState("lick"); await sleep(1000)
     } else {
       gsRef.current = "RESULT_INVALID"; setGs("RESULT_INVALID")
       setLzState("spit"); setFeedback("invalid")
       await sleep(380)
-      setTongueEnd(null); setSwallowPos(null)
+      setSwallowPos(null)
       const mouth = getMouth()
       bRef.current = bRef.current.map(b => {
         if (b.id !== animal.id) return b
@@ -194,7 +188,6 @@ export default function LizardPage() {
     gsRef.current = "IDLE"; setGs("IDLE")
   }, [getMouth])
 
-  const mouth = getMouth()
   const fb = feedback === "valid"
     ? { emoji: "😋", headline: "Delicious!", sub: "The lizard eats that!",      color: "var(--sage)", bg: "rgba(107,140,94,0.15)", border: "rgba(107,140,94,0.5)" }
     : feedback === "invalid"
@@ -236,31 +229,9 @@ export default function LizardPage() {
         </div>
       </div>
 
-      {/* ── Back link ── */}
-      <a href="/game2" style={{ position: "absolute", top: 24, right: 24, zIndex: 30, fontFamily: "var(--font-playfair), serif", fontStyle: "italic", fontSize: 12, color: "rgba(92,61,46,0.55)", textDecoration: "none" }}>← Heron</a>
-
-      {/* ── Tongue SVG ── */}
-      {tongueEnd && (gs === "TONGUE_STRIKE" || gs === "EVALUATING" || gs === "RESULT_VALID") && (
-        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 36 }}>
-          <motion.path
-            d={`M ${mouth.x} ${mouth.y} Q ${mouth.x - 100} ${(mouth.y + tongueEnd.y) / 2 - 50} ${tongueEnd.x + CARD_SIZE * 0.38} ${tongueEnd.y - CARD_SIZE * 0.32}`}
-            stroke="#C01010" strokeWidth={8} strokeLinecap="round" fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: gs === "RESULT_VALID" ? 0 : 1 }}
-            transition={{ duration: 0.42, ease: "easeOut" }}
-          />
-          <motion.path
-            d={`M ${tongueEnd.x + CARD_SIZE * 0.38} ${tongueEnd.y - CARD_SIZE * 0.32} C ${tongueEnd.x + CARD_SIZE * 0.7} ${tongueEnd.y - CARD_SIZE * 0.58} ${tongueEnd.x + CARD_SIZE * 0.7} ${tongueEnd.y + CARD_SIZE * 0.48} ${tongueEnd.x + CARD_SIZE * 0.08} ${tongueEnd.y + CARD_SIZE * 0.4}`}
-            stroke="#D81818" strokeWidth={7} strokeLinecap="round" fill="none"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: gs === "RESULT_VALID" ? 0 : 1, opacity: gs === "RESULT_VALID" ? 0 : 1 }}
-            transition={{ duration: 0.32, delay: 0.36 }}
-          />
-        </svg>
-      )}
-
+      
       {/* ── Lizard ── */}
-      <div ref={lzRef} style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", right: 24, zIndex: 30 }}>
+      <div ref={lzRef} style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", right: -50, zIndex: 30 }}>
         <motion.div
           animate={
             gs === "EVALUATING"     ? { rotate: [-1, 1, -1, 1, 0] } :
@@ -339,7 +310,7 @@ export default function LizardPage() {
       {/* ── Feedback toast ── */}
       <AnimatePresence>
         {fb && (
-          <motion.div style={{ position: "absolute", right: LIZARD_SIZE + 60, top: "50%", transform: "translateY(-60%)", zIndex: 50, textAlign: "center", pointerEvents: "none" }}
+          <motion.div style={{ position: "absolute", right: 100, top: "calc(50% + " + (LIZARD_SIZE / 2) + "px)", zIndex: 50, textAlign: "center", pointerEvents: "none", width: LIZARD_SIZE - 100 }}
             initial={{ scale: 0.5, opacity: 0, y: 20, rotate: -3 }}
             animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
             exit={{ scale: 0.85, opacity: 0, y: -16 }}
@@ -380,8 +351,8 @@ export default function LizardPage() {
                 style={{ padding: "12px 36px", fontFamily: "var(--font-mansalva), cursive", fontSize: 16, color: "rgba(244,237,211,0.95)", background: "rgba(107,140,94,0.88)", border: "1.5px solid rgba(107,140,94,0.6)", borderRadius: "4px 10px 5px 9px / 9px 4px 10px 5px", cursor: "pointer", boxShadow: "0 4px 16px rgba(107,140,94,0.3)" }}
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                  const m = getMouth()
-                  const b = initBubbles(dims.w, dims.h, m.x, m.y)
+                  const mouth = getMouth()
+                  const b = initBubbles(dims.w, dims.h, mouth.x, mouth.y)
                   bRef.current = b; setBubbles([...b])
                   setScore(0); gsRef.current = "IDLE"; setGs("IDLE")
                   setLzState("idle"); setTongueEnd(null); setDragId(null)

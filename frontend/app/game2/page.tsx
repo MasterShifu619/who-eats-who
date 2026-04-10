@@ -4,34 +4,24 @@ import { useState, useRef, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import HeronFace, { HeronState } from "@/components/game2/HeronFace"
 import FloatingBubble, { BubbleSpecies } from "@/components/game2/FloatingBubble"
-import { checkFeed } from "@/lib/api"
 
-const PREDATOR = "Ardea herodias"
-
-// Clean species portrait URLs from iNaturalist taxa pages
 const BUBBLE_SPECIES: BubbleSpecies[] = [
-  // ── Valid prey ──
-  { scientific_name: "Ameiurus natalis",         common_name: "Yellow Bullhead",          thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/45893234/medium.jpg",   is_prey: true  },
-  { scientific_name: "Lithobates catesbeianus",  common_name: "American Bullfrog",        thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/13578736/medium.jpg",   is_prey: true  },
-  { scientific_name: "Anguilla rostrata",        common_name: "American Eel",             thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/120507875/medium.jpeg", is_prey: true  },
-  { scientific_name: "Lepomis macrochirus",      common_name: "Bluegill",                 thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/57005588/medium.jpg",   is_prey: true  },
-  { scientific_name: "Nerodia sipedon",          common_name: "Common Watersnake",        thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/28757507/medium.jpg",   is_prey: true  },
-  { scientific_name: "Cyprinus carpio",          common_name: "European Carp",            thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/46703402/medium.jpg",   is_prey: true  },
-  { scientific_name: "Siren lacertina",          common_name: "Greater Siren",            thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/32964789/medium.jpg",   is_prey: true  },
-  { scientific_name: "Lepomis gibbosus",         common_name: "Pumpkinseed",              thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/57005612/medium.jpg",   is_prey: true  },
-  { scientific_name: "Apalone spinifera",        common_name: "Spiny Softshell",          thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/35478932/medium.jpg",   is_prey: true  },
-  { scientific_name: "Pomoxis nigromaculatus",   common_name: "Black Crappie",            thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/67445521/medium.jpg",   is_prey: true  },
+  // ── Prey ──
+  { scientific_name: "Green Sunfish",       common_name: "Green Sunfish",       thumbnail_url: "/Fish.svg",        is_prey: true  },
+  { scientific_name: "Tree Frog",           common_name: "Tree Frog",           thumbnail_url: "/Frog.svg",        is_prey: true  },
+  { scientific_name: "Atlantic Blue Crab",  common_name: "Atlantic Blue Crab",  thumbnail_url: "/Crab.svg",        is_prey: true  },
+  { scientific_name: "Earthworm",           common_name: "Earthworm",           thumbnail_url: "/worm.svg",        is_prey: true  },
+  { scientific_name: "Eastern Ratsnake",    common_name: "Eastern Ratsnake",    thumbnail_url: "/rattlesnake.svg", is_prey: true  },
   // ── Decoys ──
-  { scientific_name: "Zonotrichia albicollis",   common_name: "White-throated Sparrow",   thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/66662948/medium.jpeg",  is_prey: false },
-  { scientific_name: "Fulica americana",         common_name: "American Coot",            thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/29189487/medium.jpg",   is_prey: false },
-  { scientific_name: "Apalone ferox",            common_name: "Florida Softshell Turtle", thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/28289752/medium.jpg",   is_prey: false },
-  { scientific_name: "Acanthogobius flavimanus", common_name: "Yellowfin Goby",           thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/316245626/medium.jpg",  is_prey: false },
-  { scientific_name: "Hemigrapsus nudus",        common_name: "Purple Shore Crab",        thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/19611761/medium.jpg",   is_prey: false },
-  { scientific_name: "Urechis caupo",            common_name: "Fat Innkeeper Worm",       thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/183053796/medium.jpeg", is_prey: false },
-  { scientific_name: "Coleomegilla maculata",    common_name: "Pink Lady Beetle",         thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/452490513/medium.jpeg", is_prey: false },
-  { scientific_name: "Opsanus tau",              common_name: "Oyster Toadfish",          thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/181850781/medium.jpg",  is_prey: false },
-  { scientific_name: "Merluccius productus",     common_name: "Pacific Hake",             thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/397903267/medium.jpeg", is_prey: false },
-  { scientific_name: "Triglops pingelii",        common_name: "Ribbed Sculpin",           thumbnail_url: "https://inaturalist-open-data.s3.amazonaws.com/photos/409102410/medium.jpeg", is_prey: false },
+  { scientific_name: "Black Carpenter Ant", common_name: "Black Carpenter Ant", thumbnail_url: "/ant.svg",         is_prey: false },
+  { scientific_name: "Green June Beetle",   common_name: "Green June Beetle",   thumbnail_url: "/beetle.svg",      is_prey: false },
+  { scientific_name: "Grasshopper",         common_name: "Grasshopper",         thumbnail_url: "/grasshopper.svg", is_prey: false },
+  { scientific_name: "Yellow Garden Spider",common_name: "Yellow Garden Spider",thumbnail_url: "/spider.svg",      is_prey: false },
+  { scientific_name: "Monarch Butterfly",   common_name: "Monarch Butterfly",   thumbnail_url: "/Butterfly.svg",   is_prey: false },
+  { scientific_name: "Pondhawk Dragonfly",  common_name: "Pondhawk Dragonfly",  thumbnail_url: "/Dragonfly.svg",   is_prey: false },
+  { scientific_name: "White-footed Mouse",  common_name: "White-footed Mouse",  thumbnail_url: "/mouse.svg",       is_prey: false },
+  { scientific_name: "Green Anole lizard",  common_name: "Green Anole lizard",  thumbnail_url: "/lizard.svg",      is_prey: false },
+  { scientific_name: "Persimmon Tree",      common_name: "Persimmon Tree",      thumbnail_url: "/persimmon.svg",   is_prey: false },
 ]
 
 const TOTAL_PREY = BUBBLE_SPECIES.filter((s) => s.is_prey).length
@@ -101,7 +91,7 @@ export default function Game2Page() {
         e.clientY >= mr.top  && e.clientY <= mr.bottom)
     }
 
-    const onUp = async (e: PointerEvent) => {
+    const onUp = (e: PointerEvent) => {
       window.removeEventListener("pointermove", onMove)
       window.removeEventListener("pointerup", onUp)
       const mr = mouthRef.current?.getBoundingClientRect()
@@ -115,26 +105,20 @@ export default function Game2Page() {
       setLocked(true)
       setHeronState("chewing")
 
-      try {
-        const res = await checkFeed(PREDATOR, species.scientific_name)
-        setTimeout(() => {
-          if (res.valid) {
-            setHeronState("happy")
-            setEaten((p) => new Set([...p, species.scientific_name]))
-            setScore((s) => s + 1)
-            setFeedback("valid")
-            setTimeout(() => { setHeronState("idle"); setFeedback(null); setLocked(false) }, 2600)
-          } else {
-            setHeronState("spit")
-            setSpitSpecies(species.scientific_name)
-            setFeedback("invalid")
-            setTimeout(() => { setHeronState("idle"); setSpitSpecies(null); setFeedback(null); setLocked(false) }, 2400)
-          }
-        }, 2000)
-      } catch {
-        setHeronState("idle")
-        setLocked(false)
-      }
+      setTimeout(() => {
+        if (species.is_prey) {
+          setHeronState("happy")
+          setEaten((p) => new Set([...p, species.scientific_name]))
+          setScore((s) => s + 1)
+          setFeedback("valid")
+          setTimeout(() => { setHeronState("idle"); setFeedback(null); setLocked(false) }, 2600)
+        } else {
+          setHeronState("spit")
+          setSpitSpecies(species.scientific_name)
+          setFeedback("invalid")
+          setTimeout(() => { setHeronState("idle"); setSpitSpecies(null); setFeedback(null); setLocked(false) }, 2400)
+        }
+      }, 1200)
     }
 
     setDrag({ species, x: 0, y: 0, startX: cx, startY: cy })
@@ -278,19 +262,19 @@ export default function Game2Page() {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <div style={{
-              width: 96, height: 96, borderRadius: "50%", overflow: "hidden",
-              border: `3px solid ${isOverMouth ? "#4ADE80" : "rgba(255,255,255,0.7)"}`,
-              boxShadow: isOverMouth
-                ? "0 0 40px rgba(74,222,128,0.6), 0 8px 32px rgba(0,0,0,0.8)"
-                : "0 8px 32px rgba(0,0,0,0.8)",
-            }}>
-              {drag.species.thumbnail_url && (
-                <img src={drag.species.thumbnail_url} alt={drag.species.common_name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              )}
-            </div>
+            {drag.species.thumbnail_url && (
+              <img
+                src={drag.species.thumbnail_url}
+                alt={drag.species.common_name}
+                style={{
+                  width: 96, height: 96,
+                  objectFit: "contain",
+                  filter: isOverMouth
+                    ? "drop-shadow(0 0 16px rgba(74,222,128,0.8)) drop-shadow(2px 3px 8px rgba(0,0,0,0.5))"
+                    : "drop-shadow(2px 4px 10px rgba(0,0,0,0.6))",
+                }}
+              />
+            )}
           </motion.div>
         )}
       </AnimatePresence>
