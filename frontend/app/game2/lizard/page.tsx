@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence, useAnimationFrame } from "framer-motion"
+import { preloadSound, playRemoveSound } from "@/lib/sounds"
 
 type LizardState = "idle" | "tongue_out" | "catching" | "swallow" | "lick" | "spit"
 
@@ -92,6 +93,7 @@ export default function LizardPage() {
     const mX = w - LIZARD_SIZE + MOUTH_SVG.x, mY = h / 2 - LIZARD_SIZE / 2 + MOUTH_SVG.y
     const b = initBubbles(w, h, mX, mY)
     bRef.current = b; setBubbles([...b])
+    ANIMALS.forEach(a => preloadSound(a.label))
   }, [])
 
   useAnimationFrame(() => {
@@ -153,6 +155,7 @@ export default function LizardPage() {
     await sleep(900)
 
     if (animal.is_prey) {
+      playRemoveSound(animal.label)
       gsRef.current = "RESULT_VALID"; setGs("RESULT_VALID")
       setLzState("swallow"); setFeedback("valid")
       const mouth = getMouth()
