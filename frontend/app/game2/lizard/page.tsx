@@ -355,7 +355,7 @@ export default function LizardPage() {
                   const b = initBubbles(dims.w, dims.h, mouth.x, mouth.y)
                   bRef.current = b; setBubbles([...b])
                   setScore(0); gsRef.current = "IDLE"; setGs("IDLE")
-                  setLzState("idle"); setTongueEnd(null); setDragId(null)
+                  setLzState("idle"); /**setTongueEnd(null); */ setDragId(null)
                   setBScale(1); setBOpacity(1); setSwallowPos(null)
                 }}
               >Play again →</motion.button>
