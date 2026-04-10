@@ -496,7 +496,8 @@ export default function Game3Page() {
         const png=nodeImagesRef.current[n.id]
         const hasPng=!!(png&&png.complete)
         // PNG size — no circle container, just the image
-        const imgR=isHov?r*1.95:r*1.8
+        const nodeScale=n.id==="Beetle"?0.72:1.0
+        const imgR=(isHov?r*1.95:r*1.8)*nodeScale
 
         // Ghost dwell ring — pulses on hover to hint the hold mechanic
         if(isHov&&!isDwelling){
