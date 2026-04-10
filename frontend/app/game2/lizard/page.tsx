@@ -21,20 +21,20 @@ interface AnimalCard {
 
 const ANIMALS: AnimalCard[] = [
   // ── Prey ──
-  { id: "Ant",         label: "Black Carpenter Ant",  svgSrc: "/ant.svg",          is_prey: true  },
-  { id: "Spider",      label: "Yellow Garden Spider", svgSrc: "/spider.svg",       is_prey: true  },
-  { id: "Dragonfly",   label: "Pondhawk Dragonfly",   svgSrc: "/Dragonfly.svg",    is_prey: true  },
-  { id: "Frog",        label: "Tree Frog",            svgSrc: "/Frog.svg",         is_prey: true  },
-  { id: "Butterfly",   label: "Monarch Butterfly",    svgSrc: "/Butterfly.svg",    is_prey: true  },
+  { id: "Black Carpenter Ant",         label: "Black Carpenter Ant",  svgSrc: "/ant.svg",          is_prey: true  },
+  { id: "Yellow Garden Spider",      label: "Yellow Garden Spider", svgSrc: "/spider.svg",       is_prey: true  },
+  { id: "Pondhawk Dragonfly",   label: "Pondhawk Dragonfly",   svgSrc: "/Dragonfly.svg",    is_prey: true  },
+  { id: "Tree Frog",        label: "Tree Frog",            svgSrc: "/Frog.svg",         is_prey: true  },
+  { id: "Monarch Butterfly",   label: "Monarch Butterfly",    svgSrc: "/Butterfly.svg",    is_prey: true  },
   // ── Decoys ──
-  { id: "Worm",        label: "Earthworm",            svgSrc: "/worm.svg",         is_prey: false },
-  { id: "Beetle",      label: "Green June Beetle",    svgSrc: "/beetle.svg",       is_prey: false },
+  { id: "Earthworm",        label: "Earthworm",            svgSrc: "/worm.svg",         is_prey: false },
+  { id: "Green June Beetle",      label: "Green June Beetle",    svgSrc: "/beetle.svg",       is_prey: false },
   { id: "Grasshopper", label: "Grasshopper",          svgSrc: "/grasshopper.svg",  is_prey: false },
-  { id: "Fish",        label: "Green Sunfish",        svgSrc: "/Fish.svg",         is_prey: false },
-  { id: "Crab",        label: "Atlantic Blue Crab",   svgSrc: "/Crab.svg",         is_prey: false },
-  { id: "Snake",       label: "Eastern Ratsnake",     svgSrc: "/rattlesnake.svg",  is_prey: false },
-  { id: "Rat",         label: "White-footed Mouse",   svgSrc: "/mouse.svg",        is_prey: false },
-  { id: "Fruit",       label: "Persimmon Tree",       svgSrc: "/persimmon.svg",    is_prey: false },
+  { id: "Green Sunfish",        label: "Green Sunfish",        svgSrc: "/Fish.svg",         is_prey: false },
+  { id: "Atlantic Blue Crab",        label: "Atlantic Blue Crab",   svgSrc: "/Crab.svg",         is_prey: false },
+  { id: "Eastern Ratsnake",       label: "Eastern Ratsnake",     svgSrc: "/rattlesnake.svg",  is_prey: false },
+  { id: "White-footed Mouse",         label: "White-footed Mouse",   svgSrc: "/mouse.svg",        is_prey: false },
+  { id: "Persimmon Tree",       label: "Persimmon Tree",       svgSrc: "/persimmon.svg",    is_prey: false },
 ]
 
 const TOTAL_PREY = ANIMALS.filter(a => a.is_prey).length
