@@ -89,7 +89,7 @@ const ALL_EDGES: [string,string][]=[
 // Static node definitions — no backend needed for game3
 const STATIC_NODES: NodeDef[] = [
   { id:"Sun",        label:"Sun",         emoji:"☀️", trophic:"sun",       shelf:"☀️ Sun" },
-  { id:"Persimmon Tree",      label:"Persimmon Tree",       emoji:"🍎", trophic:"producer",  shelf:"🌱 Plants" },
+  { id:"Persimmon Tree",      label:"Persimmon Tree",       emoji:"🍊", trophic:"producer",  shelf:"🌱 Plants" },
   { id:"Earthworm",       label:"Earthworm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Monarch Butterfly",  label:"Monarch Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Green June Beetle",     label:"Green June Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },
@@ -866,7 +866,7 @@ export default function Game3Page() {
           textShadow:isDay?"1px 2px 0 rgba(255,255,255,0.45)":"0 0 16px rgba(100,80,40,0.4)",
           letterSpacing:"0.02em",
         }}>
-          {isDay?"🌿":"🌑"} NC Food Web
+          {isDay?"🌿":"🌑"} Who Eats Whom
         </div>
         <div style={{
           fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,

@@ -36,9 +36,9 @@ function WelcomeDemo() {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", gap: 24 }}>
       {[
         { emoji: "☀️", label: "Sun",       color: "#D4A847", delay: 0 },
-        { emoji: "🍎", label: "Fruit",     color: "#6B8C5E", delay: 0.12 },
-        { emoji: "🦋", label: "Butterfly", color: "#C8851A", delay: 0.24 },
-        { emoji: "🐸", label: "Frog",      color: "#4A8B8C", delay: 0.36 },
+        { emoji: "🍊", label: "Persimmon Tree",     color: "#6B8C5E", delay: 0.12 },
+        { emoji: "🦋", label: "Monarch Butterfly", color: "#C8851A", delay: 0.24 },
+        { emoji: "🐸", label: "American Toad",      color: "#4A8B8C", delay: 0.36 },
         { emoji: "🦤", label: "Heron",     color: "#6B8CAA", delay: 0.48 },
       ].map(({ emoji, label, color, delay }) => (
         <motion.div
@@ -110,7 +110,7 @@ function SunDemo() {
             fontSize: 22,
           }}
         >☀️</motion.div>
-        <div style={{ fontSize: 16, opacity: 0.3 }}>🍎</div>
+        <div style={{ fontSize: 16, opacity: 0.3 }}>🍊</div>
         <div style={{ fontSize: 16, opacity: 0.3 }}>🦋</div>
       </div>
 
@@ -185,9 +185,9 @@ function SunDemo() {
 
 function CreaturesDemo() {
   const ANIMALS = [
-    { emoji: "🦋", label: "Butterfly", color: "#C8851A", tx: 60,  ty: 50  },
-    { emoji: "🐸", label: "Frog",      color: "#4A8B8C", tx: 170, ty: 80  },
-    { emoji: "🐍", label: "Snake",     color: "#A0522D", tx: 115, ty: 130 },
+    { emoji: "🦋", label: "Monarch Butterfly", color: "#C8851A", tx: 60,  ty: 50  },
+    { emoji: "🐸", label: "American Toad",      color: "#4A8B8C", tx: 170, ty: 80  },
+    { emoji: "🐍", label: "Eastern Ratsnake",     color: "#A0522D", tx: 115, ty: 130 },
   ]
   const [placed, setPlaced] = useState<number[]>([])
   const [cursorIdx, setCursorIdx] = useState(0)
@@ -380,13 +380,13 @@ function HoldDemo() {
         </AnimatePresence>
 
         <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 9, color: "rgba(92,61,46,0.65)" }}>
-          {phase === "removed" || phase === "cascade" ? "" : "Frog"}
+          {phase === "removed" || phase === "cascade" ? "" : "American Toad"}
         </span>
       </div>
 
       {/* Connected nodes that cascade */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {[{ emoji: "🐍", label: "Snake", color: "#A0522D" }, { emoji: "🦤", label: "Heron", color: "#6B8CAA" }].map((a, i) => (
+        {[{ emoji: "🐍", label: "Eastern Ratsnake", color: "#A0522D" }, { emoji: "🦤", label: "Heron", color: "#6B8CAA" }].map((a, i) => (
           <motion.div key={a.label}
             animate={{
               opacity: phase === "cascade" ? [1, 0.3, 1, 0.2, 0] : 1,
@@ -441,7 +441,7 @@ function HoldDemo() {
 
 const STEPS = [
   {
-    title: "Welcome to NC Food Web",
+    title: "Welcome to Who Eats Whom",
     body: "Build a real food web using animals from North Carolina. Watch how nature connects — and collapses.",
     demo: <WelcomeDemo />,
   },
