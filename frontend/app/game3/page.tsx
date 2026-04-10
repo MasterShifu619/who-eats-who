@@ -39,20 +39,11 @@ const TROPHIC_COLOR: Record<string,string>={
 
 // PNGs that replace emojis on canvas
 const NODE_PNG_MAP: Record<string,string> = {
-  "Monarch Butterfly":  "/Butterfly.svg",
-  "Atlantic Blue Crab":       "/Crab.svg",
-  "Blue Dasher":  "/Dragonfly.svg",
-  "Bluegill":       "/Fish.svg",
-  "American Toad":       "/Frog.svg",
-  "Ant":        "/ant.svg",
-  "Beetle":     "/beetle.svg",
-  "Grasshopper":"/grasshopper.svg",
-  "Lizard":     "/lizard.svg",
-  "Rat":        "/mouse.svg",
-  "Snake":      "/rattlesnake.svg",
-  "Spider":     "/spider.svg",
-  "Worm":       "/worm.svg",
-  "Fruit":      "/persimmon.svg",
+  "Monarch Butterfly": "/Butterfly.svg",
+  "Atlantic Blue Crab":      "/Crab.svg",
+  "Blue Dasher": "/Dragonfly.svg",
+  "Bluegill":      "/Fish.svg",
+  "American Toad":      "/Frog.svg",
 }
 
 const SUN_ID = "Sun"
@@ -446,13 +437,8 @@ export default function Game3Page() {
         ctx.fillRect(0,0,canvas.width,canvas.height)
       }
       if(isDay){
-        // White overlay to reduce background dominance
-        ctx.globalAlpha=0.38
-        ctx.fillStyle="#FFFFFF"
-        ctx.fillRect(0,0,canvas.width,canvas.height)
-        ctx.globalAlpha=1
-        // Parchment wash
-        ctx.globalAlpha=0.12
+        // Very faint parchment wash — let the lake show through
+        ctx.globalAlpha=0.10
         ctx.fillStyle="#F4EDD3"
         ctx.fillRect(0,0,canvas.width,canvas.height)
         ctx.globalAlpha=1
@@ -585,8 +571,7 @@ export default function Game3Page() {
         const hasPng=!!(png&&png.complete)
         const dwellEntry=[...dwellRef.current.values()].find(d=>d.nodeId===n.id)
         // PNG size — no circle container, just the image
-        const nodeScale=n.id==="Beetle"?0.72:1.0
-        const imgR=(isHov?r*1.95:r*1.8)*nodeScale
+        const imgR=isHov?r*1.95:r*1.8
 
         // Ghost dwell ring — pulses on hover to hint the hold mechanic
         if(isHov&&!isDwelling){
@@ -622,34 +607,6 @@ export default function Game3Page() {
             const pct=(Date.now()-dwellEntry.startTime)/DWELL_MS
             ctx.beginPath();ctx.arc(n.x,n.y,r+7,-Math.PI/2,-Math.PI/2+pct*Math.PI*2)
             ctx.strokeStyle="rgba(160,82,45,0.85)";ctx.lineWidth=3.5;ctx.stroke()
-          }
-        }
-
-        // Mini-animal spawns for overpopulated nodes
-        if(n.exploding){
-          const miniCount=3
-          const miniPulse=Math.sin(t*0.008)*0.5+0.5
-          const miniAlpha=0.55+miniPulse*0.3
-          for(let mi=0;mi<miniCount;mi++){
-            const angle=(mi/miniCount)*Math.PI*2+t*0.0006
-            const dist=(hasPng?imgR:r)*1.55
-            const mx2=n.x+Math.cos(angle)*dist
-            const my2=n.y+Math.sin(angle)*dist
-            const miniR=(hasPng?imgR:r)*0.45
-            ctx.save()
-            ctx.globalAlpha=miniAlpha
-            if(hasPng){
-              ctx.drawImage(png,mx2-miniR,my2-miniR,miniR*2,miniR*2)
-            } else {
-              const mbg=ctx.createRadialGradient(mx2-miniR*0.3,my2-miniR*0.3,2,mx2,my2,miniR)
-              mbg.addColorStop(0,"rgba(255,252,238,0.95)")
-              mbg.addColorStop(1,color+"55")
-              ctx.beginPath();ctx.arc(mx2,my2,miniR,0,Math.PI*2);ctx.fillStyle=mbg;ctx.fill()
-              ctx.strokeStyle="rgba(107,140,94,0.65)";ctx.lineWidth=1;ctx.stroke()
-              ctx.font=`${Math.round(miniR*1.1)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle"
-              ctx.fillText(def.emoji,mx2,my2-1)
-            }
-            ctx.restore()
           }
         }
 
@@ -794,7 +751,8 @@ export default function Game3Page() {
     <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
       <canvas ref={canvasRef} style={{display:"block",touchAction:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}/>
+        onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}
+        onContextMenu={e=>e.preventDefault()}/>
 
       {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>

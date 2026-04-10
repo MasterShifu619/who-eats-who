@@ -26,18 +26,6 @@ const PNG_MAP: [string, string][] = [
   ["crappie",   "/Fish.svg"],
   ["frog",      "/Frog.svg"],
   ["toad",      "/Frog.svg"],
-  ["ant",       "/ant.svg"],
-  ["beetle",    "/beetle.svg"],
-  ["grasshopper", "/grasshopper.svg"],
-  ["lizard",    "/lizard.svg"],
-  ["rat",       "/mouse.svg"],
-  ["mouse",     "/mouse.svg"],
-  ["persimmon", "/persimmon.svg"],
-  ["fruit",     "/persimmon.svg"],
-  ["snake",     "/rattlesnake.svg"],
-  ["rattlesnake", "/rattlesnake.svg"],
-  ["spider",    "/spider.svg"],
-  ["worm",      "/worm.svg"],
 ]
 
 export function getLocalAnimalImage(species: Species): string | null {
@@ -91,6 +79,7 @@ export default function AnimalShelf({ onDragStart, placedSpecies }: AnimalShelfP
         backdropFilter: "blur(6px)",
         borderRight: "1px solid rgba(92,61,46,0.2)",
         boxShadow: "inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)",
+        filter: "url(#watercolor-edge)",
       }}
     >
       {/* Header tray label */}
