@@ -60,11 +60,34 @@ const SHELF_MAP: Record<string,string>={
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
-const logEvent = (animal: string, action: "ADDED" | "DELETED" | "DELETED_CASCADE") => {  fetch("/api/log", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ animal, action }),
-  }).catch(() => {}) // silent fail — don't break game on log failure
+const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DELETED_CASCADE" ) => {
+  fetch("https://api.ipify.org?format=json")
+    .then(r => r.json())
+    .then(ipData => {
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          animal,
+          action,
+          browser: navigator.userAgent,
+          ip: ipData.ip,
+        }),
+      }).catch(() => {})
+    })
+    .catch(() => {
+      // fallback without IP
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          animal,
+          action,
+          browser: navigator.userAgent,
+          ip: "unknown",
+        }),
+      }).catch(() => {})
+    })
 }
 
 // All feeding edges [prey, predator]
@@ -134,13 +157,9 @@ export default function Game3Page() {
 
   // Show tutorial on every page load
   useEffect(()=>{
-    setShowTutorial(true)
-    fetch("/api/log",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({animal:"SESSION",action:"STARTED"}),
-    }).catch(()=>{})
-  },[])
+  setShowTutorial(true)
+  logEvent("SESSION", "STARTED")
+},[])
 
   // Load background + PNG animal images
   useEffect(()=>{
