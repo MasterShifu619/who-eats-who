@@ -101,6 +101,56 @@ export function stopBgMusic() {
   setTimeout(() => bgMusic?.stop(), 850)
 }
 
+// Chomp — freesound.org #834358 by designerschoice
+let chompHowl: Howl | null = null
+export function playChomp() {
+  if (!chompHowl) {
+    chompHowl = new Howl({ src: ["https://cdn.freesound.org/previews/834/834358_6951162-lq.mp3"], volume: 0.9, preload: true })
+  }
+  chompHowl.play()
+}
+
+// Wrong answer — descending wah-wah buzzer
+export function playWrong() {
+  try {
+    if (!audioCtx) audioCtx = new AudioContext()
+    const notes = [311, 233]   // Eb4 → Bb3
+    notes.forEach((freq, i) => {
+      const osc = audioCtx!.createOscillator()
+      const gain = audioCtx!.createGain()
+      osc.connect(gain); gain.connect(audioCtx!.destination)
+      osc.type = "sawtooth"
+      const t = audioCtx!.currentTime + i * 0.18
+      osc.frequency.setValueAtTime(freq, t)
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.88, t + 0.16)
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.28, t + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22)
+      osc.start(t); osc.stop(t + 0.25)
+    })
+  } catch (e) {}
+}
+
+// Victory fanfare — ascending arpeggio using Web Audio API
+export function playVictory() {
+  try {
+    if (!audioCtx) audioCtx = new AudioContext()
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51] // C5 E5 G5 C6 E6
+    notes.forEach((freq, i) => {
+      const osc = audioCtx!.createOscillator()
+      const gain = audioCtx!.createGain()
+      osc.connect(gain); gain.connect(audioCtx!.destination)
+      osc.type = "sine"
+      const t = audioCtx!.currentTime + i * 0.13
+      osc.frequency.setValueAtTime(freq, t)
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.35, t + 0.04)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55)
+      osc.start(t); osc.stop(t + 0.6)
+    })
+  } catch (e) {}
+}
+
 // Place chime — bright pop using Web Audio API (instant, no fetch needed)
 export function playPlaceChime() {
   try {

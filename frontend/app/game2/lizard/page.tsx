@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence, useAnimationFrame } from "framer-motion"
-import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic } from "@/lib/sounds"
+import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic, playVictory, playChomp, playWrong } from "@/lib/sounds"
 
 type LizardState = "idle" | "tongue_out" | "catching" | "swallow" | "lick" | "spit"
 
@@ -178,6 +178,7 @@ export default function LizardPage() {
     await sleep(900)
 
     if (animal.is_prey) {
+      playChomp()
       playRemoveSound(animal.label)
       logEvent(animal.id, "DRAGGED", 1)
       gsRef.current = "RESULT_VALID"; setGs("RESULT_VALID")
@@ -193,9 +194,13 @@ export default function LizardPage() {
       await sleep(300)
       bRef.current = bRef.current.map(b => b.id === animal.id ? { ...b, eaten: true } : b)
       setBubbles([...bRef.current])
-      setSwallowPos(null); setScore(s => s + 1)
+      setSwallowPos(null)
+      const newScore = bRef.current.filter(b => b.eaten).length
+      setScore(newScore)
+      if (newScore === TOTAL_PREY) playVictory()
       await sleep(500); setLzState("lick"); await sleep(1000)
     } else {
+      playWrong()
       gsRef.current = "RESULT_INVALID"; setGs("RESULT_INVALID")
       logEvent(animal.id, "DRAGGED", 2)
       setLzState("spit"); setFeedback("invalid")
@@ -335,20 +340,40 @@ export default function LizardPage() {
         )
       })}
 
-      {/* ── Feedback toast ── */}
+      {/* ── Feedback overlay ── */}
       <AnimatePresence>
         {fb && (
-          <motion.div style={{ position: "absolute", right: 100, top: "calc(50% + " + (LIZARD_SIZE / 2) + "px)", zIndex: 50, textAlign: "center", pointerEvents: "none", width: LIZARD_SIZE - 100 }}
-            initial={{ scale: 0.5, opacity: 0, y: 20, rotate: -3 }}
-            animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
-            exit={{ scale: 0.85, opacity: 0, y: -16 }}
-            transition={{ type: "spring", stiffness: 380, damping: 20 }}
+          <motion.div style={{
+            position: "absolute", inset: 0, zIndex: 50,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: feedback === "valid" ? "rgba(107,140,94,0.18)" : "rgba(160,82,45,0.14)",
+            backdropFilter: "blur(4px)",
+            pointerEvents: "none",
+          }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <div style={{ background: fb.bg, border: `1.5px solid ${fb.border}`, borderRadius: "6px 16px 8px 14px / 14px 6px 16px 8px", padding: "14px 28px 16px", boxShadow: "0 8px 28px rgba(60,40,10,0.2)", backdropFilter: "blur(8px)" }}>
-              <div style={{ fontSize: 80, lineHeight: 1, marginBottom: 5 }}>{fb.emoji}</div>
-              <div style={{ fontFamily: "var(--font-mansalva), cursive", fontSize: 30, color: fb.color, letterSpacing: "0.01em", textShadow: "1px 2px 0 rgba(255,255,255,0.4)" }}>{fb.headline}</div>
-              <div style={{ fontFamily: "var(--font-playfair), serif", fontStyle: "italic", fontSize: 13, color: "rgba(92,61,46,0.72)", marginTop: 5 }}>{fb.sub}</div>
-            </div>
+            <motion.div style={{
+              background: fb.bg,
+              border: `2px solid ${fb.border}`,
+              borderRadius: "12px 28px 16px 24px / 24px 12px 28px 16px",
+              padding: "52px 72px 60px",
+              textAlign: "center",
+              boxShadow: "0 24px 80px rgba(60,40,10,0.28)",
+              backdropFilter: "blur(12px)",
+              width: "72vw", maxWidth: 700,
+            }}
+              initial={{ scale: 0.6, opacity: 0, rotate: -2 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 340, damping: 22 }}
+            >
+              <div style={{ fontSize: 120, lineHeight: 1, marginBottom: 16 }}>{fb.emoji}</div>
+              <div style={{ fontFamily: "var(--font-mansalva), cursive", fontSize: 64, color: fb.color, letterSpacing: "0.01em", textShadow: "1px 3px 0 rgba(255,255,255,0.4)", lineHeight: 1 }}>{fb.headline}</div>
+              <div style={{ fontFamily: "var(--font-playfair), serif", fontStyle: "italic", fontSize: 22, color: "rgba(92,61,46,0.72)", marginTop: 16 }}>{fb.sub}</div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
