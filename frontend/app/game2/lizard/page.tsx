@@ -34,7 +34,7 @@ const ANIMALS: AnimalCard[] = [
   { id: "Atlantic Blue Crab",        label: "Atlantic Blue Crab",   svgSrc: "/Crab.svg",         is_prey: false },
   { id: "Eastern Ratsnake",       label: "Eastern Ratsnake",     svgSrc: "/rattlesnake.svg",  is_prey: false },
   { id: "White-footed Mouse",         label: "White-footed Mouse",   svgSrc: "/mouse.svg",        is_prey: false },
-  { id: "Persimmon Tree",       label: "Persimmon Tree",       svgSrc: "/persimmon.svg",    is_prey: false },
+  { id: "Persimmon",       label: "Persimmon",       svgSrc: "/persimmon.svg",    is_prey: false },
 ]
 
 const TOTAL_PREY = ANIMALS.filter(a => a.is_prey).length

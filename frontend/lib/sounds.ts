@@ -5,7 +5,7 @@ const FREESOUND_KEY = process.env.NEXT_PUBLIC_FREESOUND_KEY || ""
 // Search queries per animal — tuned for short, recognizable sounds
 const ANIMAL_QUERIES: Record<string, string> = {
   "Sun":                  "birds chirping ai",
-  "Persimmon Tree":       "leaves crunching",
+  "Persimmon":       "leaves crunching",
   "Earthworm":            "video game squeak",
   "Monarch Butterfly":    "butterfly flying loop",
   "Green June Beetle":    "beetle",

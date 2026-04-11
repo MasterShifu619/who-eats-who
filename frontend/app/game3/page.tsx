@@ -52,7 +52,7 @@ const NODE_PNG_MAP: Record<string,string> = {
   "Grasshopper":          "/grasshopper.svg",
   "Green June Beetle":    "/beetle.svg",
   "Earthworm":            "/worm.svg",
-  "Persimmon Tree":       "/persimmon.svg",
+  "Persimmon":       "/persimmon.svg",
   "Blue Heron":           "/BlueHeron.svg",
 }
 
@@ -60,7 +60,7 @@ const SUN_ID = "Sun"
 
 const SHELF_MAP: Record<string,string>={
   "Sun":                  "☀️ Sun",
-  "Persimmon Tree":       "🌱 Plants",
+  "Persimmon":       "🌱 Plants",
   "Earthworm":            "🐛 Bugs","Monarch Butterfly":"🐛 Bugs","Green June Beetle":"🐛 Bugs",
   "Grasshopper":          "🐛 Bugs","Black Carpenter Ant":"🐛 Bugs","Pondhawk Dragonfly":"🐛 Bugs","Yellow Garden Spider":"🐛 Bugs",
   "Green Sunfish":        "🐟 Water Animals","Atlantic Blue Crab":"🐟 Water Animals",
@@ -102,8 +102,8 @@ const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DEL
 
 // All feeding edges [prey, predator]
 const ALL_EDGES: [string,string][]=[
-  ["Persimmon Tree","Grasshopper"],["Persimmon Tree","Monarch Butterfly"],["Persimmon Tree","Earthworm"],["Persimmon Tree","Black Carpenter Ant"],["Persimmon Tree","White-footed Mouse"],
-  ["Persimmon Tree","Green June Beetle"],
+  ["Persimmon","Grasshopper"],["Persimmon","Monarch Butterfly"],["Persimmon","Earthworm"],["Persimmon","Black Carpenter Ant"],["Persimmon","White-footed Mouse"],
+  ["Persimmon","Green June Beetle"],
   ["Earthworm","Tree Frog"],["Earthworm","Eastern Ratsnake"],["Earthworm","Green Sunfish"],["Earthworm","Blue Heron"],
   ["Earthworm","Atlantic Blue Crab"],
   ["Monarch Butterfly","Pondhawk Dragonfly"],["Monarch Butterfly","Yellow Garden Spider"],["Monarch Butterfly","Tree Frog"],["Monarch Butterfly","Green Anole lizard"],
@@ -122,7 +122,7 @@ const ALL_EDGES: [string,string][]=[
 // Static node definitions — no backend needed for game3
 const STATIC_NODES: NodeDef[] = [
   { id:"Sun",        label:"Sun",         emoji:"☀️", trophic:"sun",       shelf:"☀️ Sun" },
-  { id:"Persimmon Tree",      label:"Persimmon Tree",       emoji:"🍊", trophic:"producer",  shelf:"🌱 Plants" },
+  { id:"Persimmon",      label:"Persimmon",       emoji:"🍊", trophic:"producer",  shelf:"🌱 Plants" },
   { id:"Earthworm",       label:"Earthworm",        emoji:"🪱", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Monarch Butterfly",  label:"Monarch Butterfly",   emoji:"🦋", trophic:"primary",   shelf:"🐛 Bugs" },
   { id:"Green June Beetle",     label:"Green June Beetle",      emoji:"🪲", trophic:"primary",   shelf:"🐛 Bugs" },

@@ -36,7 +36,7 @@ function WelcomeDemo() {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", gap: 24 }}>
       {[
         { emoji: "☀️", label: "Sun",       color: "#D4A847", delay: 0 },
-        { emoji: "🍊", label: "Persimmon Tree",     color: "#6B8C5E", delay: 0.12 },
+        { emoji: "🍊", label: "Persimmon",     color: "#6B8C5E", delay: 0.12 },
         { emoji: "🦋", label: "Monarch Butterfly", color: "#C8851A", delay: 0.24 },
         { emoji: "🐸", label: "American Toad",      color: "#4A8B8C", delay: 0.36 },
         { emoji: "🦤", label: "Heron",     color: "#6B8CAA", delay: 0.48 },
