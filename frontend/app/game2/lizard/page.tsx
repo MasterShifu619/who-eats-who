@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence, useAnimationFrame } from "framer-motion"
-import { preloadSound, playRemoveSound } from "@/lib/sounds"
+import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic } from "@/lib/sounds"
 
 type LizardState = "idle" | "tongue_out" | "catching" | "swallow" | "lick" | "spit"
 
@@ -54,7 +54,8 @@ function initBubbles(w: number, h: number, mX: number, mY: number): Bubble[] {
   return ANIMALS.map(a => {
     let x: number, y: number, tries = 0
     do {
-      x = 80 + Math.random() * (w - 200); y = 80 + Math.random() * (h - 200); tries++
+      const topBound = Math.round(h / 5)
+      x = 80 + Math.random() * (w - 200); y = topBound + Math.random() * (h - topBound - 120); tries++
     } while (tries < 60 && Math.hypot(x - mX, y - mY) < REPEL_R + 80)
     return { id: a.id, x, y, ...seedVel(a.id), eaten: false }
   })
@@ -113,6 +114,8 @@ export default function LizardPage() {
     const b = initBubbles(w, h, mX, mY)
     bRef.current = b; setBubbles([...b])
     ANIMALS.forEach(a => preloadSound(a.label))
+    startBgMusic()
+    return () => stopBgMusic()
   }, [])
 
   useAnimationFrame(() => {
@@ -129,8 +132,9 @@ export default function LizardPage() {
       if (spd > 1.2) { vx = (vx / spd) * 1.2; vy = (vy / spd) * 1.2 }
       if (spd < 0.1) { vx *= 1.04; vy *= 1.04 }
       x += vx; y += vy
+      const topBound = Math.round(h / 5)
       if (x <= 80) { x = 80; vx = Math.abs(vx) } if (x >= w - 80) { x = w - 80; vx = -Math.abs(vx) }
-      if (y <= 80) { y = 80; vy = Math.abs(vy) } if (y >= h - 80) { y = h - 80; vy = -Math.abs(vy) }
+      if (y <= topBound) { y = topBound; vy = Math.abs(vy) } if (y >= h - 80) { y = h - 80; vy = -Math.abs(vy) }
       return { ...b, x, y, vx, vy }
     })
     bRef.current = next; setBubbles([...next])
@@ -246,7 +250,7 @@ export default function LizardPage() {
       {/* ── Title ── */}
       <div style={{ position: "absolute", top: 22, left: "50%", transform: "translateX(-50%)", zIndex: 30, textAlign: "center", pointerEvents: "none" }}>
         <div style={{ fontFamily: "var(--font-mansalva), cursive", fontSize: 22, color: "rgba(44,24,16,0.82)", letterSpacing: "0.02em", textShadow: "1px 2px 0 rgba(255,255,255,0.5)" }}>
-          Feed the Lizard
+          Feed Annie the Anole
         </div>
         <div style={{ fontFamily: "var(--font-playfair), serif", fontStyle: "italic", fontSize: 11, color: "rgba(92,61,46,0.6)", marginTop: 2 }}>
           Drag specimens close to the lizard
@@ -367,7 +371,7 @@ export default function LizardPage() {
               style={{ background: "linear-gradient(150deg, #FAF5E4 0%, #EDE0BC 100%)", border: "1.5px solid rgba(139,107,85,0.3)", borderRadius: "6px 18px 8px 16px / 16px 6px 18px 8px", padding: "36px 52px 40px", textAlign: "center", boxShadow: "0 24px 64px rgba(60,40,10,0.22)", maxWidth: 420 }}
             >
               <div style={{ fontSize: 64, marginBottom: 12 }}>🦎</div>
-              <div style={{ fontFamily: "var(--font-mansalva), cursive", fontSize: 36, color: "rgba(44,24,16,0.88)", marginBottom: 10 }}>The Lizard is full!</div>
+              <div style={{ fontFamily: "var(--font-mansalva), cursive", fontSize: 36, color: "rgba(44,24,16,0.88)", marginBottom: 10 }}>Annie is full!</div>
               <div style={{ fontFamily: "var(--font-playfair), serif", fontStyle: "italic", fontSize: 15, color: "rgba(92,61,46,0.7)", lineHeight: 1.6, marginBottom: 28 }}>
                 You found all {score} of its favourite<br />specimens from the field guide.
               </div>

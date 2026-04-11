@@ -86,6 +86,21 @@ export function playCascadeWarning() {
   } catch (e) {}
 }
 
+// Background music — village pond ambience loop
+const BG_MUSIC_URL = "https://cdn.freesound.org/previews/759/759738_2061858-lq.mp3"
+let bgMusic: Howl | null = null
+
+export function startBgMusic() {
+  if (bgMusic) { bgMusic.play(); return }
+  bgMusic = new Howl({ src: [BG_MUSIC_URL], loop: true, volume: 0.45, preload: true })
+  bgMusic.play()
+}
+
+export function stopBgMusic() {
+  bgMusic?.fade(bgMusic.volume(), 0, 800)
+  setTimeout(() => bgMusic?.stop(), 850)
+}
+
 // Place chime — bright pop using Web Audio API (instant, no fetch needed)
 export function playPlaceChime() {
   try {

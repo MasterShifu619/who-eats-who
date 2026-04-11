@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import HeronFace, { HeronState } from "@/components/game2/HeronFace"
 import FloatingBubble, { BubbleSpecies } from "@/components/game2/FloatingBubble"
-import { preloadSound, playRemoveSound } from "@/lib/sounds"
+import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic } from "@/lib/sounds"
 
 const BUBBLE_SPECIES: BubbleSpecies[] = [
   // ── Prey ──
@@ -77,6 +77,8 @@ export default function Game2Page() {
     const h = window.innerHeight
     setPositions(scatter(BUBBLE_SPECIES.length, w, h))
     BUBBLE_SPECIES.forEach(s => preloadSound(s.scientific_name))
+    startBgMusic()
+    return () => stopBgMusic()
   }, [])
 
   const handleDragStart = useCallback((species: BubbleSpecies, el: HTMLElement) => {

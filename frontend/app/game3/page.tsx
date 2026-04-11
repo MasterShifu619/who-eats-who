@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning } from "@/lib/sounds"
+import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning, startBgMusic, stopBgMusic } from "@/lib/sounds"
 import Tutorial, { shouldShowTutorial } from "@/components/game3/Tutorial"
 
 // Test 
@@ -25,6 +25,8 @@ interface Particle {
 
 const DWELL_MS=3000, NODE_R=36, REPEL=18000, ATTRACT=0.012, IDEAL_DIST=280, DAMPING=0.78
 const SHELF_W = typeof window !== "undefined" ? Math.max(180, Math.min(280, window.innerWidth * 0.20)) : 220
+const SHELF_H = 160   // height when shelf is at bottom
+type ShelfPos = "left" | "right" | "bottom"
 const API_BASE=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
 
 // Watercolor field-guide trophic palette
@@ -164,16 +166,23 @@ export default function Game3Page() {
   const [message,setMessage]         = useState<{text:string;color:string}|null>(null)
   const [shelfOpen,setShelfOpen]     = useState<Record<string,boolean>>(Object.fromEntries(SHELF_ORDER.map(s=>[s,true])))
   const [shelfVisible,setShelfVisible] = useState(true)
+  const [shelfPos,setShelfPos]       = useState<ShelfPos>("left")
   const [dims,setDims]               = useState({w:1440,h:900})
   const [shelfDrag,setShelfDrag]     = useState<{nodeId:string;x:number;y:number}|null>(null)
   const [sunPresent,setSunPresent]   = useState(false)
   const [daytimeBg,setDaytimeBg]     = useState<HTMLImageElement|null>(null)
 
+  const shelfPosRef     = useRef<ShelfPos>("left")
+  const shelfVisibleRef = useRef(true)
+
   // Show tutorial on every page load
   useEffect(()=>{
   setShowTutorial(true)
   logEvent("SESSION", "STARTED")
-},[])
+  },[])
+
+  useEffect(()=>{ shelfPosRef.current=shelfPos },[shelfPos])
+  useEffect(()=>{ shelfVisibleRef.current=shelfVisible },[shelfVisible])
 
   // Load background + PNG animal images
   useEffect(()=>{
@@ -188,6 +197,8 @@ export default function Game3Page() {
       img.src = src
       img.onload = () => { nodeImagesRef.current[id] = img }
     })
+    startBgMusic()
+    return () => stopBgMusic()
   },[])
 
   const isSunPlaced = useCallback(()=>sunPresentRef.current,[])
@@ -292,12 +303,17 @@ export default function Game3Page() {
   const autoFill=useCallback(()=>{
     const unplaced=allNodes.filter(n=>!placedIds.has(n.id)&&n.id!==SUN_ID)
     const {w,h}=dims
+    const topBar=Math.round(h*0.2)
+    const pL=shelfPos==="left"&&shelfVisible?SHELF_W:0
+    const pR=shelfPos==="right"&&shelfVisible?w-SHELF_W:w
+    const pT=topBar
+    const pB=shelfPos==="bottom"&&shelfVisible?h-SHELF_H:h
     unplaced.forEach((n,i)=>{
       const angle=(i/unplaced.length)*Math.PI*2
-      const r=Math.min(w-SHELF_W,h)*0.32
-      placeAnimal(n.id,SHELF_W+(w-SHELF_W)/2+Math.cos(angle)*r,h/2+Math.sin(angle)*r)
+      const r=Math.min((pR-pL),(pB-pT))*0.32
+      placeAnimal(n.id,(pL+pR)/2+Math.cos(angle)*r,(pT+pB)/2+Math.sin(angle)*r)
     })
-  },[allNodes,placedIds,dims,placeAnimal])
+  },[allNodes,placedIds,dims,shelfPos,shelfVisible,placeAnimal])
 
   const tick=useCallback(()=>{
     const nodes=placedRef.current.filter(n=>!n.deleted&&n.id!==SUN_ID)
@@ -314,13 +330,18 @@ export default function Game3Page() {
       const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,f=(d-IDEAL_DIST)*ATTRACT
       a.vx+=(dx/d)*f;a.vy+=(dy/d)*f;b.vx-=(dx/d)*f;b.vy-=(dy/d)*f
     })
-    const cx=SHELF_W+(w-SHELF_W)/2,cy=h/2
+    const topBar=Math.round(h*0.2)
+    const pL=shelfPosRef.current==="left"&&shelfVisibleRef.current?SHELF_W:0
+    const pR=shelfPosRef.current==="right"&&shelfVisibleRef.current?w-SHELF_W:w
+    const pT=topBar
+    const pB=shelfPosRef.current==="bottom"&&shelfVisibleRef.current?h-SHELF_H:h
+    const cx=(pL+pR)/2,cy=(pT+pB)/2
     nodes.forEach(n=>{
       if([...dragRef.current.values()].some(d=>d.nodeId===n.id)) return
       if(n.pinned){n.vx=0;n.vy=0;return}
       n.vx+=(cx-n.x)*0.001;n.vy+=(cy-n.y)*0.001
       n.vx*=DAMPING;n.vy*=DAMPING;n.x+=n.vx;n.y+=n.vy
-      n.x=Math.max(SHELF_W+55,Math.min(w-55,n.x));n.y=Math.max(55,Math.min(h-55,n.y))
+      n.x=Math.max(pL+55,Math.min(pR-55,n.x));n.y=Math.max(pT+55,Math.min(pB-55,n.y))
     })
   },[dims])
 
@@ -787,7 +808,10 @@ export default function Game3Page() {
       const canvas=canvasRef.current;if(!canvas){dragRef.current.delete(pointerId);return}
       const rect=canvas.getBoundingClientRect()
       const x=ev.clientX-rect.left,y=ev.clientY-rect.top
-      if(x>SHELF_W) placeAnimal(nodeId,x,y)
+      const inPlay=shelfPosRef.current==="left"?x>SHELF_W
+        :shelfPosRef.current==="right"?x<rect.width-SHELF_W
+        :y<rect.height-SHELF_H
+      if(inPlay) placeAnimal(nodeId,x,y)
       dragRef.current.delete(pointerId)
     }
     window.addEventListener("pointermove",onMove)
@@ -796,6 +820,55 @@ export default function Game3Page() {
 
   const unplacedCount=allNodes.filter(n=>!placedIds.has(n.id)).length
   const isDay=sunPresent
+  const topBarH=Math.round(dims.h*0.2)
+
+  // Shared shelf item renderer
+  const renderShelfItem=(node:NodeDef,compact=false)=>{
+    const color=node.id===SUN_ID?"rgba(212,168,71,0.85)":TROPHIC_COLOR[node.trophic]||"rgba(139,107,85,0.7)"
+    const pngSrc=NODE_PNG_MAP[node.id]
+    const isSun=node.id===SUN_ID
+    const sz=compact?38:isSun?40:44
+    return(
+      <motion.div key={node.id} whileHover={{scale:1.06,rotate:1.5}}
+        style={{
+          flexShrink:0,
+          width:compact?54:isSun?SHELF_W-28:62,
+          display:"flex",flexDirection:"column",alignItems:"center",
+          cursor:"grab",padding:compact?"5px 4px 3px":"7px 4px 5px",
+          background:isDay?"rgba(255,252,238,0.9)":"rgba(20,30,48,0.85)",
+          border:`1px solid ${color}55`,
+          borderRadius:"3px 8px 4px 7px / 6px 3px 8px 4px",
+          boxShadow:isDay?"0 2px 8px rgba(60,40,10,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
+          touchAction:"none",
+        }}
+        onPointerDown={e=>handleShelfDragStart(e,node.id)}>
+        {pngSrc?(
+          <img src={pngSrc} alt={node.label} aria-label={node.label}
+            style={{width:sz,height:compact?sz:isSun?40:36,objectFit:"contain",
+              filter:isDay?"drop-shadow(1px 2px 4px rgba(60,40,10,0.22))":"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}/>
+        ):(
+          <span style={{fontSize:compact?18:isSun?28:22,filter:isDay?"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))":"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}
+            aria-label={node.label}>{node.emoji}</span>
+        )}
+        <span style={{
+          fontFamily:"var(--font-playfair), serif",fontSize:compact?7:isSun?10:8,
+          color:isDay?"rgba(44,24,16,0.72)":"rgba(160,190,230,0.8)",
+          textAlign:"center",marginTop:3,lineHeight:1.2,letterSpacing:"0.02em",
+          maxWidth:compact?50:undefined,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+        }}>{node.label}</span>
+      </motion.div>
+    )
+  }
+
+  // Shelf animation props based on position
+  const shelfAnim=shelfPos==="left"
+    ?{initial:{x:-SHELF_W},animate:{x:0},exit:{x:-SHELF_W}}
+    :shelfPos==="right"
+    ?{initial:{x:SHELF_W},animate:{x:0},exit:{x:SHELF_W}}
+    :{initial:{y:SHELF_H},animate:{y:0},exit:{y:SHELF_H}}
+
+  // Position toggle buttons (◀ ▼ ▶)
+  const posButtons:(["left"|"right"|"bottom",string])[]=[["left","◀"],["bottom","▼"],["right","▶"]]
 
   return(
     <div style={{width:"100vw",height:"100vh",position:"relative",overflow:"hidden",userSelect:"none",cursor:"crosshair",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
@@ -804,142 +877,198 @@ export default function Game3Page() {
         onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}
         onContextMenu={e=>e.preventDefault()}/>
 
+      {/* ── Title + Message row ── */}
+      <div style={{
+        position:"absolute",top:14,left:0,right:0,
+        display:"flex",alignItems:"center",justifyContent:"center",gap:16,
+        pointerEvents:"none",zIndex:30,
+      }}>
+        {/* Title block */}
+        <div style={{textAlign:"center",flexShrink:0}}>
+          <div style={{
+            fontFamily:"var(--font-mansalva), cursive",fontSize:22,
+            color:isDay?"rgba(44,24,16,0.82)":"rgba(220,210,190,0.90)",
+            textShadow:isDay?"1px 2px 0 rgba(255,255,255,0.45)":"0 0 16px rgba(100,80,40,0.4)",
+            letterSpacing:"0.02em",
+          }}>
+            {isDay?"🌿":"🌑"} Hunger Web
+          </div>
+          <div style={{
+            fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
+            color:isDay?"rgba(92,61,46,0.6)":"rgba(180,165,130,0.55)",
+            letterSpacing:"0.05em",marginTop:3,
+          }}>
+            {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 3s to remove"}
+          </div>
+        </div>
+
+        {/* Message bubble — appears inline to the right of the title */}
+        <AnimatePresence>
+          {message&&(
+            <motion.div style={{
+              background:"rgba(244,237,211,0.94)",
+              borderRadius:"4px 12px 6px 10px / 10px 4px 12px 6px",
+              padding:"10px 22px",
+              border:`1.5px solid ${message.color}88`,
+              boxShadow:`0 8px 32px rgba(44,24,16,0.25), 0 0 0 1px ${message.color}22`,
+              backdropFilter:"blur(6px)",
+              flexShrink:0,maxWidth:"40vw",
+            }}
+              initial={{scale:0.8,opacity:0,x:-8}} animate={{scale:1,opacity:1,x:0}} exit={{scale:0.85,opacity:0}}
+              transition={{type:"spring",stiffness:300,damping:22}}>
+              <div style={{
+                fontFamily:"var(--font-mansalva), cursive",fontSize:16,
+                color:message.color,textAlign:"center",
+                textShadow:"0 1px 0 rgba(255,255,255,0.4)",whiteSpace:"nowrap",
+              }}>{message.text}</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* ── Watercolor Specimen Shelf ── */}
       <AnimatePresence>
         {shelfVisible&&(
-          <motion.div initial={{x:-SHELF_W}} animate={{x:0}} exit={{x:-SHELF_W}}
+          <motion.div {...shelfAnim}
             transition={{type:"spring",stiffness:280,damping:28}}
-            style={{
+            style={shelfPos==="bottom"?{
+              position:"absolute",left:0,right:0,bottom:0,height:SHELF_H,
+              background:isDay?"rgba(244,237,211,0.92)":"rgba(12,18,28,0.94)",
+              backdropFilter:"blur(10px)",
+              borderTop:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.07)",
+              boxShadow:isDay?"0 -4px 24px rgba(44,24,16,0.12)":"0 -4px 24px rgba(0,0,0,0.4)",
+              zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden",
+              transition:"background 0.8s ease",
+            }:shelfPos==="right"?{
+              position:"absolute",top:0,right:0,bottom:0,width:SHELF_W,
+              background:isDay?"rgba(244,237,211,0.92)":"rgba(12,18,28,0.94)",
+              backdropFilter:"blur(10px)",
+              borderLeft:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.07)",
+              boxShadow:isDay?"inset 4px 0 20px rgba(92,61,46,0.06), -4px 0 24px rgba(44,24,16,0.12)":"inset 4px 0 20px rgba(0,0,0,0.3), -4px 0 24px rgba(0,0,0,0.4)",
+              zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden",
+              transition:"background 0.8s ease",
+            }:{
               position:"absolute",top:0,left:0,bottom:0,width:SHELF_W,
               background:isDay?"rgba(244,237,211,0.92)":"rgba(12,18,28,0.94)",
               backdropFilter:"blur(10px)",
               borderRight:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.07)",
-              boxShadow:isDay
-                ?"inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)"
-                :"inset -4px 0 20px rgba(0,0,0,0.3), 4px 0 24px rgba(0,0,0,0.4)",
+              boxShadow:isDay?"inset -4px 0 20px rgba(92,61,46,0.06), 4px 0 24px rgba(44,24,16,0.12)":"inset -4px 0 20px rgba(0,0,0,0.3), 4px 0 24px rgba(0,0,0,0.4)",
               zIndex:20,display:"flex",flexDirection:"column",overflow:"hidden",
-              transition:"background 0.8s ease, border-color 0.8s ease",
+              transition:"background 0.8s ease",
             }}>
 
             {/* Header */}
             <div style={{
-              padding:"16px 12px 10px",
+              padding:shelfPos==="bottom"?"8px 12px":"16px 12px 10px",
               borderBottom:isDay?"1px solid rgba(92,61,46,0.15)":"1px solid rgba(255,255,255,0.07)",
               background:isDay?"rgba(232,216,180,0.55)":"rgba(8,12,20,0.6)",
+              display:"flex",flexDirection:shelfPos==="bottom"?"row":"column",
+              alignItems:shelfPos==="bottom"?"center":"stretch",
+              gap:shelfPos==="bottom"?8:0,flexShrink:0,
             }}>
-              <div style={{fontFamily:"var(--font-mansalva), cursive",fontSize:15,color:isDay?"rgba(44,24,16,0.82)":"rgba(180,200,230,0.85)",marginBottom:8}}>
-                Field Specimens
-              </div>
-              <div style={{fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:isDay?"rgba(92,61,46,0.55)":"rgba(120,150,190,0.55)",marginBottom:10}}>
-                {unplacedCount} awaiting placement
-              </div>
-              <div style={{display:"flex",gap:6}}>
+              {shelfPos!=="bottom"&&(
+                <>
+                  <div style={{fontFamily:"var(--font-mansalva), cursive",fontSize:15,color:isDay?"rgba(44,24,16,0.82)":"rgba(180,200,230,0.85)",marginBottom:8}}>
+                    Field Specimens
+                  </div>
+                  <div style={{fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,color:isDay?"rgba(92,61,46,0.55)":"rgba(120,150,190,0.55)",marginBottom:8}}>
+                    {unplacedCount} awaiting placement
+                  </div>
+                </>
+              )}
+              <div style={{display:"flex",gap:5,alignItems:"center",flexShrink:0}}>
+                {/* Position toggle */}
+                {posButtons.map(([pos,icon])=>(
+                  <button key={pos} onClick={()=>setShelfPos(pos)} style={{
+                    width:24,height:24,padding:0,
+                    fontFamily:"monospace",fontSize:11,
+                    color:shelfPos===pos
+                      ?(isDay?"rgba(107,140,94,1)":"rgba(140,200,160,1)")
+                      :(isDay?"rgba(92,61,46,0.45)":"rgba(120,150,190,0.4)"),
+                    background:shelfPos===pos
+                      ?(isDay?"rgba(107,140,94,0.18)":"rgba(107,140,94,0.2)")
+                      :"transparent",
+                    border:shelfPos===pos
+                      ?"1px solid rgba(107,140,94,0.5)"
+                      :(isDay?"1px solid rgba(92,61,46,0.15)":"1px solid rgba(255,255,255,0.08)"),
+                    borderRadius:4,cursor:"pointer",lineHeight:"22px",
+                  }}>{icon}</button>
+                ))}
+                {shelfPos==="bottom"&&(
+                  <span style={{fontFamily:"var(--font-mansalva), cursive",fontSize:13,color:isDay?"rgba(44,24,16,0.75)":"rgba(180,200,230,0.8)",marginLeft:4}}>
+                    Field Specimens
+                  </span>
+                )}
                 <button onClick={autoFill} style={{
-                  flex:1,padding:"6px 0",
+                  padding:"4px 8px",marginLeft:shelfPos==="bottom"?0:0,
                   fontFamily:"var(--font-mansalva), cursive",fontSize:11,
                   color:"rgba(107,140,94,0.95)",
                   background:"rgba(107,140,94,0.12)",
                   border:"1px solid rgba(107,140,94,0.4)",
                   borderRadius:"4px 8px 5px 7px / 7px 4px 8px 5px",
-                  cursor:"pointer",
-                }}>⚡ Fill All</button>
+                  cursor:"pointer",whiteSpace:"nowrap",
+                }}>⚡ Fill</button>
                 <button onClick={()=>setShelfVisible(false)} style={{
-                  padding:"6px 10px",
+                  padding:"4px 8px",
                   fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
                   color:isDay?"rgba(92,61,46,0.6)":"rgba(120,150,190,0.6)",
                   background:"transparent",
                   border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
                   borderRadius:"3px 6px 4px 5px / 5px 3px 6px 4px",
-                  cursor:"pointer",
+                  cursor:"pointer",whiteSpace:"nowrap",
                 }}>Hide</button>
               </div>
             </div>
 
-            {/* Scrollable specimen list */}
-            <div style={{flex:1,overflowY:"auto",padding:"6px 0",scrollbarWidth:"none"}}>
-              {SHELF_ORDER.map(shelf=>{
-                const shelfNodes=allNodes.filter(n=>n.shelf===shelf&&!placedIds.has(n.id))
-                const isSunShelf=shelf==="☀️ Sun"
-                const sectionColor=isSunShelf
-                  ?"rgba(212,168,71,0.9)"
-                  :isDay?"rgba(92,61,46,0.65)":"rgba(140,165,200,0.65)"
-                return(
-                  <div key={shelf}>
-                    <button onClick={()=>setShelfOpen(p=>({...p,[shelf]:!p[shelf]}))} style={{
-                      width:"100%",padding:"7px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
-                      background:"transparent",border:"none",cursor:"pointer",
-                      fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
-                      color:sectionColor,letterSpacing:"0.04em",
-                    }}>
-                      <span>{shelf}</span>
-                      <span style={{fontSize:8,opacity:0.6}}>{shelfOpen[shelf]?"▲":"▼"}</span>
-                    </button>
-                    <AnimatePresence>
-                      {shelfOpen[shelf]&&(
-                        <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
-                          transition={{duration:0.22}} style={{overflow:"hidden"}}>
-                          {shelfNodes.length===0?(
-                            <div style={{padding:"3px 14px 10px",fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,
-                              color:isDay?"rgba(92,61,46,0.4)":"rgba(120,150,190,0.4)"}}>
-                              {isSunShelf?"Sun is shining ☀️":"All placed"}
-                            </div>
-                          ):(
-                            <div style={{padding:"4px 8px 10px",display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center"}}>
-                              {shelfNodes.map(node=>{
-                                const color=node.id===SUN_ID?"rgba(212,168,71,0.85)":TROPHIC_COLOR[node.trophic]||"rgba(139,107,85,0.7)"
-                                const pngSrc=NODE_PNG_MAP[node.id]
-                                const isSun=node.id===SUN_ID
-                                return(
-                                  <motion.div key={node.id} whileHover={{scale:1.06,rotate:1.5}}
-                                    style={{
-                                      width:isSun?SHELF_W-28:62,
-                                      display:"flex",flexDirection:"column",alignItems:"center",
-                                      cursor:"grab",padding:"7px 4px 5px",
-                                      background:isDay?"rgba(255,252,238,0.9)":"rgba(20,30,48,0.85)",
-                                      border:`1px solid ${color}55`,
-                                      borderRadius:"3px 8px 4px 7px / 6px 3px 8px 4px",
-                                      boxShadow:isDay?"0 2px 8px rgba(60,40,10,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
-                                      touchAction:"none",
-                                    }}
-                                    onPointerDown={e=>handleShelfDragStart(e,node.id)}>
-                                    {/* Illustration or emoji */}
-                                    {pngSrc?(
-                                      <img src={pngSrc} alt={node.label} aria-label={node.label}
-                                        style={{width:isSun?40:44,height:isSun?40:36,objectFit:"contain",
-                                          filter:isDay
-                                            ?"drop-shadow(1px 2px 4px rgba(60,40,10,0.22))"
-                                            :"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}/>
-                                    ):(
-                                      <span style={{fontSize:isSun?28:22,filter:isDay
-                                        ?"drop-shadow(1px 2px 4px rgba(60,40,10,0.2))"
-                                        :"drop-shadow(0 0 6px rgba(100,150,220,0.3))"}}
-                                        aria-label={node.label}>{node.emoji}</span>
-                                    )}
-                                    {/* Name label */}
-                                    <span style={{
-                                      fontFamily:"var(--font-playfair), serif",fontSize:isSun?10:8,
-                                      color:isDay?"rgba(44,24,16,0.72)":"rgba(160,190,230,0.8)",
-                                      textAlign:"center",marginTop:4,
-                                      lineHeight:1.2,letterSpacing:"0.02em",
-                                    }}>{node.label}</span>
-                                  </motion.div>
-                                )
-                              })}
-                            </div>
+            {shelfPos==="bottom"?(
+              /* ── Bottom shelf: horizontal scrollable strip ── */
+              <div style={{flex:1,overflowX:"auto",overflowY:"hidden",display:"flex",alignItems:"center",padding:"6px 10px",gap:6,scrollbarWidth:"none"}}>
+                {allNodes.filter(n=>!placedIds.has(n.id)).map(node=>renderShelfItem(node,true))}
+              </div>
+            ):(
+              /* ── Left/Right shelf: vertical accordion ── */
+              <>
+                <div style={{flex:1,overflowY:"auto",padding:"6px 0",scrollbarWidth:"none"}}>
+                  {SHELF_ORDER.map(shelf=>{
+                    const shelfNodes=allNodes.filter(n=>n.shelf===shelf&&!placedIds.has(n.id))
+                    const isSunShelf=shelf==="☀️ Sun"
+                    const sectionColor=isSunShelf?"rgba(212,168,71,0.9)":isDay?"rgba(92,61,46,0.65)":"rgba(140,165,200,0.65)"
+                    return(
+                      <div key={shelf}>
+                        <button onClick={()=>setShelfOpen(p=>({...p,[shelf]:!p[shelf]}))} style={{
+                          width:"100%",padding:"7px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
+                          background:"transparent",border:"none",cursor:"pointer",
+                          fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
+                          color:sectionColor,letterSpacing:"0.04em",
+                        }}>
+                          <span>{shelf}</span>
+                          <span style={{fontSize:8,opacity:0.6}}>{shelfOpen[shelf]?"▲":"▼"}</span>
+                        </button>
+                        <AnimatePresence>
+                          {shelfOpen[shelf]&&(
+                            <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
+                              transition={{duration:0.22}} style={{overflow:"hidden"}}>
+                              {shelfNodes.length===0?(
+                                <div style={{padding:"3px 14px 10px",fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:10,
+                                  color:isDay?"rgba(92,61,46,0.4)":"rgba(120,150,190,0.4)"}}>
+                                  {isSunShelf?"Sun is shining ☀️":"All placed"}
+                                </div>
+                              ):(
+                                <div style={{padding:"4px 8px 10px",display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center"}}>
+                                  {shelfNodes.map(node=>renderShelfItem(node,false))}
+                                </div>
+                              )}
+                            </motion.div>
                           )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Bottom fade */}
-            <div style={{position:"absolute",bottom:0,left:0,right:0,height:36,pointerEvents:"none",
-              background:isDay
-                ?"linear-gradient(to top, rgba(244,237,211,0.95), transparent)"
-                :"linear-gradient(to top, rgba(12,18,28,0.95), transparent)"}}/>
+                        </AnimatePresence>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div style={{position:"absolute",bottom:0,left:0,right:0,height:36,pointerEvents:"none",
+                  background:isDay?"linear-gradient(to top, rgba(244,237,211,0.95), transparent)":"linear-gradient(to top, rgba(12,18,28,0.95), transparent)"}}/>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -950,7 +1079,11 @@ export default function Game3Page() {
           <motion.button initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setShelfVisible(true)}
             style={{
-              position:"absolute",top:20,left:16,zIndex:20,padding:"8px 16px",
+              position:"absolute",
+              top:20,
+              left:shelfPos==="right"?undefined:16,
+              right:shelfPos==="right"?16:undefined,
+              zIndex:20,padding:"8px 16px",
               fontFamily:"var(--font-mansalva), cursive",fontSize:13,
               color:isDay?"rgba(44,24,16,0.78)":"rgba(160,190,230,0.85)",
               background:isDay?"rgba(244,237,211,0.90)":"rgba(12,18,28,0.88)",
@@ -962,25 +1095,6 @@ export default function Game3Page() {
         )}
       </AnimatePresence>
 
-      {/* ── Title ── */}
-      <div style={{position:"absolute",top:18,left:"50%",transform:"translateX(-50%)",textAlign:"center",pointerEvents:"none",zIndex:10}}>
-        <div style={{
-          fontFamily:"var(--font-mansalva), cursive",fontSize:22,
-          color:isDay?"rgba(44,24,16,0.82)":"rgba(220,210,190,0.90)",
-          textShadow:isDay?"1px 2px 0 rgba(255,255,255,0.45)":"0 0 16px rgba(100,80,40,0.4)",
-          letterSpacing:"0.02em",
-        }}>
-          {isDay?"🌿":"🌑"} Who Eats Whom
-        </div>
-        <div style={{
-          fontFamily:"var(--font-playfair), serif",fontStyle:"italic",fontSize:11,
-          color:isDay?"rgba(92,61,46,0.6)":"rgba(180,165,130,0.55)",
-          letterSpacing:"0.05em",marginTop:3,
-        }}>
-          {isDay?"The sun is shining — life thrives":"Add the sun to begin · Hold 3s to remove"}
-        </div>
-      </div>
-
       {/* ── Hold-to-remove hint pill ── fades in once any animal is placed */}
       <AnimatePresence>
         {placedIds.size > 0 && (
@@ -991,7 +1105,7 @@ export default function Game3Page() {
             transition={{duration:0.6, ease:"easeOut"}}
             style={{
               position:"absolute",
-              bottom:28,
+              bottom:shelfPos==="bottom"&&shelfVisible?SHELF_H+10:28,
               left:"50%",
               transform:"translateX(-50%)",
               pointerEvents:"none",
@@ -1044,31 +1158,6 @@ export default function Game3Page() {
         )}
       </AnimatePresence>
 
-      {/* ── Message bubble ── */}
-      <AnimatePresence>
-        {message&&(
-          <motion.div style={{
-            position:"absolute",top:"28%",left:"50%",transform:"translateX(-50%)",
-            background:"rgba(244,237,211,0.94)",
-            borderRadius:"4px 12px 6px 10px / 10px 4px 12px 6px",
-            padding:"16px 32px",
-            border:`1.5px solid ${message.color}88`,
-            boxShadow:`0 8px 32px rgba(44,24,16,0.25), 0 0 0 1px ${message.color}22`,
-            pointerEvents:"none",
-            backdropFilter:"blur(6px)",
-            zIndex:30,
-            maxWidth:"60vw",
-          }}
-            initial={{scale:0.8,opacity:0,y:-10}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.85,opacity:0}}
-            transition={{type:"spring",stiffness:300,damping:22}}>
-            <div style={{
-              fontFamily:"var(--font-mansalva), cursive",fontSize:20,
-              color:message.color,textAlign:"center",
-              textShadow:"0 1px 0 rgba(255,255,255,0.4)",
-            }}>{message.text}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── Drag ghost ── */}
       <AnimatePresence>
