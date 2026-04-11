@@ -61,6 +61,24 @@ function initBubbles(w: number, h: number, mX: number, mY: number): Bubble[] {
 }
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+const logEvent = (animal: string, action: string, state: 0 | 1 | 2 = 0) => {
+  fetch("https://api.ipify.org?format=json")
+    .then(r => r.json())
+    .then(ipData => {
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ animal, action, browser: navigator.userAgent, ip: ipData.ip, state, game: "feed the lizard" }),
+      }).catch(() => {})
+    })
+    .catch(() => {
+      fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ animal, action, browser: navigator.userAgent, ip: "unknown", state, game: "feed the lizard" }),
+      }).catch(() => {})
+    })
+}
 const LEAF_COLORS = ["#6B8C5E", "#C8851A", "#A0522D", "#4A8B8C", "#D4A847"]
 
 export default function LizardPage() {
@@ -90,6 +108,7 @@ export default function LizardPage() {
   useEffect(() => {
     const w = window.innerWidth, h = window.innerHeight
     setDims({ w, h })
+    logEvent("SESSION", "STARTED", 0)
     const mX = w - LIZARD_SIZE + MOUTH_SVG.x, mY = h / 2 - LIZARD_SIZE / 2 + MOUTH_SVG.y
     const b = initBubbles(w, h, mX, mY)
     bRef.current = b; setBubbles([...b])
@@ -156,6 +175,7 @@ export default function LizardPage() {
 
     if (animal.is_prey) {
       playRemoveSound(animal.label)
+      logEvent(animal.id, "DRAGGED", 1)
       gsRef.current = "RESULT_VALID"; setGs("RESULT_VALID")
       setLzState("swallow"); setFeedback("valid")
       const mouth = getMouth()
@@ -173,6 +193,7 @@ export default function LizardPage() {
       await sleep(500); setLzState("lick"); await sleep(1000)
     } else {
       gsRef.current = "RESULT_INVALID"; setGs("RESULT_INVALID")
+      logEvent(animal.id, "DRAGGED", 2)
       setLzState("spit"); setFeedback("invalid")
       await sleep(380)
       setSwallowPos(null)
@@ -198,7 +219,7 @@ export default function LizardPage() {
     : null
 
   return (
-    <div className="wc-cursor" style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden", userSelect: "none" }}>
+    <div className="wc-cursor" style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" }} onContextMenu={e=>e.preventDefault()}>
 
       {/* ── Watercolor lake background ── */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: "url('/watercolor-lake-background.jpg')", backgroundSize: "cover", backgroundPosition: "center" }} />
@@ -360,6 +381,7 @@ export default function LizardPage() {
                   setScore(0); gsRef.current = "IDLE"; setGs("IDLE")
                   setLzState("idle"); /**setTongueEnd(null); */ setDragId(null)
                   setBScale(1); setBOpacity(1); setSwallowPos(null)
+                  logEvent("SESSION", "STARTED", 0)
                 }}
               >Play again →</motion.button>
             </motion.div>

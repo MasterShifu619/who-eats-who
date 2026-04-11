@@ -70,7 +70,7 @@ const SHELF_MAP: Record<string,string>={
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
-const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DELETED_CASCADE" ) => {
+const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DELETED_CASCADE", state: 0 | 1 | 2 = 0) => {
   fetch("https://api.ipify.org?format=json")
     .then(r => r.json())
     .then(ipData => {
@@ -82,6 +82,8 @@ const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DEL
           action,
           browser: navigator.userAgent,
           ip: ipData.ip,
+          state,
+          game: "who-eats-whom"
         }),
       }).catch(() => {})
     })
@@ -95,6 +97,8 @@ const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DEL
           action,
           browser: navigator.userAgent,
           ip: "unknown",
+          state,
+          game: "who-eats-whom"
         }),
       }).catch(() => {})
     })
