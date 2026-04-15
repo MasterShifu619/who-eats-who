@@ -8,14 +8,15 @@ Built by Bipin Gowda in collaboration with Dr. Bradley Allf and Dr. Aditi Mallav
 
 ## What It Is
 
-The *Who Eats Whom* database contains ~13,000 verified feeding records (predation, parasitism, pollination, scavenging) crowdsourced from iNaturalist. Every relationship has a real photograph attached to it. This project makes that data tangible through four interactive mini-games designed for a 55" IR multitouch wall display and iPads.
+The *Who Eats Whom* database contains ~13,000 verified feeding records (predation, parasitism, pollination, scavenging) crowdsourced from iNaturalist. Every relationship has a real photograph attached to it. This project makes that data tangible through three interactive mini-games designed for a 55" IR multitouch wall display and iPads.
 
-### The Four Mini-Games
+### The Three Mini-Games
 
-1. **Who Eats Whom?** — Pick two animals and find out if one eats the other, and which direction.
-2. **Snapshot Science** — Place animals, predict connections, then see real photographic evidence of a feeding interaction.
-3. **Who Ate My Fish?** — Place a fish and watch its predators animate in. Remove one and see the cascade effect.
-4. **Planetary Collapse** — Remove an entire category of species and watch cascade effects propagate across the full food web.
+1. **Who Eats Whom?** (`/game1`) — Drag two animals into drop zones and find out if one eats the other. Shows real iNaturalist photo evidence and builds a live food web visualization as you explore more pairs.
+
+2. **Feed the Animal** (`/game2`) — Floating animal bubbles drift across the screen. Drag them into the predator's mouth (Blue Heron or Lizard variant at `/game2/lizard`). Correct prey is swallowed with a chomp; wrong choices get spat out. Score by finding all real prey.
+
+3. **Food Web Collapse** (`/game3`) — Build a North Carolina food web by dragging species from a trophic shelf onto the canvas. Then remove a species and watch cascade effects animate in real time: some populations explode (lost all predators), others starve (lost all prey).
 
 ---
 
@@ -23,7 +24,7 @@ The *Who Eats Whom* database contains ~13,000 verified feeding records (predatio
 
 - **Frontend:** Next.js (App Router) + Framer Motion + Tailwind CSS
 - **Backend:** FastAPI (Python)
-- **Database:** SQLite (local exhibition), Neo4j (full dataset)
+- **Database:** SQLite (local exhibition)
 - **Touch input:** Pointer Events API — unified across IR frame, iPad, and mouse
 
 ---
@@ -31,39 +32,52 @@ The *Who Eats Whom* database contains ~13,000 verified feeding records (predatio
 ## Project Structure
 
 ```
-who-eats-whom/
+who-eats-who/
 ├── README.md
 ├── .gitignore
+├── docker-compose.yml
+├── assets/                  # Source SVG assets
 ├── backend/
 │   ├── main.py              # FastAPI app — all game endpoints
-│   ├── parse_csv.py         # CSV parser and SQLite loader
+│   ├── create_foodweb_nc.py # NC food web data loader
 │   ├── requirements.txt     # Python dependencies
-│   ├── who_eats_whom.db     # SQLite DB (generated — not committed)
-│   ├── data/                # Place CSV files here (not committed)
-│   │   ├── nc_species.csv
-│   │   └── us_species.csv
-│   └── static_json/         # Auto-generated fallback JSON (not committed)
-│       ├── relationships.json
-│       ├── species.json
-│       └── network.json
+│   ├── Dockerfile
+│   └── who_eats_whom.db     # SQLite DB (generated — not committed)
 └── frontend/
     ├── app/
     │   ├── globals.css
     │   ├── layout.tsx
     │   ├── page.tsx          # Redirects to /game1
-    │   └── game1/
-    │       └── page.tsx      # Game 1 main page
+    │   ├── api/log/          # Server-side event logging
+    │   ├── game1/
+    │   │   └── page.tsx      # Who Eats Whom?
+    │   ├── game2/
+    │   │   ├── page.tsx      # Feed the Heron
+    │   │   └── lizard/
+    │   │       └── page.tsx  # Feed the Lizard (variant)
+    │   └── game3/
+    │       └── page.tsx      # Food Web Collapse
     ├── components/
     │   ├── game1/
     │   │   ├── AnimalShelf.tsx
     │   │   ├── DropZone.tsx
     │   │   ├── PhotoModal.tsx
     │   │   └── NetworkCanvas.tsx
+    │   ├── game2/
+    │   │   ├── FloatingBubble.tsx
+    │   │   ├── HeronFace.tsx
+    │   │   ├── LizardFace.tsx
+    │   │   └── RoomBubble.tsx
+    │   ├── game3/
+    │   │   └── Tutorial.tsx
     │   └── ui/
     │       └── AnimalBlob.tsx
     ├── lib/
-    │   ├── api.ts            # API client with static fallback
+    │   ├── api.ts            # API client
+    │   ├── sounds.ts         # Sound effects and background music
     │   └── types.ts          # Shared TypeScript types
+    ├── public/               # SVG animal images
+    ├── Dockerfile
     └── .env.local            # Local environment variables (not committed)
 ```
 
@@ -78,22 +92,11 @@ who-eats-whom/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/who-eats-whom.git
-cd who-eats-whom
+git clone https://github.com/your-username/who-eats-who.git
+cd who-eats-who
 ```
 
-### 2. Add the data files
-
-The CSV files are not committed. Place them manually inside `backend/data/`:
-
-```
-backend/data/nc_species.csv
-backend/data/us_species.csv
-```
-
-Contact the project team to obtain the data files.
-
-### 3. Create a virtual environment
+### 2. Create a virtual environment
 
 **Mac / Linux / WSL:**
 ```bash
@@ -109,34 +112,25 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 4. Install dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Build the database
+### 4. Build the database
 
 ```bash
-python3 parse_csv.py
+python3 create_foodweb_nc.py
 ```
 
-You should see:
-```
-Processing 697 unique relationships...
-✓ Loaded 697 relationships
-✓ Built species table with 808 entries
-✓ Species with thumbnails: 808/808
-✓ Static JSON exported to static_json/
-```
-
-### 6. Start the backend
+### 5. Start the backend
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-API is running at `http://localhost:8000`.
+API is running at `http://localhost:8000`.  
 Interactive docs at `http://localhost:8000/docs`.
 
 ---
@@ -197,6 +191,16 @@ Then open `http://localhost:3000`.
 
 ---
 
+## Docker (Alternative)
+
+```bash
+docker-compose up --build
+```
+
+Frontend at `http://localhost:3000`, backend at `http://localhost:8000`.
+
+---
+
 ## API Reference
 
 ### Health
@@ -220,43 +224,16 @@ Then open `http://localhost:3000`.
 
 Returns `direction`: `a_eats_b`, `b_eats_a`, `both`, or `none`.
 
-### Game 2 — Snapshot Science
+### Game 2 — Feed the Animal
+
+Game 2 is fully client-side — it uses a hardcoded NC species list and plays back local SVG assets. No backend calls are made during gameplay.
+
+### Game 3 — Food Web Collapse
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/game/snapshot` | Find photo evidence among placed species. Param: `species` (comma-separated) |
-
-### Game 3 — Who Ate My Fish?
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/game/who-ate-my-fish` | Get all predators and prey of a focal species. Param: `species` |
-| GET | `/game/cascade` | Simulate removing one predator. Params: `remove_species`, `focal_species` |
-
-### Game 4 — Planetary Collapse
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/game/network` | Get the full food web network. Param: `top_n` (default 200) |
-| GET | `/game/collapse` | Simulate removing a taxon class. Param: `remove_taxon_class` |
-| GET | `/game/taxon-classes` | List all taxon classes |
-
----
-
-## Postman Test Suite
-
-```
-GET localhost:8000/health
-GET localhost:8000/species?limit=10
-GET localhost:8000/species/Ardea alba
-GET localhost:8000/game/who-eats-whom?species_a=Ardea alba&species_b=Ameiurus natalis
-GET localhost:8000/game/who-eats-whom?species_a=Homo sapiens&species_b=Ardea alba
-GET localhost:8000/game/who-ate-my-fish?species=Ameiurus natalis
-GET localhost:8000/game/snapshot?species=Ardea alba,Ameiurus natalis
-GET localhost:8000/game/taxon-classes
-GET localhost:8000/game/network?top_n=50
-GET localhost:8000/game/collapse?remove_taxon_class=Insecta
-```
+| GET | `/game/foodweb/nc` | Get NC food web nodes and edges |
+| GET | `/game/foodweb/nc/cascade` | Simulate removing one or more species. Param: `removed` (comma-separated) |
 
 ---
 
@@ -268,15 +245,6 @@ GET localhost:8000/game/collapse?remove_taxon_class=Insecta
 4. Run `npm run build && npm run start` for production mode
 5. Open `http://localhost:3000` on the TV browser
 6. For iPads, open `http://[laptop-ip]:3000` in Safari
-
----
-
-## Data Notes
-
-- 697 verified US feeding relationships across 808 species
-- Every record includes a real iNaturalist observation photograph
-- The CSV column headers `Predator` and `Prey` are inverted from their intuitive meaning — corrected in `parse_csv.py`
-- The `n` column in the raw CSV contains Neo4j Cypher-style property strings parsed into clean fields on load
 
 ---
 
