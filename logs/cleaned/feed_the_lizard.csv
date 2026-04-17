@@ -1,0 +1,394 @@
+timestamp|game|ip|animal|action|state|browser
+2026-04-11T18:58:04.057Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:57:48.168Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:57:39.594Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:57:33.550Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:57:20.161Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:56:54.438Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:56:45.199Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:56:27.511Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:56:09.999Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:55:52.799Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:50:25.551Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:50:20.212Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:50:16.011Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:50:06.328Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:55.594Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:50.884Z|feed the lizard|76.36.238.139|SESSION|STARTED|0|Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36
+2026-04-11T18:49:45.527Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:38.139Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:31.328Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:25.242Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:49:24.248Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:13.449Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:49:06.617Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:59.510Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:51.534Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:48.267Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:48:43.067Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:23.254Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:15.336Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:14.504Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:48:09.221Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:48:08.279Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:48:00.674Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:58.043Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:47:54.082Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:47.698Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:47:41.800Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:36.389Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:33.457Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:47:27.521Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:24.380Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:47:18.007Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:13.668Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:47:09.526Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:47:00.394Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:46:59.100Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:46:31.920Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:46:24.786Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:46:05.836Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:45:57.515Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:45:26.579Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:45:16.916Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:45:00.509Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:44:30.570Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:44:08.199Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:43:39.064Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:43:11.781Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:42:52.013Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:42:38.278Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:42:21.031Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:42:15.255Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:42:00.995Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:41:48.134Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:41:31.195Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:41:17.223Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:41:12.678Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:41:00.248Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:40:55.234Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:40:44.969Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:40:34.827Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:40:26.435Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:40:22.226Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:39:58.823Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:39:38.929Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:39:34.221Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:39:18.158Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:39:10.295Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:38:28.212Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:33:00.435Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:32:02.454Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:56.800Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:48.509Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:42.692Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:35.071Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:29.416Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:21.836Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:31:14.625Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:30:58.119Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:30:49.571Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:30:41.926Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:30:33.885Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:30:08.205Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:25:54.729Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:47.046Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:39.876Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:28.676Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:16.731Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:07.874Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:25:00.607Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:24:21.314Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:23:07.303Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:23:01.839Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:22:48.125Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:22:37.622Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:22:18.832Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:21:42.485Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:21:26.404Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:21:19.399Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:21:08.000Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:19:27.635Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:19:13.829Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:19:02.914Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:18:41.282Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:18:17.574Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:17:57.333Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:17:22.183Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:16:48.898Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:16:47.775Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:16:44.717Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:16:38.106Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:16:29.745Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:16:27.410Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:16:20.505Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:16:16.629Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:16:12.190Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:59.205Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:15:50.192Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:15:49.610Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:43.830Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:34.267Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:30.013Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:15:23.252Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:17.379Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:16.527Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:15:09.935Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:15:02.564Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:14:43.332Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:14:33.461Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:14:26.139Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:14:16.330Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:14:06.156Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:13:59.060Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:13:49.746Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:13:12.147Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:07:35.491Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:07:28.336Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:07:25.016Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:07:23.756Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:07:00.734Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:06:49.516Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:06:43.742Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:06:38.169Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:06:26.050Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:06:19.493Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:05:59.344Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:05:49.675Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:05:38.422Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:05:26.011Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:05:25.570Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:05:15.809Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:05:06.318Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:59.178Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:04:38.604Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:34.254Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:29.875Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:27.731Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:04:23.870Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:16.545Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:09.301Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:04:00.885Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:03:59.701Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:03:55.661Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:03:47.994Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:03:43.616Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:03:43.105Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:03:36.944Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:03:28.419Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:03:11.465Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:36.055Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:28.012Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:23.244Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:18.675Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:11.501Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:01:05.706Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:00:55.441Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:00:32.734Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:00:23.875Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:00:23.595Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:00:14.083Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:00:06.668Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T18:00:06.328Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T18:00:00.944Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:54.402Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:43.592Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:41.984Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:38.052Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:33.974Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:32.177Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:25.072Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:24.852Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:18.591Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:17.596Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:59:11.733Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:59:02.023Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:58:57.133Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:58:54.730Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:58:51.450Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:58:48.986Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:58:44.157Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:58:36.742Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:58:22.605Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:58:09.451Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:57:49.656Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:57:31.180Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:50.892Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:42.333Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:35.312Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:20.202Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:12.531Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:07.263Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:52:02.091Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:51:55.382Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:51:48.423Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:51:39.749Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:51:31.884Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:51:20.544Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:49:32.781Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:49:11.923Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:49:00.416Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:48:55.150Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:48:46.128Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:48:36.458Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:48:28.434Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:48:27.872Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:48:23.081Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:48:15.861Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:48:05.723Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:48:03.238Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:47:49.692Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:47:37.292Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:47:33.803Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:47:21.400Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:47:10.348Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:46:59.564Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:46:52.589Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:46:33.254Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:46:07.916Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:45:39.960Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:45:10.221Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:44:58.156Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:44:45.732Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:44:35.229Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:44:12.286Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:43:59.978Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:43:40.105Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:43:26.232Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:43:13.885Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:42:34.055Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:42:26.391Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:42:21.443Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:41:31.020Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:35:30.382Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:35:16.348Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:35:09.873Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:34:43.795Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:34:38.061Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:34:06.459Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:33:50.036Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:33:41.322Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:33:23.083Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:32:30.233Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:32:17.021Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:32:08.661Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:59.710Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:54.839Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:50.551Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:46.382Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:32.486Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:27.942Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:20.358Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:31:17.761Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:12.537Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:31:07.371Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:30:29.173Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:30:12.065Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:29:46.231Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:25:26.844Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:58.553Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:52.922Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:48.336Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:42.284Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:38.333Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:32.811Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:28.371Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:22.368Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:16.845Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:10.913Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:06.040Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:24:02.147Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:57.006Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:50.505Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:45.859Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:40.334Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:35.604Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:29.006Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:24.013Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:17.529Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:10.806Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:23:04.476Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:22:58.337Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:22:51.546Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:22:43.768Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:22:37.694Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:07:17.484Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T17:05:00.906Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:04:43.401Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:03:54.427Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:03:41.118Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:03:11.023Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:03:01.140Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:02:25.890Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:01:59.809Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:01:54.283Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:01:49.584Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:01:42.830Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T17:01:33.791Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:38:16.911Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:38:12.403Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:38:01.763Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:54.029Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:48.906Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:44.816Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:39.138Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:33.667Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:24.535Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:37:06.005Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:54.703Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:48.332Z|feed the lizard|198.85.225.66|Persimmon|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:40.045Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:34.918Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:22.608Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:36:07.781Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:35:57.066Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:35:48.190Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:35:41.315Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:35:25.379Z|feed the lizard|198.85.225.66|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T16:34:32.631Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:55:38.042Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:55:28.241Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:55:21.114Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:55:15.731Z|feed the lizard|198.85.225.66|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:55:06.821Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:51.420Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:40.852Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:36.981Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:54:33.515Z|feed the lizard|198.85.225.66|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:29.396Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:54:24.901Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:54:23.237Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:13.715Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:54:13.330Z|feed the lizard|198.85.225.66|Tree Frog|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:54:09.470Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:53:45.196Z|feed the lizard|198.85.225.66|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:53:37.664Z|feed the lizard|198.85.225.66|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:53:32.815Z|feed the lizard|198.85.225.66|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:53:29.701Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:53:22.626Z|feed the lizard|198.85.225.66|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:53:18.386Z|feed the lizard|198.85.225.66|Eastern Ratsnake|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:52:55.984Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:52:48.857Z|feed the lizard|198.85.225.66|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:52:42.385Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:52:35.589Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T15:51:41.900Z|feed the lizard|198.85.225.66|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:51:37.962Z|feed the lizard|198.85.225.66|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:50:23.601Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T15:47:31.294Z|feed the lizard|198.85.225.66|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15
+2026-04-11T13:12:21.606Z|feed the lizard|76.38.17.143|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:46.995Z|feed the lizard|76.38.17.143|Monarch Butterfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:42.630Z|feed the lizard|76.38.17.143|Grasshopper|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:25.989Z|feed the lizard|76.38.17.143|Pondhawk Dragonfly|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:16.937Z|feed the lizard|76.38.17.143|Yellow Garden Spider|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:11.835Z|feed the lizard|76.38.17.143|Atlantic Blue Crab|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:10:03.171Z|feed the lizard|76.38.17.143|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:09:58.617Z|feed the lizard|76.38.17.143|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:09:31.870Z|feed the lizard|76.38.17.143|Green June Beetle|DRAGGED|2|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T13:09:20.690Z|feed the lizard|76.38.17.143|SESSION|STARTED|0|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-04-11T12:40:10.089Z|feed the lizard|76.38.17.214|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:38:01.455Z|feed the lizard|76.38.17.214|SESSION|STARTED|0|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:37:53.460Z|feed the lizard|76.38.17.214|Black Carpenter Ant|DRAGGED|1|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:37:49.403Z|feed the lizard|76.38.17.214|Grasshopper|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:37:43.863Z|feed the lizard|76.38.17.214|White-footed Mouse|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:37:39.590Z|feed the lizard|76.38.17.214|Green Sunfish|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+2026-04-11T12:37:34.413Z|feed the lizard|76.38.17.214|Earthworm|DRAGGED|2|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
