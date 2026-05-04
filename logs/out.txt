@@ -1,0 +1,1608 @@
+======================================================================
+  WHO EATS WHOM — LOG ANALYSIS  (all times in EDT)
+======================================================================
+
+PER SESSION
+----------------------------------------------------------------------
+
+  Session 1  |  Windows  |  IP: 76.38.17.214
+    Time in:  08:38:29 EDT
+    Time out: 08:39:45 EDT  (76s total)
+    Time from session start to Sun added: 11.7s
+    First animal added after Sun: Persimmon
+    Event order:
+      08:38:29  ADDED              Sun
+      08:38:33  ADDED              Persimmon
+      08:38:35  ADDED              Green June Beetle
+      08:39:21  DELETED            Sun
+      08:39:22  DELETED            Persimmon
+      08:39:23  DELETED            Green June Beetle
+      08:39:45  ADDED              Sun
+    Animal add counts:
+        2x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Green June Beetle
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   Green June Beetle
+    Most deleted animal: Sun (1x)
+    No cascades
+
+  Session 2  |  Windows  |  IP: 76.38.17.214
+    Time in:  08:41:58 EDT
+    Time out: 08:41:58 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 3  |  Mac  |  IP: 76.38.17.143
+    Time in:  09:05:10 EDT
+    Time out: 09:05:10 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 4  |  Mac  |  IP: 76.38.17.143
+    Time in:  09:12:42 EDT
+    Time out: 09:13:41 EDT  (58s total)
+    Time from session start to Sun added: 12.4s
+    First animal added after Sun: Persimmon
+    Event order:
+      09:12:42  ADDED              Sun
+      09:13:11  ADDED              Persimmon
+      09:13:17  ADDED              Earthworm
+      09:13:21  ADDED              Monarch Butterfly
+      09:13:23  ADDED              Grasshopper
+      09:13:25  ADDED              Pondhawk Dragonfly
+      09:13:26  ADDED              Black Carpenter Ant
+      09:13:28  ADDED              Green June Beetle
+      09:13:30  ADDED              Yellow Garden Spider
+      09:13:32  ADDED              Green Sunfish
+      09:13:33  ADDED              Atlantic Blue Crab
+      09:13:35  ADDED              White-footed Mouse
+      09:13:36  ADDED              Tree Frog
+      09:13:38  ADDED              Eastern Ratsnake
+      09:13:39  ADDED              Green Anole lizard
+      09:13:41  ADDED              Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Grasshopper
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Tree Frog
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 5  |  Unknown  |  IP: 76.38.17.62
+    Time in:  09:46:25 EDT
+    Time out: 09:48:08 EDT  (103s total)
+    Time from session start to Sun added: 15.0s
+    First animal added after Sun: Persimmon
+    Event order:
+      09:46:25  ADDED              Sun
+      09:46:53  ADDED              Persimmon
+      09:46:57  ADDED              Green June Beetle
+      09:47:02  ADDED              Yellow Garden Spider
+      09:47:21  ADDED              Earthworm
+      09:47:24  ADDED              Green Sunfish
+      09:47:27  ADDED              Atlantic Blue Crab
+      09:47:31  ADDED              Eastern Ratsnake
+      09:47:33  ADDED              Blue Heron
+      09:47:46  DELETED            Persimmon
+      09:47:58  DELETED_CASCADE    Earthworm
+      09:48:08  DELETED_CASCADE    Atlantic Blue Crab
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Earthworm
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Persimmon
+        1x  DELETED   Earthworm
+        1x  DELETED   Atlantic Blue Crab
+    Most deleted animal: Persimmon (1x)
+    Cascades: 2 total
+      Cascade 1 (1 animals lost) ← LONGEST: Earthworm
+      Cascade 2 (1 animals lost): Atlantic Blue Crab
+    Longest cascade: 1 animals
+    Time to first cascade: 107.5s from session start
+    Cascade-deleted animals (no food source):
+      09:47:58  Earthworm
+      09:48:08  Atlantic Blue Crab
+
+  Session 6  |  Windows  |  IP: 198.85.225.66
+    Time in:  11:49:39 EDT
+    Time out: 11:49:39 EDT  (0s total)
+    Time from session start to Sun added: 169.5s
+    No animals added after Sun (or Sun never added)
+    Event order:
+      11:49:39  ADDED              Sun
+    Animal add counts:
+        1x  ADDED     Sun
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 7  |  Mac  |  IP: 198.85.225.66
+    Time in:  11:47:22 EDT
+    Time out: 11:47:22 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 8  |  Mac  |  IP: 198.85.225.66
+    Time in:  11:50:12 EDT
+    Time out: 11:50:12 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 9  |  Mac  |  IP: unknown
+    Time in:  11:50:18 EDT
+    Time out: 11:50:18 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 10  |  Mac  |  IP: 198.85.225.66
+    Time in:  11:50:19 EDT
+    Time out: 11:50:19 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 11  |  Windows  |  IP: 198.85.225.66
+    Time in:  11:52:12 EDT
+    Time out: 11:52:12 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 12  |  Windows  |  IP: 198.85.225.66
+    Time in:  11:56:40 EDT
+    Time out: 12:03:02 EDT  (381s total)
+    Time from session start to Sun added: 359.3s
+    First animal added after Sun: Persimmon
+    Event order:
+      11:56:40  ADDED              Earthworm
+      11:56:40  ADDED              Persimmon
+      11:56:40  ADDED              Monarch Butterfly
+      11:56:40  ADDED              Green June Beetle
+      11:56:40  ADDED              Grasshopper
+      11:56:41  ADDED              Black Carpenter Ant
+      11:56:41  ADDED              Pondhawk Dragonfly
+      11:56:41  ADDED              Yellow Garden Spider
+      11:56:41  ADDED              Green Sunfish
+      11:56:41  ADDED              Atlantic Blue Crab
+      11:56:41  ADDED              Tree Frog
+      11:56:41  ADDED              Green Anole lizard
+      11:56:41  ADDED              Eastern Ratsnake
+      11:56:41  ADDED              Blue Heron
+      11:56:41  ADDED              White-footed Mouse
+      11:57:20  DELETED            Sun
+      11:57:21  DELETED            Persimmon
+      11:57:22  DELETED            Earthworm
+      11:57:23  DELETED            Monarch Butterfly
+      11:57:24  DELETED            Green June Beetle
+      11:57:25  DELETED            Grasshopper
+      11:57:26  DELETED            Black Carpenter Ant
+      11:57:27  DELETED            Pondhawk Dragonfly
+      11:57:28  DELETED            Yellow Garden Spider
+      11:57:29  DELETED            Green Sunfish
+      11:57:30  DELETED            Atlantic Blue Crab
+      11:57:31  DELETED            Tree Frog
+      11:57:32  DELETED            White-footed Mouse
+      11:57:33  DELETED            Green Anole lizard
+      11:57:34  DELETED            Eastern Ratsnake
+      11:57:35  DELETED            Blue Heron
+      12:02:32  ADDED              Sun
+      12:02:48  ADDED              Persimmon
+      12:03:02  DELETED            Persimmon
+    Animal add counts:
+        2x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Sun
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Persimmon
+        1x  DELETED   Sun
+        1x  DELETED   Earthworm
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Grasshopper
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Green Sunfish
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Tree Frog
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Blue Heron
+    Most deleted animal: Persimmon (2x)
+    No cascades
+
+  Session 13  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:24:40 EDT
+    Time out: 12:26:25 EDT  (105s total)
+    Time from session start to Sun added: 403.7s
+    First animal added after Sun: Persimmon
+    Event order:
+      12:24:40  ADDED              Sun
+      12:24:47  ADDED              Persimmon
+      12:26:24  DELETED            Sun
+      12:26:25  DELETED            Persimmon
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+    Most deleted animal: Sun (1x)
+    No cascades
+
+  Session 14  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:28:12 EDT
+    Time out: 12:35:59 EDT  (467s total)
+    Time from session start to Sun added: 85.3s
+    First animal added after Sun: Persimmon
+    Event order:
+      12:28:12  ADDED              Sun
+      12:28:16  ADDED              Persimmon
+      12:28:23  ADDED              Green June Beetle
+      12:28:35  ADDED              Black Carpenter Ant
+      12:28:44  ADDED              Tree Frog
+      12:29:08  ADDED              White-footed Mouse
+      12:29:17  ADDED              Eastern Ratsnake
+      12:29:42  ADDED              Green Anole lizard
+      12:29:47  ADDED              Blue Heron
+      12:30:07  DELETED            White-footed Mouse
+      12:30:21  DELETED            Black Carpenter Ant
+      12:30:35  DELETED            Persimmon
+      12:30:38  ADDED              Persimmon
+      12:30:43  DELETED_CASCADE    Green June Beetle
+      12:30:46  ADDED              Green June Beetle
+      12:30:55  DELETED_CASCADE    Tree Frog
+      12:30:57  ADDED              Tree Frog
+      12:31:05  DELETED_CASCADE    Green Anole lizard
+      12:31:07  ADDED              Green Anole lizard
+      12:31:14  ADDED              White-footed Mouse
+      12:31:24  ADDED              Black Carpenter Ant
+      12:31:26  ADDED              Earthworm
+      12:31:34  ADDED              Atlantic Blue Crab
+      12:31:36  ADDED              Green Sunfish
+      12:31:44  ADDED              Monarch Butterfly
+      12:31:48  ADDED              Yellow Garden Spider
+      12:31:53  ADDED              Pondhawk Dragonfly
+      12:31:59  ADDED              Grasshopper
+      12:32:40  DELETED            Tree Frog
+      12:32:57  DELETED            Green Sunfish
+      12:33:01  DELETED            Yellow Garden Spider
+      12:33:19  DELETED            Green Anole lizard
+      12:33:41  DELETED            Sun
+      12:33:42  DELETED            Eastern Ratsnake
+      12:33:43  DELETED            Blue Heron
+      12:33:44  DELETED            Persimmon
+      12:33:45  ADDED              Sun
+      12:33:45  DELETED            Green June Beetle
+      12:33:46  DELETED            White-footed Mouse
+      12:33:47  DELETED            Black Carpenter Ant
+      12:33:48  ADDED              Persimmon
+      12:33:48  DELETED            Earthworm
+      12:33:49  ADDED              White-footed Mouse
+      12:33:49  DELETED            Atlantic Blue Crab
+      12:33:50  ADDED              Green Sunfish
+      12:33:50  DELETED            Monarch Butterfly
+      12:33:51  ADDED              Tree Frog
+      12:33:51  ADDED              Green June Beetle
+      12:33:51  DELETED            Pondhawk Dragonfly
+      12:33:52  ADDED              Monarch Butterfly
+      12:33:52  DELETED            Grasshopper
+      12:33:53  ADDED              Yellow Garden Spider
+      12:33:53  ADDED              Pondhawk Dragonfly
+      12:33:54  ADDED              Grasshopper
+      12:33:55  ADDED              Black Carpenter Ant
+      12:33:58  ADDED              Earthworm
+      12:33:58  ADDED              Atlantic Blue Crab
+      12:33:59  ADDED              Green Anole lizard
+      12:33:59  ADDED              Eastern Ratsnake
+      12:33:59  ADDED              Blue Heron
+      12:34:18  DELETED            Earthworm
+      12:34:23  DELETED            Eastern Ratsnake
+      12:34:27  DELETED_CASCADE    Atlantic Blue Crab
+      12:34:28  DELETED            Persimmon
+      12:34:40  DELETED_CASCADE    Grasshopper
+      12:34:49  DELETED_CASCADE    Monarch Butterfly
+      12:35:00  DELETED_CASCADE    Pondhawk Dragonfly
+      12:35:09  DELETED_CASCADE    Green Sunfish
+      12:35:16  DELETED_CASCADE    Black Carpenter Ant
+      12:35:23  DELETED_CASCADE    Green June Beetle
+      12:35:32  DELETED_CASCADE    Yellow Garden Spider
+      12:35:41  DELETED_CASCADE    Tree Frog
+      12:35:46  DELETED_CASCADE    White-footed Mouse
+      12:35:53  DELETED_CASCADE    Green Anole lizard
+      12:35:59  DELETED_CASCADE    Blue Heron
+    Animal add counts:
+        3x  ADDED     Persimmon
+        3x  ADDED     Green June Beetle
+        3x  ADDED     Black Carpenter Ant
+        3x  ADDED     Tree Frog
+        3x  ADDED     White-footed Mouse
+        3x  ADDED     Green Anole lizard
+        2x  ADDED     Sun
+        2x  ADDED     Eastern Ratsnake
+        2x  ADDED     Blue Heron
+        2x  ADDED     Earthworm
+        2x  ADDED     Atlantic Blue Crab
+        2x  ADDED     Green Sunfish
+        2x  ADDED     Monarch Butterfly
+        2x  ADDED     Yellow Garden Spider
+        2x  ADDED     Pondhawk Dragonfly
+        2x  ADDED     Grasshopper
+    Animal delete counts (DELETED + CASCADE):
+        3x  DELETED   White-footed Mouse
+        3x  DELETED   Black Carpenter Ant
+        3x  DELETED   Persimmon
+        3x  DELETED   Tree Frog
+        3x  DELETED   Green Anole lizard
+        3x  DELETED   Green June Beetle
+        2x  DELETED   Green Sunfish
+        2x  DELETED   Yellow Garden Spider
+        2x  DELETED   Eastern Ratsnake
+        2x  DELETED   Blue Heron
+        2x  DELETED   Earthworm
+        2x  DELETED   Atlantic Blue Crab
+        2x  DELETED   Monarch Butterfly
+        2x  DELETED   Pondhawk Dragonfly
+        2x  DELETED   Grasshopper
+        1x  DELETED   Sun
+    Most deleted animal: White-footed Mouse (3x)
+    Cascades: 6 total
+      Cascade 1 (1 animals lost): Green June Beetle
+      Cascade 2 (1 animals lost): Tree Frog
+      Cascade 3 (1 animals lost): Green Anole lizard
+      Cascade 4 (1 animals lost): Atlantic Blue Crab
+      Cascade 5 (2 animals lost): Grasshopper, Monarch Butterfly
+      Cascade 6 (9 animals lost) ← LONGEST: Pondhawk Dragonfly, Green Sunfish, Black Carpenter Ant, Green June Beetle, Yellow Garden Spider, Tree Frog, White-footed Mouse, Green Anole lizard, Blue Heron
+    Longest cascade: 9 animals
+    Time to first cascade: 236.9s from session start
+    Cascade-deleted animals (no food source):
+      12:30:43  Green June Beetle
+      12:30:55  Tree Frog
+      12:31:05  Green Anole lizard
+      12:34:27  Atlantic Blue Crab
+      12:34:40  Grasshopper
+      12:34:49  Monarch Butterfly
+      12:35:00  Pondhawk Dragonfly
+      12:35:09  Green Sunfish
+      12:35:16  Black Carpenter Ant
+      12:35:23  Green June Beetle
+      12:35:32  Yellow Garden Spider
+      12:35:41  Tree Frog
+      12:35:46  White-footed Mouse
+      12:35:53  Green Anole lizard
+      12:35:59  Blue Heron
+
+  Session 15  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:42:28 EDT
+    Time out: 12:42:28 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 16  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:44:03 EDT
+    Time out: 12:45:01 EDT  (58s total)
+    Time from session start to Sun added: 28.0s
+    First animal added after Sun: Persimmon
+    Event order:
+      12:44:03  ADDED              Sun
+      12:44:22  ADDED              Persimmon
+      12:44:30  ADDED              Grasshopper
+      12:44:40  ADDED              White-footed Mouse
+      12:44:53  DELETED            Persimmon
+      12:44:59  DELETED_CASCADE    Grasshopper
+      12:45:01  DELETED_CASCADE    White-footed Mouse
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Grasshopper
+        1x  ADDED     White-footed Mouse
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Persimmon
+        1x  DELETED   Grasshopper
+        1x  DELETED   White-footed Mouse
+    Most deleted animal: Persimmon (1x)
+    Cascades: 1 total
+      Cascade 1 (2 animals lost): Grasshopper, White-footed Mouse
+    Longest cascade: 2 animals
+    Time to first cascade: 83.6s from session start
+    Cascade-deleted animals (no food source):
+      12:44:59  Grasshopper
+      12:45:01  White-footed Mouse
+
+  Session 17  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:48:22 EDT
+    Time out: 12:48:22 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 18  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:48:29 EDT
+    Time out: 12:48:29 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 19  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:55:07 EDT
+    Time out: 12:57:25 EDT  (138s total)
+    Time from session start to Sun added: 392.9s
+    First animal added after Sun: Persimmon
+    Event order:
+      12:55:07  ADDED              Sun
+      12:55:16  ADDED              Persimmon
+      12:55:21  ADDED              White-footed Mouse
+      12:55:22  ADDED              Eastern Ratsnake
+      12:55:23  ADDED              Green June Beetle
+      12:57:21  DELETED            Sun
+      12:57:22  DELETED            Persimmon
+      12:57:23  DELETED            White-footed Mouse
+      12:57:24  DELETED            Eastern Ratsnake
+      12:57:25  DELETED            Green June Beetle
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Green June Beetle
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Green June Beetle
+    Most deleted animal: Sun (1x)
+    No cascades
+
+  Session 20  |  Windows  |  IP: 198.85.225.66
+    Time in:  12:57:42 EDT
+    Time out: 12:57:42 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 21  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:06:00 EDT
+    Time out: 13:06:00 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 22  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:19:12 EDT
+    Time out: 13:22:01 EDT  (169s total)
+    Time from session start to Sun added: 50.5s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:19:12  ADDED              Sun
+      13:19:43  ADDED              Persimmon
+      13:19:47  ADDED              Earthworm
+      13:19:52  ADDED              Monarch Butterfly
+      13:19:56  ADDED              Green June Beetle
+      13:19:58  ADDED              Grasshopper
+      13:20:00  ADDED              Black Carpenter Ant
+      13:20:01  ADDED              Pondhawk Dragonfly
+      13:20:02  ADDED              Yellow Garden Spider
+      13:20:04  ADDED              Green Sunfish
+      13:20:05  ADDED              Atlantic Blue Crab
+      13:20:07  ADDED              Tree Frog
+      13:20:08  ADDED              White-footed Mouse
+      13:20:10  ADDED              Green Anole lizard
+      13:20:11  ADDED              Eastern Ratsnake
+      13:20:12  ADDED              Blue Heron
+      13:20:31  DELETED            Grasshopper
+      13:20:32  DELETED            Grasshopper
+      13:20:57  DELETED            Persimmon
+      13:21:09  DELETED_CASCADE    Monarch Butterfly
+      13:21:21  DELETED_CASCADE    Pondhawk Dragonfly
+      13:21:31  DELETED_CASCADE    Earthworm
+      13:21:41  DELETED_CASCADE    Atlantic Blue Crab
+      13:21:51  DELETED_CASCADE    Green Sunfish
+      13:21:53  DELETED            Sun
+      13:21:54  DELETED            Green June Beetle
+      13:21:55  DELETED            Black Carpenter Ant
+      13:21:56  DELETED            Yellow Garden Spider
+      13:21:57  DELETED            Tree Frog
+      13:21:58  DELETED            White-footed Mouse
+      13:21:59  DELETED_CASCADE    Black Carpenter Ant
+      13:21:59  DELETED            Green Anole lizard
+      13:22:00  DELETED            Eastern Ratsnake
+      13:22:01  DELETED            Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Grasshopper
+        2x  DELETED   Black Carpenter Ant
+        1x  DELETED   Persimmon
+        1x  DELETED   Sun
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Tree Frog
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Blue Heron
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Earthworm
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green Sunfish
+    Most deleted animal: Grasshopper (2x)
+    Cascades: 5 total
+      Cascade 1 (1 animals lost): Monarch Butterfly
+      Cascade 2 (1 animals lost): Pondhawk Dragonfly
+      Cascade 3 (1 animals lost): Earthworm
+      Cascade 4 (1 animals lost): Atlantic Blue Crab
+      Cascade 5 (2 animals lost) ← LONGEST: Green Sunfish, Black Carpenter Ant
+    Longest cascade: 2 animals
+    Time to first cascade: 166.9s from session start
+    Cascade-deleted animals (no food source):
+      13:21:09  Monarch Butterfly
+      13:21:21  Pondhawk Dragonfly
+      13:21:31  Earthworm
+      13:21:41  Atlantic Blue Crab
+      13:21:51  Green Sunfish
+      13:21:59  Black Carpenter Ant
+
+  Session 23  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:28:22 EDT
+    Time out: 13:30:56 EDT  (154s total)
+    Time from session start to Sun added: 150.6s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:28:22  ADDED              Sun
+      13:28:33  ADDED              Persimmon
+      13:28:39  ADDED              Earthworm
+      13:28:42  ADDED              Monarch Butterfly
+      13:28:44  ADDED              Green June Beetle
+      13:28:49  ADDED              Grasshopper
+      13:28:51  ADDED              Black Carpenter Ant
+      13:28:53  ADDED              Pondhawk Dragonfly
+      13:28:54  ADDED              Yellow Garden Spider
+      13:29:08  ADDED              Green Sunfish
+      13:29:11  ADDED              Atlantic Blue Crab
+      13:29:15  ADDED              Tree Frog
+      13:29:19  ADDED              White-footed Mouse
+      13:29:22  ADDED              Green Anole lizard
+      13:29:24  ADDED              Eastern Ratsnake
+      13:29:25  ADDED              Blue Heron
+      13:29:48  DELETED            Pondhawk Dragonfly
+      13:29:55  DELETED            Persimmon
+      13:30:07  DELETED_CASCADE    Grasshopper
+      13:30:14  DELETED_CASCADE    Monarch Butterfly
+      13:30:25  DELETED_CASCADE    Earthworm
+      13:30:35  DELETED_CASCADE    Atlantic Blue Crab
+      13:30:45  DELETED_CASCADE    Green Sunfish
+      13:30:48  DELETED            Sun
+      13:30:49  DELETED            Green June Beetle
+      13:30:50  DELETED            Black Carpenter Ant
+      13:30:51  DELETED            Yellow Garden Spider
+      13:30:52  DELETED            Tree Frog
+      13:30:52  DELETED_CASCADE    Black Carpenter Ant
+      13:30:53  DELETED            White-footed Mouse
+      13:30:54  DELETED            Green Anole lizard
+      13:30:55  DELETED            Eastern Ratsnake
+      13:30:56  DELETED            Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Black Carpenter Ant
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Persimmon
+        1x  DELETED   Sun
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Tree Frog
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Blue Heron
+        1x  DELETED   Grasshopper
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Earthworm
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green Sunfish
+    Most deleted animal: Black Carpenter Ant (2x)
+    Cascades: 4 total
+      Cascade 1 (2 animals lost) ← LONGEST: Grasshopper, Monarch Butterfly
+      Cascade 2 (1 animals lost): Earthworm
+      Cascade 3 (1 animals lost): Atlantic Blue Crab
+      Cascade 4 (2 animals lost): Green Sunfish, Black Carpenter Ant
+    Longest cascade: 2 animals
+    Time to first cascade: 255.6s from session start
+    Cascade-deleted animals (no food source):
+      13:30:07  Grasshopper
+      13:30:14  Monarch Butterfly
+      13:30:25  Earthworm
+      13:30:35  Atlantic Blue Crab
+      13:30:45  Green Sunfish
+      13:30:52  Black Carpenter Ant
+
+  Session 24  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:33:48 EDT
+    Time out: 13:35:40 EDT  (112s total)
+    Time from session start to Sun added: 74.3s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:33:48  ADDED              Sun
+      13:34:05  ADDED              Persimmon
+      13:34:09  ADDED              Earthworm
+      13:34:48  ADDED              Tree Frog
+      13:34:55  ADDED              Eastern Ratsnake
+      13:35:03  ADDED              Blue Heron
+      13:35:35  DELETED            Sun
+      13:35:36  DELETED            Persimmon
+      13:35:37  DELETED            Earthworm
+      13:35:38  DELETED            Tree Frog
+      13:35:39  DELETED            Eastern Ratsnake
+      13:35:40  DELETED            Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Tree Frog
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   Earthworm
+        1x  DELETED   Tree Frog
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Blue Heron
+    Most deleted animal: Sun (1x)
+    No cascades
+
+  Session 25  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:37:57 EDT
+    Time out: 13:41:22 EDT  (205s total)
+    Time from session start to Sun added: 55.5s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:37:57  ADDED              Sun
+      13:38:01  ADDED              Persimmon
+      13:38:19  ADDED              Earthworm
+      13:38:23  ADDED              Atlantic Blue Crab
+      13:38:30  ADDED              Black Carpenter Ant
+      13:38:32  ADDED              Yellow Garden Spider
+      13:38:38  ADDED              Monarch Butterfly
+      13:38:40  ADDED              Pondhawk Dragonfly
+      13:38:42  ADDED              Grasshopper
+      13:38:44  ADDED              Green June Beetle
+      13:38:45  ADDED              Blue Heron
+      13:38:47  ADDED              Eastern Ratsnake
+      13:38:50  ADDED              Green Anole lizard
+      13:38:53  ADDED              Green Sunfish
+      13:38:55  ADDED              White-footed Mouse
+      13:38:57  ADDED              Tree Frog
+      13:39:19  DELETED            Monarch Butterfly
+      13:39:20  DELETED            Monarch Butterfly
+      13:39:46  DELETED            Persimmon
+      13:40:00  DELETED_CASCADE    Grasshopper
+      13:40:03  ADDED              Persimmon
+      13:40:12  DELETED_CASCADE    Pondhawk Dragonfly
+      13:40:24  DELETED_CASCADE    Earthworm
+      13:40:34  DELETED_CASCADE    Atlantic Blue Crab
+      13:40:44  DELETED_CASCADE    Green Sunfish
+      13:40:53  DELETED_CASCADE    Black Carpenter Ant
+      13:41:02  DELETED_CASCADE    Green June Beetle
+      13:41:12  DELETED_CASCADE    Yellow Garden Spider
+      13:41:22  DELETED_CASCADE    Tree Frog
+    Animal add counts:
+        2x  ADDED     Persimmon
+        1x  ADDED     Sun
+        1x  ADDED     Earthworm
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Grasshopper
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Blue Heron
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Green Sunfish
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Tree Frog
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Monarch Butterfly
+        1x  DELETED   Persimmon
+        1x  DELETED   Grasshopper
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Earthworm
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green Sunfish
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Tree Frog
+    Most deleted animal: Monarch Butterfly (2x)
+    Cascades: 7 total
+      Cascade 1 (1 animals lost): Grasshopper
+      Cascade 2 (1 animals lost): Pondhawk Dragonfly
+      Cascade 3 (1 animals lost): Earthworm
+      Cascade 4 (1 animals lost): Atlantic Blue Crab
+      Cascade 5 (3 animals lost) ← LONGEST: Green Sunfish, Black Carpenter Ant, Green June Beetle
+      Cascade 6 (1 animals lost): Yellow Garden Spider
+      Cascade 7 (1 animals lost): Tree Frog
+    Longest cascade: 3 animals
+    Time to first cascade: 178.5s from session start
+    Cascade-deleted animals (no food source):
+      13:40:00  Grasshopper
+      13:40:12  Pondhawk Dragonfly
+      13:40:24  Earthworm
+      13:40:34  Atlantic Blue Crab
+      13:40:44  Green Sunfish
+      13:40:53  Black Carpenter Ant
+      13:41:02  Green June Beetle
+      13:41:12  Yellow Garden Spider
+      13:41:22  Tree Frog
+
+  Session 26  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:42:52 EDT
+    Time out: 13:46:15 EDT  (203s total)
+    Time from session start to Sun added: 88.1s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:42:52  ADDED              Sun
+      13:43:36  ADDED              Persimmon
+      13:43:56  ADDED              Black Carpenter Ant
+      13:44:08  ADDED              Green Anole lizard
+      13:44:20  ADDED              Blue Heron
+      13:45:08  DELETED            Blue Heron
+      13:45:15  ADDED              Eastern Ratsnake
+      13:45:26  ADDED              Blue Heron
+      13:45:55  ADDED              Earthworm
+      13:45:59  ADDED              Atlantic Blue Crab
+      13:46:15  ADDED              Tree Frog
+    Animal add counts:
+        2x  ADDED     Blue Heron
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Earthworm
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Blue Heron
+    Most deleted animal: Blue Heron (1x)
+    No cascades
+
+  Session 27  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:50:12 EDT
+    Time out: 13:54:42 EDT  (270s total)
+    Time from session start to Sun added: 216.7s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:50:12  ADDED              Sun
+      13:50:48  ADDED              Persimmon
+      13:51:15  ADDED              Earthworm
+      13:51:25  ADDED              Tree Frog
+      13:51:35  ADDED              Blue Heron
+      13:52:05  ADDED              Eastern Ratsnake
+      13:52:38  ADDED              Grasshopper
+      13:52:51  ADDED              Green Anole lizard
+      13:53:02  ADDED              Pondhawk Dragonfly
+      13:53:09  ADDED              Black Carpenter Ant
+      13:53:12  ADDED              Yellow Garden Spider
+      13:53:29  ADDED              Monarch Butterfly
+      13:54:00  DELETED            Pondhawk Dragonfly
+      13:54:42  DELETED            Green Anole lizard
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Tree Frog
+        1x  ADDED     Blue Heron
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Grasshopper
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Monarch Butterfly
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Green Anole lizard
+    Most deleted animal: Pondhawk Dragonfly (1x)
+    No cascades
+
+  Session 28  |  Windows  |  IP: 198.85.225.66
+    Time in:  13:55:28 EDT
+    Time out: 13:58:17 EDT  (169s total)
+    Time from session start to Sun added: 42.9s
+    First animal added after Sun: Persimmon
+    Event order:
+      13:55:28  ADDED              Sun
+      13:56:10  ADDED              Persimmon
+      13:56:34  ADDED              Earthworm
+      13:56:43  ADDED              White-footed Mouse
+      13:56:48  ADDED              Eastern Ratsnake
+      13:56:55  ADDED              Atlantic Blue Crab
+      13:56:59  ADDED              Green June Beetle
+      13:57:10  ADDED              Green Anole lizard
+      13:57:13  ADDED              Blue Heron
+      13:57:16  ADDED              Green Sunfish
+      13:57:22  ADDED              Tree Frog
+      13:57:28  ADDED              Black Carpenter Ant
+      13:57:32  ADDED              Grasshopper
+      13:57:36  ADDED              Monarch Butterfly
+      13:57:39  ADDED              Yellow Garden Spider
+      13:57:42  ADDED              Pondhawk Dragonfly
+      13:58:01  DELETED            Sun
+      13:58:02  DELETED            Persimmon
+      13:58:04  DELETED            Earthworm
+      13:58:05  DELETED            White-footed Mouse
+      13:58:06  DELETED            Eastern Ratsnake
+      13:58:07  DELETED            Atlantic Blue Crab
+      13:58:08  DELETED            Green June Beetle
+      13:58:09  DELETED            Green Anole lizard
+      13:58:10  DELETED            Blue Heron
+      13:58:11  DELETED            Green Sunfish
+      13:58:12  DELETED            Tree Frog
+      13:58:13  DELETED            Black Carpenter Ant
+      13:58:14  DELETED            Grasshopper
+      13:58:15  DELETED            Monarch Butterfly
+      13:58:16  DELETED            Yellow Garden Spider
+      13:58:17  DELETED            Pondhawk Dragonfly
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Blue Heron
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Tree Frog
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Grasshopper
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Pondhawk Dragonfly
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   Earthworm
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Blue Heron
+        1x  DELETED   Green Sunfish
+        1x  DELETED   Tree Frog
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Grasshopper
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Pondhawk Dragonfly
+    Most deleted animal: Sun (1x)
+    No cascades
+
+  Session 29  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:08:15 EDT
+    Time out: 14:13:00 EDT  (284s total)
+    Time from session start to Sun added: 417.3s
+    First animal added after Sun: Persimmon
+    Event order:
+      14:08:15  ADDED              Sun
+      14:08:35  ADDED              Persimmon
+      14:08:51  ADDED              Green June Beetle
+      14:09:12  ADDED              White-footed Mouse
+      14:09:24  ADDED              Eastern Ratsnake
+      14:09:33  ADDED              Blue Heron
+      14:09:42  ADDED              Yellow Garden Spider
+      14:09:49  ADDED              Black Carpenter Ant
+      14:10:08  ADDED              Grasshopper
+      14:10:11  ADDED              Earthworm
+      14:10:17  ADDED              Green Sunfish
+      14:10:22  ADDED              Atlantic Blue Crab
+      14:10:30  ADDED              Monarch Butterfly
+      14:10:48  ADDED              Tree Frog
+      14:10:51  ADDED              Green Anole lizard
+      14:10:57  ADDED              Pondhawk Dragonfly
+      14:11:31  DELETED            Earthworm
+      14:11:41  DELETED_CASCADE    Atlantic Blue Crab
+      14:11:46  DELETED            Persimmon
+      14:11:59  DELETED_CASCADE    Grasshopper
+      14:12:08  DELETED_CASCADE    Monarch Butterfly
+      14:12:20  DELETED_CASCADE    Pondhawk Dragonfly
+      14:12:23  DELETED            Eastern Ratsnake
+      14:12:28  DELETED_CASCADE    Green Sunfish
+      14:12:36  DELETED_CASCADE    Black Carpenter Ant
+      14:12:38  DELETED            Sun
+      14:12:39  DELETED            Green June Beetle
+      14:12:40  DELETED            White-footed Mouse
+      14:12:41  DELETED            Blue Heron
+      14:12:42  DELETED            Yellow Garden Spider
+      14:12:43  DELETED_CASCADE    Green June Beetle
+      14:12:43  DELETED            Tree Frog
+      14:12:44  DELETED            Green Anole lizard
+      14:12:51  ADDED              Sun
+      14:13:00  ADDED              Green Anole lizard
+    Animal add counts:
+        2x  ADDED     Sun
+        2x  ADDED     Green Anole lizard
+        1x  ADDED     Persimmon
+        1x  ADDED     Green June Beetle
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Grasshopper
+        1x  ADDED     Earthworm
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Tree Frog
+        1x  ADDED     Pondhawk Dragonfly
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Green June Beetle
+        1x  DELETED   Earthworm
+        1x  DELETED   Persimmon
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Sun
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Blue Heron
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Tree Frog
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Grasshopper
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Green Sunfish
+        1x  DELETED   Black Carpenter Ant
+    Most deleted animal: Green June Beetle (2x)
+    Cascades: 3 total
+      Cascade 1 (1 animals lost): Atlantic Blue Crab
+      Cascade 2 (2 animals lost): Grasshopper, Monarch Butterfly
+      Cascade 3 (4 animals lost) ← LONGEST: Pondhawk Dragonfly, Green Sunfish, Black Carpenter Ant, Green June Beetle
+    Longest cascade: 4 animals
+    Time to first cascade: 623.0s from session start
+    Cascade-deleted animals (no food source):
+      14:11:41  Atlantic Blue Crab
+      14:11:59  Grasshopper
+      14:12:08  Monarch Butterfly
+      14:12:20  Pondhawk Dragonfly
+      14:12:28  Green Sunfish
+      14:12:36  Black Carpenter Ant
+      14:12:43  Green June Beetle
+
+  Session 30  |  Mac  |  IP: 198.85.225.66
+    Time in:  14:17:43 EDT
+    Time out: 14:28:52 EDT  (669s total)
+    Time from session start to Sun added: 612.5s
+    First animal added after Sun: Persimmon
+    Event order:
+      14:17:43  ADDED              Sun
+      14:18:05  ADDED              Persimmon
+      14:18:13  ADDED              White-footed Mouse
+      14:18:23  DELETED            Persimmon
+      14:18:29  DELETED_CASCADE    White-footed Mouse
+      14:18:30  ADDED              Persimmon
+      14:18:36  ADDED              White-footed Mouse
+      14:19:20  ADDED              Monarch Butterfly
+      14:19:34  ADDED              Black Carpenter Ant
+      14:19:38  ADDED              Tree Frog
+      14:19:47  ADDED              Green Anole lizard
+      14:19:53  ADDED              Yellow Garden Spider
+      14:19:57  ADDED              Earthworm
+      14:20:14  DELETED            Green Anole lizard
+      14:20:28  ADDED              Green Anole lizard
+      14:20:42  DELETED            Sun
+      14:20:42  DELETED            Tree Frog
+      14:20:43  DELETED            Persimmon
+      14:20:44  DELETED            White-footed Mouse
+      14:20:45  DELETED            Monarch Butterfly
+      14:20:46  DELETED            Black Carpenter Ant
+      14:20:47  DELETED            Tree Frog
+      14:20:48  DELETED            Yellow Garden Spider
+      14:20:49  DELETED            Earthworm
+      14:20:50  DELETED            Green Anole lizard
+      14:26:26  ADDED              Sun
+      14:27:29  ADDED              Persimmon
+      14:27:44  ADDED              White-footed Mouse
+      14:27:54  ADDED              Eastern Ratsnake
+      14:28:08  ADDED              Green Anole lizard
+      14:28:14  ADDED              Blue Heron
+      14:28:30  DELETED            White-footed Mouse
+      14:28:39  DELETED_CASCADE    Green Anole lizard
+      14:28:46  DELETED_CASCADE    Eastern Ratsnake
+      14:28:52  DELETED_CASCADE    Blue Heron
+    Animal add counts:
+        3x  ADDED     Persimmon
+        3x  ADDED     White-footed Mouse
+        3x  ADDED     Green Anole lizard
+        2x  ADDED     Sun
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Tree Frog
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Earthworm
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        3x  DELETED   Green Anole lizard
+        3x  DELETED   White-footed Mouse
+        2x  DELETED   Persimmon
+        2x  DELETED   Tree Frog
+        1x  DELETED   Sun
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Earthworm
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Blue Heron
+    Most deleted animal: Green Anole lizard (3x)
+    Cascades: 2 total
+      Cascade 1 (1 animals lost): White-footed Mouse
+      Cascade 2 (3 animals lost) ← LONGEST: Green Anole lizard, Eastern Ratsnake, Blue Heron
+    Longest cascade: 3 animals
+    Time to first cascade: 658.8s from session start
+    Cascade-deleted animals (no food source):
+      14:18:29  White-footed Mouse
+      14:28:39  Green Anole lizard
+      14:28:46  Eastern Ratsnake
+      14:28:52  Blue Heron
+
+  Session 31  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:19:36 EDT
+    Time out: 14:19:36 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 32  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:28:06 EDT
+    Time out: 14:29:34 EDT  (88s total)
+    Time from session start to Sun added: 42.1s
+    First animal added after Sun: Persimmon
+    Event order:
+      14:28:06  ADDED              Sun
+      14:28:35  ADDED              Persimmon
+      14:28:37  ADDED              Earthworm
+      14:28:44  ADDED              Monarch Butterfly
+      14:28:52  ADDED              Green June Beetle
+      14:28:56  ADDED              Grasshopper
+      14:28:59  ADDED              Black Carpenter Ant
+      14:29:03  ADDED              Pondhawk Dragonfly
+      14:29:26  DELETED            Grasshopper
+      14:29:34  ADDED              Green Sunfish
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Green Sunfish
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Grasshopper
+    Most deleted animal: Grasshopper (1x)
+    No cascades
+
+  Session 33  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:30:49 EDT
+    Time out: 14:30:49 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 34  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:32:41 EDT
+    Time out: 14:37:26 EDT  (285s total)
+    Time from session start to Sun added: 38.9s
+    First animal added after Sun: Persimmon
+    Event order:
+      14:32:41  ADDED              Sun
+      14:33:23  ADDED              Persimmon
+      14:33:27  ADDED              Earthworm
+      14:33:36  ADDED              Monarch Butterfly
+      14:33:47  ADDED              Black Carpenter Ant
+      14:33:49  ADDED              Yellow Garden Spider
+      14:34:00  ADDED              Atlantic Blue Crab
+      14:34:06  ADDED              Blue Heron
+      14:34:20  ADDED              Green Anole lizard
+      14:34:25  ADDED              White-footed Mouse
+      14:34:33  ADDED              Pondhawk Dragonfly
+      14:34:36  ADDED              Eastern Ratsnake
+      14:34:40  ADDED              Tree Frog
+      14:34:44  ADDED              Green Sunfish
+      14:34:51  ADDED              Green June Beetle
+      14:34:58  ADDED              Grasshopper
+      14:35:32  DELETED            Earthworm
+      14:35:42  DELETED_CASCADE    Atlantic Blue Crab
+      14:36:00  DELETED            Pondhawk Dragonfly
+      14:36:11  DELETED_CASCADE    Green Sunfish
+      14:36:26  DELETED            Monarch Butterfly
+      14:36:45  DELETED            Black Carpenter Ant
+      14:37:17  DELETED            Sun
+      14:37:18  DELETED            Persimmon
+      14:37:19  DELETED            Yellow Garden Spider
+      14:37:20  DELETED            Blue Heron
+      14:37:21  DELETED            Green Anole lizard
+      14:37:22  DELETED            White-footed Mouse
+      14:37:23  DELETED            Eastern Ratsnake
+      14:37:24  DELETED            Tree Frog
+      14:37:25  DELETED            Green June Beetle
+      14:37:26  DELETED            Grasshopper
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Blue Heron
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Tree Frog
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Earthworm
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   Yellow Garden Spider
+        1x  DELETED   Blue Heron
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Tree Frog
+        1x  DELETED   Green June Beetle
+        1x  DELETED   Grasshopper
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green Sunfish
+    Most deleted animal: Earthworm (1x)
+    Cascades: 2 total
+      Cascade 1 (1 animals lost) ← LONGEST: Atlantic Blue Crab
+      Cascade 2 (1 animals lost): Green Sunfish
+    Longest cascade: 1 animals
+    Time to first cascade: 219.8s from session start
+    Cascade-deleted animals (no food source):
+      14:35:42  Atlantic Blue Crab
+      14:36:11  Green Sunfish
+
+  Session 35  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:51:01 EDT
+    Time out: 14:54:59 EDT  (238s total)
+    Time from session start to Sun added: 92.4s
+    First animal added after Sun: Persimmon
+    Event order:
+      14:51:01  ADDED              Sun
+      14:51:28  ADDED              Persimmon
+      14:51:35  ADDED              White-footed Mouse
+      14:51:49  ADDED              Eastern Ratsnake
+      14:52:10  ADDED              Earthworm
+      14:52:15  ADDED              Tree Frog
+      14:52:19  ADDED              Blue Heron
+      14:52:29  ADDED              Green Anole lizard
+      14:52:58  ADDED              Monarch Butterfly
+      14:53:16  ADDED              Atlantic Blue Crab
+      14:53:22  ADDED              Green Sunfish
+      14:53:34  ADDED              Yellow Garden Spider
+      14:53:38  ADDED              Pondhawk Dragonfly
+      14:53:42  ADDED              Black Carpenter Ant
+      14:53:48  ADDED              Grasshopper
+      14:53:53  ADDED              Green June Beetle
+      14:54:31  DELETED            White-footed Mouse
+      14:54:37  DELETED            Sun
+      14:54:38  DELETED            Persimmon
+      14:54:39  DELETED            Eastern Ratsnake
+      14:54:40  DELETED            Earthworm
+      14:54:41  DELETED            Tree Frog
+      14:54:42  DELETED            Blue Heron
+      14:54:43  DELETED            Green Anole lizard
+      14:54:44  DELETED            Monarch Butterfly
+      14:54:45  DELETED            Atlantic Blue Crab
+      14:54:46  DELETED            Yellow Garden Spider
+      14:54:46  DELETED            Green Sunfish
+      14:54:47  DELETED            Yellow Garden Spider
+      14:54:48  DELETED            Pondhawk Dragonfly
+      14:54:49  DELETED            Black Carpenter Ant
+      14:54:50  DELETED            Grasshopper
+      14:54:51  DELETED            Green June Beetle
+      14:54:59  ADDED              Sun
+    Animal add counts:
+        2x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Earthworm
+        1x  ADDED     Tree Frog
+        1x  ADDED     Blue Heron
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Grasshopper
+        1x  ADDED     Green June Beetle
+    Animal delete counts (DELETED + CASCADE):
+        2x  DELETED   Yellow Garden Spider
+        1x  DELETED   White-footed Mouse
+        1x  DELETED   Sun
+        1x  DELETED   Persimmon
+        1x  DELETED   Eastern Ratsnake
+        1x  DELETED   Earthworm
+        1x  DELETED   Tree Frog
+        1x  DELETED   Blue Heron
+        1x  DELETED   Green Anole lizard
+        1x  DELETED   Monarch Butterfly
+        1x  DELETED   Atlantic Blue Crab
+        1x  DELETED   Green Sunfish
+        1x  DELETED   Pondhawk Dragonfly
+        1x  DELETED   Black Carpenter Ant
+        1x  DELETED   Grasshopper
+        1x  DELETED   Green June Beetle
+    Most deleted animal: Yellow Garden Spider (2x)
+    No cascades
+
+  Session 36  |  Windows  |  IP: 198.85.225.66
+    Time in:  14:58:10 EDT
+    Time out: 14:58:10 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 37  |  Windows  |  IP: 198.85.225.66
+    Time in:  15:10:17 EDT
+    Time out: 15:10:22 EDT  (5s total)
+    Time from session start to Sun added: 471.9s
+    First animal added after Sun: Persimmon
+    Event order:
+      15:10:17  ADDED              Sun
+      15:10:21  ADDED              Persimmon
+      15:10:21  ADDED              Earthworm
+      15:10:21  ADDED              Monarch Butterfly
+      15:10:21  ADDED              Green June Beetle
+      15:10:21  ADDED              Grasshopper
+      15:10:22  ADDED              Black Carpenter Ant
+      15:10:22  ADDED              Pondhawk Dragonfly
+      15:10:22  ADDED              Yellow Garden Spider
+      15:10:22  ADDED              Green Sunfish
+      15:10:22  ADDED              Atlantic Blue Crab
+      15:10:22  ADDED              Tree Frog
+      15:10:22  ADDED              White-footed Mouse
+      15:10:22  ADDED              Green Anole lizard
+      15:10:22  ADDED              Eastern Ratsnake
+      15:10:22  ADDED              Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 38  |  Android  |  IP: 76.36.238.139
+    Time in:  15:13:06 EDT
+    Time out: 15:14:59 EDT  (113s total)
+    Time from session start to Sun added: 12.6s
+    First animal added after Sun: Persimmon
+    Event order:
+      15:13:06  ADDED              Sun
+      15:13:08  ADDED              Persimmon
+      15:13:14  DELETED            Persimmon
+      15:13:17  ADDED              Persimmon
+      15:13:34  ADDED              Green June Beetle
+      15:13:34  ADDED              Earthworm
+      15:13:34  ADDED              Monarch Butterfly
+      15:13:34  ADDED              Grasshopper
+      15:13:34  ADDED              Black Carpenter Ant
+      15:13:34  ADDED              Pondhawk Dragonfly
+      15:13:34  ADDED              Yellow Garden Spider
+      15:13:34  ADDED              Green Sunfish
+      15:13:35  ADDED              Atlantic Blue Crab
+      15:13:35  ADDED              Tree Frog
+      15:13:35  ADDED              White-footed Mouse
+      15:13:35  ADDED              Green Anole lizard
+      15:13:35  ADDED              Eastern Ratsnake
+      15:13:35  ADDED              Blue Heron
+      15:14:59  DELETED            Blue Heron
+    Animal add counts:
+        2x  ADDED     Persimmon
+        1x  ADDED     Sun
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Earthworm
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Grasshopper
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Tree Frog
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+        1x  DELETED   Persimmon
+        1x  DELETED   Blue Heron
+    Most deleted animal: Persimmon (1x)
+    No cascades
+
+  Session 39  |  iPhone  |  IP: 107.13.165.55
+    Time in:  15:44:18 EDT
+    Time out: 15:44:54 EDT  (37s total)
+    Time from session start to Sun added: 14.2s
+    First animal added after Sun: Persimmon
+    Event order:
+      15:44:18  ADDED              Sun
+      15:44:20  ADDED              Persimmon
+      15:44:21  ADDED              Green June Beetle
+      15:44:25  ADDED              Green Sunfish
+      15:44:29  ADDED              Yellow Garden Spider
+      15:44:30  ADDED              Monarch Butterfly
+      15:44:31  ADDED              Tree Frog
+      15:44:33  ADDED              White-footed Mouse
+      15:44:34  ADDED              Earthworm
+      15:44:35  ADDED              Black Carpenter Ant
+      15:44:46  ADDED              Pondhawk Dragonfly
+      15:44:48  ADDED              Grasshopper
+      15:44:49  ADDED              Atlantic Blue Crab
+      15:44:50  ADDED              Eastern Ratsnake
+      15:44:52  ADDED              Green Anole lizard
+      15:44:54  ADDED              Blue Heron
+    Animal add counts:
+        1x  ADDED     Sun
+        1x  ADDED     Persimmon
+        1x  ADDED     Green June Beetle
+        1x  ADDED     Green Sunfish
+        1x  ADDED     Yellow Garden Spider
+        1x  ADDED     Monarch Butterfly
+        1x  ADDED     Tree Frog
+        1x  ADDED     White-footed Mouse
+        1x  ADDED     Earthworm
+        1x  ADDED     Black Carpenter Ant
+        1x  ADDED     Pondhawk Dragonfly
+        1x  ADDED     Grasshopper
+        1x  ADDED     Atlantic Blue Crab
+        1x  ADDED     Eastern Ratsnake
+        1x  ADDED     Green Anole lizard
+        1x  ADDED     Blue Heron
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+  Session 40  |  iPhone  |  IP: 107.13.165.55
+    Time in:  15:49:45 EDT
+    Time out: 15:49:45 EDT  (0s total)
+    Sun never added
+    No animals added after Sun (or Sun never added)
+    Event order:
+    Animal add counts:
+    Animal delete counts (DELETED + CASCADE):
+    No cascades
+
+
+======================================================================
+  OVERALL STATS
+======================================================================
+
+SESSIONS
+----------------------------------------------------------------------
+  Total sessions:              40
+  Sessions by device:
+    Windows      29 sessions
+    Mac          7 sessions
+    iPhone       2 sessions
+    Unknown      1 sessions
+    Android      1 sessions
+
+TIME METRICS
+----------------------------------------------------------------------
+  Avg linger time (time in → time out): 109.7s  (1.8 mins)
+  Avg time from session start to Sun:   160.8s  (2.7 mins)
+  (based on 24/40 sessions where Sun was added)
+
+CASCADES
+----------------------------------------------------------------------
+  Sessions with at least 1 cascade:    9 / 40
+  Avg time to first cascade:           281.2s  (4.7 mins)
+  (based on 9 sessions with cascades)
+  Avg animals lost per cascade:        1.7
+  Cascade count distribution:
+    0 cascades      31 session(s)
+    1 cascade       1 session(s)
+    2 cascades      3 session(s)
+    3 cascades      1 session(s)
+    4 cascades      1 session(s)
+    5 cascades      1 session(s)
+    6 cascades      1 session(s)
+    7 cascades      1 session(s)
+
+FIRST ANIMAL ADDED AFTER SUN
+----------------------------------------------------------------------
+  Most common first animal after Sun:
+     23x  Persimmon
+
+ANIMAL ADD FREQUENCY (all sessions)
+----------------------------------------------------------------------
+    30x  Persimmon
+    29x  Sun
+    21x  Green Anole lizard
+    20x  Earthworm
+    20x  White-footed Mouse
+    20x  Eastern Ratsnake
+    20x  Blue Heron
+    19x  Green June Beetle
+    19x  Black Carpenter Ant
+    19x  Tree Frog
+    17x  Monarch Butterfly
+    17x  Grasshopper
+    17x  Yellow Garden Spider
+    16x  Pondhawk Dragonfly
+    16x  Green Sunfish
+    16x  Atlantic Blue Crab
+
+ANIMAL DELETE FREQUENCY (DELETED + CASCADE, all sessions)
+----------------------------------------------------------------------
+    21x  Persimmon
+    15x  White-footed Mouse
+    14x  Green June Beetle
+    14x  Black Carpenter Ant
+    14x  Tree Frog
+    14x  Green Anole lizard
+    13x  Sun
+    13x  Earthworm
+    13x  Grasshopper
+    13x  Blue Heron
+    12x  Monarch Butterfly
+    12x  Yellow Garden Spider
+    12x  Eastern Ratsnake
+    11x  Atlantic Blue Crab
+    11x  Pondhawk Dragonfly
+    10x  Green Sunfish
+
+  Most deleted overall: Persimmon (21x)
+
+
+Note: who_eats_whom_analysis.xlsx is open — saved to cleaned/who_eats_whom_analysis_015051.xlsx

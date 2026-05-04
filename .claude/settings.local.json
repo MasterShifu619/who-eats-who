@@ -4,7 +4,9 @@
       "Bash(npx next:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "WebFetch(domain:freesound.org)"
+      "WebFetch(domain:freesound.org)",
+      "Bash(python3 *)",
+      "Bash(pip install *)"
     ]
   }
 }
