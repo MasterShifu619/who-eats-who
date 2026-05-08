@@ -1,0 +1,30 @@
+# .github/workflows/build.yml
+name: Build and Push
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering from the UI
+
+jobs:
+  deploy:
+    # Points to central repo and the specific branch for the template
+    uses: ncstate-engineering/web-deployment-templates/.github/workflows/push-to-ecr.yml@workflows
+    with:
+      # Map variables to GHA inputs
+      app_env: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
+      ecr_name: "who-eats-whom-game"
+      sync_dockerfiles: false
+      build_app_disabled: true
+      build_nginx_disabled: true
+      build_php_disabled: true
+      build_custom_image_1: true
+      custom_image_1_filepath: "frontend/Dockerfile"
+      custom_image_1_context: "frontend"
+      custom_image_1_tag_prefix: "node"
+      build_custom_image_2: true
+      custom_image_2_filepath: "backend/Dockerfile"
+      custom_image_2_context: "backend"
+      custom_image_2_tag_prefix: "python"
+    secrets: inherit
