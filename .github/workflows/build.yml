@@ -21,10 +21,10 @@ jobs:
       build_php_disabled: true
       build_custom_image_1: true
       custom_image_1_filepath: "frontend/Dockerfile"
-      custom_image_1_context: "frontend"
+      custom_image_1_context: "frontend/"
       custom_image_1_tag_prefix: "node"
       build_custom_image_2: true
       custom_image_2_filepath: "backend/Dockerfile"
-      custom_image_2_context: "backend"
+      custom_image_2_context: "backend/"
       custom_image_2_tag_prefix: "python"
     secrets: inherit
