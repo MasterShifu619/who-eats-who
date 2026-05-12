@@ -148,12 +148,13 @@ export default function LizardPage() {
     bRef.current = next; setBubbles([...next])
   })
 
-  const startDrag = useCallback((animal: AnimalCard, cX: number, cY: number, bx: number, by: number) => {
+  const startDrag = useCallback((animal: AnimalCard, cX: number, cY: number, bx: number, by: number, pointerId: number) => {
     if (gsRef.current !== "IDLE") return
     gsRef.current = "DRAGGING"; setGs("DRAGGING")
     setDragId(animal.id); setDragPos({ x: bx, y: by })
     const mouth = getMouth()
     const onMove = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return
       if (gsRef.current !== "DRAGGING") return
       const nx = bx + (e.clientX - cX), ny = by + (e.clientY - cY)
       setDragPos({ x: nx, y: ny })
@@ -164,6 +165,7 @@ export default function LizardPage() {
       }
     }
     const onUp = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return
       window.removeEventListener("pointermove", onMove)
       window.removeEventListener("pointerup", onUp)
       const finalX = bx + (e.clientX - cX)
@@ -347,7 +349,7 @@ export default function LizardPage() {
             onPointerDown={e => {
               if (gs !== "IDLE") return
               e.preventDefault()
-              startDrag(animal, e.clientX, e.clientY, b.x, b.y)
+              startDrag(animal, e.clientX, e.clientY, b.x, b.y, e.pointerId)
             }}
             onKeyDown={e => {
               if (gs !== "IDLE") return
