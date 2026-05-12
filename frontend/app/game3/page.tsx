@@ -114,7 +114,7 @@ const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DEL
     })
 }
 
-// All feeding edges [prey, predator]
+// All feeding edge [prey, predator]
 const ALL_EDGES: [string,string][]=[
   ["Persimmon","Grasshopper"],["Persimmon","Monarch Butterfly"],["Persimmon","Earthworm"],["Persimmon","Black Carpenter Ant"],["Persimmon","White-footed Mouse"],
   ["Persimmon","Green June Beetle"],
