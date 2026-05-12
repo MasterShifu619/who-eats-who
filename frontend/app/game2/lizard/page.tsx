@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence, useAnimationFrame } from "framer-motion"
-import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic, playVictory, playChomp, playWrong } from "@/lib/sounds"
+import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic, playVictory, playChomp, playWrong, getMuted, setMuted } from "@/lib/sounds"
+import { getSpeakEnabled, setSpeakEnabled, useSpeakOnFocus } from "@/lib/useSpeakOnFocus"
 
 type LizardState = "idle" | "tongue_out" | "catching" | "swallow" | "lick" | "spit"
 
@@ -83,6 +84,9 @@ const logEvent = (animal: string, action: string, state: 0 | 1 | 2 = 0) => {
 const LEAF_COLORS = ["#6B8C5E", "#C8851A", "#A0522D", "#4A8B8C", "#D4A847"]
 
 export default function LizardPage() {
+  const [muted, setMutedState]      = useState(false)
+  const [speak, setSpeak]           = useState(false)
+  useSpeakOnFocus(speak)
   const [gs, setGs]                 = useState<GameState>("IDLE")
   const [dims, setDims]             = useState({ w: 1440, h: 900 })
   const [bubbles, setBubbles]       = useState<Bubble[]>([])
@@ -115,6 +119,8 @@ export default function LizardPage() {
     bRef.current = b; setBubbles([...b])
     ANIMALS.forEach(a => preloadSound(a.label))
     startBgMusic()
+    setMutedState(getMuted())
+    setSpeak(getSpeakEnabled())
     return () => stopBgMusic()
   }, [])
 
@@ -237,6 +243,32 @@ export default function LizardPage() {
       {/* Contrast overlay */}
       <div style={{ position: "absolute", inset: 0, zIndex: 500, pointerEvents: "none", background: "rgba(20,12,4,0.07)", mixBlendMode: "multiply" }} />
 
+      {/* ── Mute + speak buttons top-right ── */}
+      <div style={{ position: "absolute", top: 16, right: 16, zIndex: 30, display: "flex", gap: 6 }}>
+        <button
+          onClick={() => { const next = !speak; setSpeakEnabled(next); setSpeak(next) }}
+          aria-label={speak ? "Turn off read aloud" : "Turn on read aloud"}
+          title={speak ? "Read aloud: on" : "Read aloud: off"}
+          style={{
+            width: 36, height: 36, padding: 0, fontSize: 18, lineHeight: "34px",
+            background: "rgba(244,237,211,0.88)", border: "1px solid rgba(92,61,46,0.2)",
+            borderRadius: "50%", cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(44,24,16,0.12)",
+            opacity: speak ? 1 : 0.45,
+          }}
+        >🗣️</button>
+        <button
+          onClick={() => { const next = !muted; setMuted(next); setMutedState(next) }}
+          aria-label={muted ? "Unmute sounds" : "Mute sounds"}
+          style={{
+            width: 36, height: 36, padding: 0, fontSize: 18, lineHeight: "34px",
+            background: "rgba(244,237,211,0.88)", border: "1px solid rgba(92,61,46,0.2)",
+            borderRadius: "50%", cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(44,24,16,0.12)",
+          }}
+        >{muted ? "🔇" : "🔊"}</button>
+      </div>
+
       {/* ── Score badge ── */}
       <div style={{
         position: "absolute", top: 20, left: 24, zIndex: 30,
@@ -292,7 +324,11 @@ export default function LizardPage() {
         const dispY = isDragged && dragPos ? dragPos.y : isCaptured && swallowPos ? swallowPos.y : b.y
 
         return (
-          <motion.div key={b.id} style={{
+          <motion.div key={b.id}
+            role="button"
+            tabIndex={gs === "IDLE" ? 0 : -1}
+            aria-label={`${animal.label} — press Enter to feed to lizard`}
+            style={{
             position: "absolute",
             left: dispX - CARD_SIZE / 2, top: dispY - CARD_SIZE / 2,
             width: CARD_SIZE,
@@ -310,6 +346,10 @@ export default function LizardPage() {
               if (gs !== "IDLE") return
               e.preventDefault()
               startDrag(animal, e.clientX, e.clientY, b.x, b.y)
+            }}
+            onKeyDown={e => {
+              if (gs !== "IDLE") return
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); capture(animal, b.x, b.y) }
             }}
           >
             <img

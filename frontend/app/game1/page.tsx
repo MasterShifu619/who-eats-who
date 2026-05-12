@@ -9,6 +9,8 @@ import NetworkCanvas from "@/components/game1/NetworkCanvas"
 import { checkWhoEatsWhom } from "@/lib/api"
 import type { Species, WhoEatsWhomResult, NetworkNode, NetworkLink } from "@/lib/types"
 import { useReducedMotion } from "@/lib/useReducedMotion"
+import { getMuted, setMuted } from "@/lib/sounds"
+import { getSpeakEnabled, setSpeakEnabled, useSpeakOnFocus } from "@/lib/useSpeakOnFocus"
 
 const SR_ONLY: React.CSSProperties = {
   position: "absolute", width: 1, height: 1, padding: 0,
@@ -27,6 +29,9 @@ interface DragState {
 
 export default function Game1Page() {
   const prefersReduced = useReducedMotion()
+  const [muted, setMutedState] = useState(false)
+  const [speak, setSpeak] = useState(false)
+  useSpeakOnFocus(speak)
   const [zoneA, setZoneA] = useState<Species | null>(null)
   const [zoneB, setZoneB] = useState<Species | null>(null)
   const [keyboardPick, setKeyboardPick] = useState<{ species: Species; localImage: string | null } | null>(null)
@@ -138,6 +143,11 @@ export default function Game1Page() {
     return () => window.removeEventListener("keydown", onKey)
   }, [])
 
+  useEffect(() => {
+    setMutedState(getMuted())
+    setSpeak(getSpeakEnabled())
+  }, [])
+
   const placedSpecies = [zoneA?.scientific_name, zoneB?.scientific_name].filter(Boolean) as string[]
 
   const ariaStatus = checking
@@ -195,7 +205,32 @@ export default function Game1Page() {
         }}
       >
         {/* Title */}
-        <div style={{ flexShrink: 0, padding: "20px 36px 6px", display: "flex", alignItems: "baseline", gap: 12 }}>
+        <div style={{ flexShrink: 0, padding: "20px 36px 6px", display: "flex", alignItems: "baseline", gap: 12, position: "relative" }}>
+          {/* Mute + speak buttons */}
+          <div style={{ position: "absolute", top: 16, right: 36, display: "flex", gap: 6, zIndex: 10 }}>
+            <button
+              onClick={() => { const next = !speak; setSpeakEnabled(next); setSpeak(next) }}
+              aria-label={speak ? "Turn off read aloud" : "Turn on read aloud"}
+              title={speak ? "Read aloud: on" : "Read aloud: off"}
+              style={{
+                width: 36, height: 36, padding: 0, fontSize: 18, lineHeight: "34px",
+                background: "rgba(244,237,211,0.88)", border: "1px solid rgba(92,61,46,0.2)",
+                borderRadius: "50%", cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(44,24,16,0.12)",
+                opacity: speak ? 1 : 0.45,
+              }}
+            >🗣️</button>
+            <button
+              onClick={() => { const next = !muted; setMuted(next); setMutedState(next) }}
+              aria-label={muted ? "Unmute sounds" : "Mute sounds"}
+              style={{
+                width: 36, height: 36, padding: 0, fontSize: 18, lineHeight: "34px",
+                background: "rgba(244,237,211,0.88)", border: "1px solid rgba(92,61,46,0.2)",
+                borderRadius: "50%", cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(44,24,16,0.12)",
+              }}
+            >{muted ? "🔇" : "🔊"}</button>
+          </div>
           <h1
             style={{
               fontFamily: "var(--font-mansalva), cursive",

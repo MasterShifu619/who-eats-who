@@ -6,6 +6,7 @@ import HeronFace, { HeronState } from "@/components/game2/HeronFace"
 import FloatingBubble, { BubbleSpecies } from "@/components/game2/FloatingBubble"
 import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic, getMuted, setMuted } from "@/lib/sounds"
 import { useReducedMotion } from "@/lib/useReducedMotion"
+import { getSpeakEnabled, setSpeakEnabled, useSpeakOnFocus } from "@/lib/useSpeakOnFocus"
 
 const SR_ONLY: React.CSSProperties = {
   position: "absolute", width: 1, height: 1, padding: 0,
@@ -69,6 +70,8 @@ const FEEDBACK = {
 export default function Game2Page() {
   const prefersReduced = useReducedMotion()
   const [muted, setMutedState] = useState(false)
+  const [speak, setSpeak] = useState(false)
+  useSpeakOnFocus(speak)
   const [heronState, setHeronState]   = useState<HeronState>("idle")
   const [drag, setDrag]               = useState<DragState | null>(null)
   const [isOverMouth, setIsOverMouth] = useState(false)
@@ -87,6 +90,7 @@ export default function Game2Page() {
     setPositions(scatter(BUBBLE_SPECIES.length, w, h))
     BUBBLE_SPECIES.forEach(s => preloadSound(s.scientific_name))
     setMutedState(getMuted())
+    setSpeak(getSpeakEnabled())
     startBgMusic()
     return () => stopBgMusic()
   }, [])
@@ -243,11 +247,14 @@ export default function Game2Page() {
         <button
           onClick={handleMuteToggle}
           aria-label={muted ? "Unmute sounds" : "Mute sounds"}
-          style={{
-            background: "transparent", border: "none", cursor: "pointer",
-            fontSize: 18, opacity: 0.5, lineHeight: 1, padding: 0,
-          }}
+          style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 18, opacity: 0.5, lineHeight: 1, padding: 0 }}
         >{muted ? "🔇" : "🔊"}</button>
+        <button
+          onClick={() => { const next = !speak; setSpeakEnabled(next); setSpeak(next) }}
+          aria-label={speak ? "Turn off read aloud" : "Turn on read aloud"}
+          title={speak ? "Read aloud: on" : "Read aloud: off"}
+          style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 18, opacity: speak ? 1 : 0.4, lineHeight: 1, padding: 0 }}
+        >🗣️</button>
         <a href="/game1" style={{
           fontFamily: "system-ui, sans-serif", fontWeight: 700,
           fontSize: 13, color: "rgba(255,255,255,0.4)",

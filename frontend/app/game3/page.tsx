@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning, startBgMusic, stopBgMusic, getMuted, setMuted } from "@/lib/sounds"
 import Tutorial, { shouldShowTutorial } from "@/components/game3/Tutorial"
 import { useReducedMotion } from "@/lib/useReducedMotion"
+import { getSpeakEnabled, setSpeakEnabled, useSpeakOnFocus } from "@/lib/useSpeakOnFocus"
 
 const SR_ONLY: React.CSSProperties = {
   position: "absolute", width: 1, height: 1, padding: 0,
@@ -155,6 +156,8 @@ const STATIC_NODES: NodeDef[] = [
 export default function Game3Page() {
   const prefersReduced = useReducedMotion()
   const [mutedState, setMutedState] = useState(false)
+  const [speakState, setSpeakState] = useState(false)
+  useSpeakOnFocus(speakState)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const placedRef    = useRef<PlacedNode[]>([])
   const edgesRef     = useRef<Edge[]>([])
@@ -189,6 +192,7 @@ export default function Game3Page() {
     setShowTutorial(true)
     logEvent("SESSION", "STARTED")
     setMutedState(getMuted())
+    setSpeakState(getSpeakEnabled())
   },[])
 
   useEffect(()=>{ shelfPosRef.current=shelfPos },[shelfPos])
@@ -904,36 +908,78 @@ export default function Game3Page() {
         role="img"
       />
 
-      {/* ── ARIA tree: screen-reader parallel DOM for canvas contents ── */}
-      <div role="region" aria-label="Food web contents" style={SR_ONLY}>
-        {placedIds.size === 0
-          ? <p>No animals placed yet. Use the Field Specimens shelf to add animals.</p>
-          : <p>{placedIds.size} animal{placedIds.size !== 1 ? "s" : ""} in the food web.</p>
-        }
-        <ul aria-label="Placed animals">
-          {[...placedIds].map(id => {
-            const def = STATIC_NODES.find(n => n.id === id)
-            if (!def) return null
-            const prey = id === SUN_ID ? [] : ALL_EDGES.filter(([p, pred]) => pred === id && placedIds.has(p)).map(([p]) => p)
-            const predators = id === SUN_ID ? [] : ALL_EDGES.filter(([p, pred]) => p === id && placedIds.has(pred)).map(([, pred]) => pred)
-            const desc = id === SUN_ID
-              ? "energy source for all producers"
-              : [
-                  prey.length ? `eats: ${prey.join(", ")}` : "no prey currently placed",
-                  predators.length ? `eaten by: ${predators.join(", ")}` : "no predators currently placed",
-                ].join(". ")
-            return (
-              <li key={id}>
-                <span>{def.label} — {desc}.</span>
-                {" "}
-                <button onClick={() => deleteNodeAnimated(id)} aria-label={`Remove ${def.label} from food web`}>
-                  Remove
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      {/* ── Food web panel: visible keyboard-accessible list of placed animals ── */}
+      {placedIds.size > 0 && (
+        <div
+          role="region"
+          aria-label="Food web contents"
+          style={{
+            position: "absolute",
+            bottom: shelfPos === "bottom" && shelfVisible ? SHELF_H + 10 : 16,
+            right: shelfPos === "right" && shelfVisible ? SHELF_W + 10 : 16,
+            zIndex: 25,
+            maxWidth: 220,
+            maxHeight: 260,
+            overflowY: "auto",
+            background: isDay ? "rgba(244,237,211,0.94)" : "rgba(12,18,28,0.94)",
+            border: isDay ? "1px solid rgba(92,61,46,0.2)" : "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "6px 12px 8px 10px / 10px 6px 12px 8px",
+            boxShadow: isDay ? "0 4px 20px rgba(44,24,16,0.15)" : "0 4px 20px rgba(0,0,0,0.4)",
+            backdropFilter: "blur(8px)",
+            padding: "8px 10px 10px",
+            scrollbarWidth: "none",
+          }}
+        >
+          <div style={{
+            fontFamily: "var(--font-mansalva), cursive",
+            fontSize: 11,
+            color: isDay ? "rgba(44,24,16,0.6)" : "rgba(180,200,230,0.6)",
+            marginBottom: 6,
+            letterSpacing: "0.04em",
+          }}>
+            In the web ({placedIds.size})
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+            {[...placedIds].map(id => {
+              const def = STATIC_NODES.find(n => n.id === id)
+              if (!def) return null
+              return (
+                <li key={id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
+                  <span style={{
+                    fontFamily: "var(--font-playfair), serif",
+                    fontSize: 10,
+                    color: isDay ? "rgba(44,24,16,0.8)" : "rgba(200,220,240,0.85)",
+                    flex: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {def.emoji} {def.label}
+                  </span>
+                  <button
+                    onClick={() => deleteNodeAnimated(id)}
+                    aria-label={`Remove ${def.label} from food web`}
+                    style={{
+                      flexShrink: 0,
+                      padding: "2px 6px",
+                      fontSize: 9,
+                      fontFamily: "var(--font-playfair), serif",
+                      fontStyle: "italic",
+                      color: isDay ? "rgba(160,82,45,0.8)" : "rgba(200,120,80,0.8)",
+                      background: "transparent",
+                      border: isDay ? "1px solid rgba(160,82,45,0.3)" : "1px solid rgba(200,120,80,0.3)",
+                      borderRadius: "3px 6px 4px 5px / 5px 3px 6px 4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    remove
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* ── Title + Message row ── */}
       <div style={{
@@ -1157,19 +1203,33 @@ export default function Game3Page() {
         )}
       </AnimatePresence>
 
-      {/* ── Mute button — always visible top-right ── */}
-      <button
-        onClick={()=>{ const next=!mutedState; setMuted(next); setMutedState(next) }}
-        aria-label={mutedState ? "Unmute sounds" : "Mute sounds"}
-        style={{
-          position:"absolute", top:16, right:16, zIndex:30,
-          width:36, height:36, padding:0, fontSize:18, lineHeight:"34px",
-          background:isDay?"rgba(244,237,211,0.88)":"rgba(12,18,28,0.88)",
-          border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
-          borderRadius:"50%", cursor:"pointer",
-          boxShadow:isDay?"0 2px 8px rgba(44,24,16,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
-        }}
-      >{mutedState?"🔇":"🔊"}</button>
+      {/* ── Mute + speak buttons — always visible top-right ── */}
+      <div style={{ position:"absolute", top:16, right:16, zIndex:30, display:"flex", gap:6 }}>
+        <button
+          onClick={()=>{ const next=!speakState; setSpeakEnabled(next); setSpeakState(next) }}
+          aria-label={speakState ? "Turn off read aloud" : "Turn on read aloud"}
+          title={speakState ? "Read aloud: on" : "Read aloud: off"}
+          style={{
+            width:36, height:36, padding:0, fontSize:18, lineHeight:"34px",
+            background:isDay?"rgba(244,237,211,0.88)":"rgba(12,18,28,0.88)",
+            border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
+            borderRadius:"50%", cursor:"pointer",
+            boxShadow:isDay?"0 2px 8px rgba(44,24,16,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
+            opacity: speakState ? 1 : 0.45,
+          }}
+        >🗣️</button>
+        <button
+          onClick={()=>{ const next=!mutedState; setMuted(next); setMutedState(next) }}
+          aria-label={mutedState ? "Unmute sounds" : "Mute sounds"}
+          style={{
+            width:36, height:36, padding:0, fontSize:18, lineHeight:"34px",
+            background:isDay?"rgba(244,237,211,0.88)":"rgba(12,18,28,0.88)",
+            border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
+            borderRadius:"50%", cursor:"pointer",
+            boxShadow:isDay?"0 2px 8px rgba(44,24,16,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
+          }}
+        >{mutedState?"🔇":"🔊"}</button>
+      </div>
 
       {/* ── Hold-to-remove hint pill ── fades in once any animal is placed */}
       <AnimatePresence>
