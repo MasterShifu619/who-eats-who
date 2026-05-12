@@ -2,8 +2,15 @@
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning, startBgMusic, stopBgMusic } from "@/lib/sounds"
+import { preloadSound, playPlaceSound, playRemoveSound, playPlaceChime, playCascadeWarning, startBgMusic, stopBgMusic, getMuted, setMuted } from "@/lib/sounds"
 import Tutorial, { shouldShowTutorial } from "@/components/game3/Tutorial"
+import { useReducedMotion } from "@/lib/useReducedMotion"
+
+const SR_ONLY: React.CSSProperties = {
+  position: "absolute", width: 1, height: 1, padding: 0,
+  margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)",
+  whiteSpace: "nowrap", border: 0,
+}
 
 // Test 
 interface NodeDef {
@@ -146,6 +153,8 @@ const STATIC_NODES: NodeDef[] = [
 ]
 
 export default function Game3Page() {
+  const prefersReduced = useReducedMotion()
+  const [mutedState, setMutedState] = useState(false)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const placedRef    = useRef<PlacedNode[]>([])
   const edgesRef     = useRef<Edge[]>([])
@@ -177,8 +186,9 @@ export default function Game3Page() {
 
   // Show tutorial on every page load
   useEffect(()=>{
-  setShowTutorial(true)
-  logEvent("SESSION", "STARTED")
+    setShowTutorial(true)
+    logEvent("SESSION", "STARTED")
+    setMutedState(getMuted())
   },[])
 
   useEffect(()=>{ shelfPosRef.current=shelfPos },[shelfPos])
@@ -903,6 +913,8 @@ export default function Game3Page() {
         </div>
 
         {/* Message bubble — appears inline to the right of the title */}
+        {/* aria-live region mirrors message for screen readers */}
+        <div aria-live="assertive" aria-atomic="true" style={SR_ONLY}>{message?.text ?? ""}</div>
         <AnimatePresence>
           {message&&(
             <motion.div style={{
@@ -914,8 +926,10 @@ export default function Game3Page() {
               backdropFilter:"blur(6px)",
               flexShrink:0,maxWidth:"40vw",
             }}
-              initial={{scale:0.8,opacity:0,x:-8}} animate={{scale:1,opacity:1,x:0}} exit={{scale:0.85,opacity:0}}
-              transition={{type:"spring",stiffness:300,damping:22}}>
+              initial={{scale: prefersReduced ? 1 : 0.8,opacity:0,x: prefersReduced ? 0 : -8}}
+              animate={{scale:1,opacity:1,x:0}}
+              exit={{scale:0.85,opacity:0}}
+              transition={prefersReduced ? {duration:0} : {type:"spring",stiffness:300,damping:22}}>
               <div style={{
                 fontFamily:"var(--font-mansalva), cursive",fontSize:16,
                 color:message.color,textAlign:"center",
@@ -999,6 +1013,17 @@ export default function Game3Page() {
                     Field Specimens
                   </span>
                 )}
+                <button
+                  onClick={()=>{ const next=!mutedState; setMuted(next); setMutedState(next) }}
+                  aria-label={mutedState ? "Unmute sounds" : "Mute sounds"}
+                  style={{
+                    width:24,height:24,padding:0,fontSize:13,lineHeight:"22px",
+                    background:"transparent",cursor:"pointer",
+                    border:isDay?"1px solid rgba(92,61,46,0.15)":"1px solid rgba(255,255,255,0.08)",
+                    borderRadius:4,
+                    color:isDay?"rgba(92,61,46,0.6)":"rgba(120,150,190,0.6)",
+                  }}
+                >{mutedState?"🔇":"🔊"}</button>
                 <button onClick={autoFill} style={{
                   padding:"4px 8px",marginLeft:shelfPos==="bottom"?0:0,
                   fontFamily:"var(--font-mansalva), cursive",fontSize:11,
@@ -1123,7 +1148,7 @@ export default function Game3Page() {
           >
             {/* Animated hold icon */}
             <motion.span
-              animate={{scale:[1, 1.18, 1]}}
+              animate={prefersReduced ? {} : {scale:[1, 1.18, 1]}}
               transition={{duration:1.8, repeat:Infinity, ease:"easeInOut"}}
               style={{fontSize:14, lineHeight:1}}
             >
@@ -1149,7 +1174,7 @@ export default function Game3Page() {
                 strokeLinecap="round"
                 fill="none"
                 strokeDasharray="44"
-                animate={{strokeDashoffset:[44, 0]}}
+                animate={prefersReduced ? {} : {strokeDashoffset:[44, 0]}}
                 transition={{duration:2.2, repeat:Infinity, ease:"linear", repeatDelay:0.8}}
                 style={{rotate:"-90deg", transformOrigin:"9px 9px"}}
               />
@@ -1177,7 +1202,9 @@ export default function Game3Page() {
               boxShadow:"0 8px 24px rgba(44,24,16,0.25)",
               transform:"rotate(3deg)",
             }}
-              initial={{scale:0.8,opacity:0}} animate={{scale:1.1,opacity:1}} exit={{scale:0.7,opacity:0}}
+              initial={{scale: prefersReduced ? 1 : 0.8,opacity:0}}
+              animate={{scale: prefersReduced ? 1 : 1.1,opacity:1}}
+              exit={{scale: prefersReduced ? 1 : 0.7,opacity:0}}
             >
               {pngSrc?(
                 <img src={pngSrc} alt={def?.label} style={{

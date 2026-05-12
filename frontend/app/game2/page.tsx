@@ -4,7 +4,14 @@ import { useState, useRef, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import HeronFace, { HeronState } from "@/components/game2/HeronFace"
 import FloatingBubble, { BubbleSpecies } from "@/components/game2/FloatingBubble"
-import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic } from "@/lib/sounds"
+import { preloadSound, playRemoveSound, startBgMusic, stopBgMusic, getMuted, setMuted } from "@/lib/sounds"
+import { useReducedMotion } from "@/lib/useReducedMotion"
+
+const SR_ONLY: React.CSSProperties = {
+  position: "absolute", width: 1, height: 1, padding: 0,
+  margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)",
+  whiteSpace: "nowrap", border: 0,
+}
 
 const BUBBLE_SPECIES: BubbleSpecies[] = [
   // ── Prey ──
@@ -60,6 +67,8 @@ const FEEDBACK = {
 }
 
 export default function Game2Page() {
+  const prefersReduced = useReducedMotion()
+  const [muted, setMutedState] = useState(false)
   const [heronState, setHeronState]   = useState<HeronState>("idle")
   const [drag, setDrag]               = useState<DragState | null>(null)
   const [isOverMouth, setIsOverMouth] = useState(false)
@@ -77,6 +86,7 @@ export default function Game2Page() {
     const h = window.innerHeight
     setPositions(scatter(BUBBLE_SPECIES.length, w, h))
     BUBBLE_SPECIES.forEach(s => preloadSound(s.scientific_name))
+    setMutedState(getMuted())
     startBgMusic()
     return () => stopBgMusic()
   }, [])
@@ -134,12 +144,27 @@ export default function Game2Page() {
   const activeBubbles = BUBBLE_SPECIES.filter((s) => !eaten.has(s.scientific_name))
   const fb = feedback ? FEEDBACK[feedback] : null
 
+  const handleMuteToggle = () => {
+    const next = !muted
+    setMuted(next)
+    setMutedState(next)
+  }
+
+  const ariaStatus = score === TOTAL_PREY && score > 0
+    ? `The Heron is full! You found all ${score} favourite foods!`
+    : fb
+      ? `${fb.headline} ${fb.sub}`
+      : ""
+
   return (
     <div style={{
       width: "100vw", height: "100vh",
       background: "linear-gradient(135deg, #0D1B2A 0%, #1A2F4A 50%, #0D1B2A 100%)",
       overflow: "hidden", position: "relative", userSelect: "none",
     }}>
+
+      {/* Screen-reader live region */}
+      <div aria-live="assertive" aria-atomic="true" style={SR_ONLY}>{ariaStatus}</div>
 
       {/* Stars */}
       {[...Array(40)].map((_, i) => (
@@ -152,7 +177,7 @@ export default function Game2Page() {
           opacity: 0.25 + (i % 4) * 0.1,
           pointerEvents: "none",
         }}
-          animate={{ opacity: [0.15, 0.6, 0.15] }}
+          animate={prefersReduced ? {} : { opacity: [0.15, 0.6, 0.15] }}
           transition={{ duration: 2 + (i % 3), repeat: Infinity, delay: i * 0.15 }}
         />
       ))}
@@ -192,13 +217,22 @@ export default function Game2Page() {
         </div>
       </div>
 
-      {/* Back */}
-      <a href="/game1" style={{
-        position: "absolute", top: 22, right: 24, zIndex: 20,
-        fontFamily: "system-ui, sans-serif", fontWeight: 700,
-        fontSize: 13, color: "rgba(255,255,255,0.4)",
-        textDecoration: "none",
-      }}>Back →</a>
+      {/* Back + Mute */}
+      <div style={{ position: "absolute", top: 22, right: 24, zIndex: 20, display: "flex", alignItems: "center", gap: 12 }}>
+        <button
+          onClick={handleMuteToggle}
+          aria-label={muted ? "Unmute sounds" : "Mute sounds"}
+          style={{
+            background: "transparent", border: "none", cursor: "pointer",
+            fontSize: 18, opacity: 0.5, lineHeight: 1, padding: 0,
+          }}
+        >{muted ? "🔇" : "🔊"}</button>
+        <a href="/game1" style={{
+          fontFamily: "system-ui, sans-serif", fontWeight: 700,
+          fontSize: 13, color: "rgba(255,255,255,0.4)",
+          textDecoration: "none",
+        }}>Back →</a>
+      </div>
 
       {/* Heron — top right, beak drawn pointing left */}
       <div style={{
@@ -292,10 +326,10 @@ export default function Game2Page() {
             transform: "translateX(-50%)",
             zIndex: 40, textAlign: "center", pointerEvents: "none",
           }}
-            initial={{ scale: 0.3, opacity: 0, y: 20 }}
+            initial={{ scale: prefersReduced ? 1 : 0.3, opacity: 0, y: prefersReduced ? 0 : 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: -20 }}
-            transition={{ type: "spring", stiffness: 400, damping: 18 }}
+            exit={{ scale: 0.8, opacity: 0, y: prefersReduced ? 0 : -20 }}
+            transition={prefersReduced ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 18 }}
           >
             <div style={{ fontSize: 72, lineHeight: 1 }}>{fb.emoji}</div>
             <div style={{
@@ -328,8 +362,8 @@ export default function Game2Page() {
                 background: ["#4ADE80","#60A5FA","#FBBF24","#F87171","#A78BFA"][i % 5],
                 left: `${5 + (i * 4.1) % 90}%`, top: "10%",
               }}
-                animate={{ y: ["0vh","90vh"], rotate: [0, 360*(i%2===0?1:-1)], opacity:[1,0] }}
-                transition={{ duration: 2+(i%3)*0.5, delay: i*0.08, repeat: Infinity, ease: "linear" }}
+                animate={prefersReduced ? { opacity: [1, 0] } : { y: ["0vh","90vh"], rotate: [0, 360*(i%2===0?1:-1)], opacity:[1,0] }}
+                transition={{ duration: prefersReduced ? 0.5 : 2+(i%3)*0.5, delay: prefersReduced ? 0 : i*0.08, repeat: Infinity, ease: "linear" }}
               />
             ))}
             <motion.div style={{ fontSize: 80 }}

@@ -2,6 +2,23 @@ import { Howl } from "howler"
 
 const FREESOUND_KEY = process.env.NEXT_PUBLIC_FREESOUND_KEY || ""
 
+// ── Mute state ────────────────────────────────────────────────────────────────
+const MUTE_KEY = "weew-muted"
+let _muted: boolean | null = null
+
+export function getMuted(): boolean {
+  if (_muted === null) {
+    _muted = typeof window !== "undefined" && localStorage.getItem(MUTE_KEY) === "1"
+  }
+  return _muted
+}
+
+export function setMuted(val: boolean) {
+  _muted = val
+  if (typeof window !== "undefined") localStorage.setItem(MUTE_KEY, val ? "1" : "0")
+  if (bgMusic) bgMusic.volume(val ? 0 : 0.45)
+}
+
 // Search queries per animal — tuned for short, recognizable sounds
 const ANIMAL_QUERIES: Record<string, string> = {
   "Sun":                  "birds chirping ai",
@@ -62,17 +79,20 @@ export async function preloadSound(animalId: string): Promise<void> {
 }
 
 export function playPlaceSound(animalId: string) {
+  if (getMuted()) return
   console.log("cache for", animalId, soundCache[animalId])
   soundCache[animalId]?.place?.play()
 }
 
 export function playRemoveSound(animalId: string) {
+  if (getMuted()) return
   soundCache[animalId]?.remove?.play()
 }
 
 // Cascade warning — a low ominous tone using Web Audio API
 let audioCtx: AudioContext | null = null
 export function playCascadeWarning() {
+  if (getMuted()) return
   try {
     if (!audioCtx) audioCtx = new AudioContext()
     const osc = audioCtx.createOscillator()
@@ -91,9 +111,10 @@ const BG_MUSIC_URL = "https://cdn.freesound.org/previews/759/759738_2061858-lq.m
 let bgMusic: Howl | null = null
 
 export function startBgMusic() {
-  if (bgMusic) { bgMusic.play(); return }
-  bgMusic = new Howl({ src: [BG_MUSIC_URL], loop: true, volume: 0.45, preload: true })
-  bgMusic.play()
+  const muted = getMuted()
+  if (bgMusic) { if (!muted) bgMusic.play(); return }
+  bgMusic = new Howl({ src: [BG_MUSIC_URL], loop: true, volume: muted ? 0 : 0.45, preload: true })
+  if (!muted) bgMusic.play()
 }
 
 export function stopBgMusic() {
@@ -104,6 +125,7 @@ export function stopBgMusic() {
 // Chomp — freesound.org #834358 by designerschoice
 let chompHowl: Howl | null = null
 export function playChomp() {
+  if (getMuted()) return
   if (!chompHowl) {
     chompHowl = new Howl({ src: ["https://cdn.freesound.org/previews/834/834358_6951162-lq.mp3"], volume: 0.9, preload: true })
   }
@@ -112,6 +134,7 @@ export function playChomp() {
 
 // Wrong answer — descending wah-wah buzzer
 export function playWrong() {
+  if (getMuted()) return
   try {
     if (!audioCtx) audioCtx = new AudioContext()
     const notes = [311, 233]   // Eb4 → Bb3
@@ -133,6 +156,7 @@ export function playWrong() {
 
 // Victory fanfare — ascending arpeggio using Web Audio API
 export function playVictory() {
+  if (getMuted()) return
   try {
     if (!audioCtx) audioCtx = new AudioContext()
     const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51] // C5 E5 G5 C6 E6
@@ -153,6 +177,7 @@ export function playVictory() {
 
 // Place chime — bright pop using Web Audio API (instant, no fetch needed)
 export function playPlaceChime() {
+  if (getMuted()) return
   try {
     if (!audioCtx) audioCtx = new AudioContext()
     const osc = audioCtx.createOscillator()

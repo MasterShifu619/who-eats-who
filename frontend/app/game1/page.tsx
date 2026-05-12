@@ -8,6 +8,13 @@ import PhotoModal from "@/components/game1/PhotoModal"
 import NetworkCanvas from "@/components/game1/NetworkCanvas"
 import { checkWhoEatsWhom } from "@/lib/api"
 import type { Species, WhoEatsWhomResult, NetworkNode, NetworkLink } from "@/lib/types"
+import { useReducedMotion } from "@/lib/useReducedMotion"
+
+const SR_ONLY: React.CSSProperties = {
+  position: "absolute", width: 1, height: 1, padding: 0,
+  margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)",
+  whiteSpace: "nowrap", border: 0,
+}
 
 interface DragState {
   species: Species
@@ -19,6 +26,7 @@ interface DragState {
 }
 
 export default function Game1Page() {
+  const prefersReduced = useReducedMotion()
   const [zoneA, setZoneA] = useState<Species | null>(null)
   const [zoneB, setZoneB] = useState<Species | null>(null)
   const [drag, setDrag] = useState<DragState | null>(null)
@@ -113,6 +121,16 @@ export default function Game1Page() {
   }, [zoneA, zoneB])
 
   const placedSpecies = [zoneA?.scientific_name, zoneB?.scientific_name].filter(Boolean) as string[]
+
+  const ariaStatus = checking
+    ? `Checking relationship between ${zoneA?.common_name ?? ""} and ${zoneB?.common_name ?? ""}…`
+    : result && zoneA && zoneB
+      ? result.direction === "a_eats_b"
+        ? `${zoneA.common_name} eats ${zoneB.common_name}.`
+        : result.direction === "b_eats_a"
+          ? `${zoneB.common_name} eats ${zoneA.common_name}.`
+          : `No predator-prey relationship found between ${zoneA.common_name} and ${zoneB.common_name}.`
+      : ""
 
   return (
     <div
@@ -264,6 +282,9 @@ export default function Game1Page() {
         </div>
       </div>
 
+      {/* Screen-reader live region */}
+      <div aria-live="polite" aria-atomic="true" style={SR_ONLY}>{ariaStatus}</div>
+
       {/* ── Drag ghost ── */}
       <AnimatePresence>
         {drag && (
@@ -278,9 +299,9 @@ export default function Game1Page() {
               zIndex: 100,
             }}
             initial={{ scale: 0.9, opacity: 0.8, rotate: 0 }}
-            animate={{ scale: 1.12, opacity: 0.95, rotate: 3 }}
+            animate={{ scale: prefersReduced ? 1 : 1.12, opacity: 0.95, rotate: prefersReduced ? 0 : 3 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: prefersReduced ? 0 : 0.15 }}
           >
             <div
               style={{
