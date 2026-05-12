@@ -403,9 +403,10 @@ export default function Game3Page() {
       if(myPrey.length>0&&myPrey.every(p=>!presentIds.has(p))) starving.push(id)
     })
     if(starving.length===0&&exploding.length===0) return
+    exploding.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.exploding=true})
+    if(starving.length===0) return
     setMessage({text:"⚠️ Watch the cascade...",color:"#FFAA00"})
     playCascadeWarning()
-    exploding.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.exploding=true})
     starving.forEach(id=>{const n=placedRef.current.find(n=>n.id===id);if(n)n.starving=true})
     await sleep(3000)
     for(const id of starving){

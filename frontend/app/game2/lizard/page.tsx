@@ -12,6 +12,8 @@ const STRIKE_R    = 100
 const CARD_SIZE   = 130
 const LIZARD_SIZE = 340
 const MOUTH_SVG   = { x: 43, y: 135 }
+// Keep bubbles clear of the lizard body (lizard left edge = w - (LIZARD_SIZE - 50))
+const LIZARD_GUARD = LIZARD_SIZE - 50 + CARD_SIZE / 2  // ≈ 355
 
 interface AnimalCard {
   id: string
@@ -56,7 +58,7 @@ function initBubbles(w: number, h: number, mX: number, mY: number): Bubble[] {
     let x: number, y: number, tries = 0
     do {
       const topBound = Math.round(h / 5)
-      x = 80 + Math.random() * (w - 200); y = topBound + Math.random() * (h - topBound - 120); tries++
+      x = 80 + Math.random() * (w - LIZARD_GUARD - 160); y = topBound + Math.random() * (h - topBound - 120); tries++
     } while (tries < 60 && Math.hypot(x - mX, y - mY) < REPEL_R + 80)
     return { id: a.id, x, y, ...seedVel(a.id), eaten: false }
   })
@@ -139,7 +141,7 @@ export default function LizardPage() {
       if (spd < 0.1) { vx *= 1.04; vy *= 1.04 }
       x += vx; y += vy
       const topBound = Math.round(h / 5)
-      if (x <= 80) { x = 80; vx = Math.abs(vx) } if (x >= w - 80) { x = w - 80; vx = -Math.abs(vx) }
+      if (x <= 80) { x = 80; vx = Math.abs(vx) } if (x >= w - LIZARD_GUARD) { x = w - LIZARD_GUARD; vx = -Math.abs(vx) }
       if (y <= topBound) { y = topBound; vy = Math.abs(vy) } if (y >= h - 80) { y = h - 80; vy = -Math.abs(vy) }
       return { ...b, x, y, vx, vy }
     })

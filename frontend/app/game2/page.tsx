@@ -95,13 +95,14 @@ export default function Game2Page() {
     return () => stopBgMusic()
   }, [])
 
-  const handleDragStart = useCallback((species: BubbleSpecies, el: HTMLElement) => {
+  const handleDragStart = useCallback((species: BubbleSpecies, el: HTMLElement, pointerId: number) => {
     if (locked || eaten.has(species.scientific_name)) return
     const rect = el.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
 
     const onMove = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return
       setDrag((p) => p ? { ...p, x: e.clientX - cx, y: e.clientY - cy } : null)
       const mr = mouthRef.current?.getBoundingClientRect()
       setIsOverMouth(!!mr &&
@@ -110,6 +111,7 @@ export default function Game2Page() {
     }
 
     const onUp = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return
       window.removeEventListener("pointermove", onMove)
       window.removeEventListener("pointerup", onUp)
       const mr = mouthRef.current?.getBoundingClientRect()

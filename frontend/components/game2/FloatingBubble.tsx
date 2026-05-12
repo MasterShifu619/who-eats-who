@@ -15,7 +15,7 @@ interface FloatingBubbleProps {
   initialX: number
   initialY: number
   size?: number
-  onDragStart: (species: BubbleSpecies, el: HTMLElement) => void
+  onDragStart: (species: BubbleSpecies, el: HTMLElement, pointerId: number) => void
   onKeyboardFeed: (species: BubbleSpecies) => void
   spit?: boolean
   onSpitDone?: () => void
@@ -89,7 +89,7 @@ export default function FloatingBubble({
       whileTap={{ scale: 0.96 }}
       onPointerDown={(e) => {
         e.preventDefault()
-        if (ref.current) onDragStart(species, ref.current)
+        if (ref.current) onDragStart(species, ref.current, e.pointerId)
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onKeyboardFeed(species) }
