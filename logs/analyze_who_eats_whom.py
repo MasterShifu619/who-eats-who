@@ -8,11 +8,14 @@
 #   Session splitting strategy:
 #     1. Split rows by IP
 #     2. Within each IP, split further by device (browser type)
-#     3. Within each IP+device stream, split by STARTED events
+#     3. Within each IP+device stream, split by TUTORIAL_STARTED events
+#        (also supports legacy STARTED events from before dual-timestamp logging)
 #     4. All sessions sorted by start time at the end
 #
-#   Session duration is measured from first non-STARTED event to last event
-#   (time in to time out), to capture the full play window.
+#   Two timestamps are tracked per session:
+#     - TUTORIAL_STARTED: page load / tutorial shown (person walks up)
+#     - GAME_STARTED:     tutorial dismissed (person starts playing)
+#   This allows separating idle tutorial dwell time from actual gameplay.
 #   All timestamps are converted from UTC to EDT (UTC-4).
 #
 # Usage:
@@ -27,10 +30,20 @@
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # 1. SESSION IDENTIFICATION
-#    A new session is defined by a "SESSION | STARTED" log event. This is
-#    triggered every time the game page is loaded or refreshed.
+#    A new session is defined by a TUTORIAL_STARTED log event (or legacy STARTED).
+#    This fires every time the game page loads.
 #
-# 2. DEVICE SEPARATION (shared WiFi)
+# 2. DUAL TIMESTAMPS
+#    TUTORIAL_STARTED = page load. The tutorial overlay appears and may sit idle
+#    for a long time at exhibitions between visitors.
+#    GAME_STARTED = fired when the user dismisses the tutorial (skip or finish).
+#    Sessions where GAME_STARTED is missing means the visitor left before
+#    touching the tutorial dismiss button.
+#    tutorial_duration = GAME_STARTED - TUTORIAL_STARTED (tutorial idle time)
+#    game_duration     = last event   - GAME_STARTED      (actual play time)
+#    total_duration    = last event   - TUTORIAL_STARTED   (full session)
+#
+# 3. DEVICE SEPARATION (shared WiFi)
 #    The event was hosted on a shared WiFi network, meaning multiple devices
 #    could share the same IP address. Logs from different devices were therefore
 #    interleaved under the same IP in some sessions.
@@ -39,11 +52,6 @@
 #    iPad / iPhone / Android). Each unique IP+device combination is treated as
 #    a separate independent stream before session splitting is applied.
 #
-# 3. SESSION DURATION (linger time)
-#    Measured as first event to last event within the session. Unlike the
-#    lizard game, every event (ADDED/DELETED/DELETED_CASCADE) is meaningful
-#    interaction — there is no idle drag-delay to exclude.
-#
 # 4. CASCADE GROUPING
 #    DELETED_CASCADE events that occur within CASCADE_GAP_SECONDS of each
 #    other are treated as a single cascade event (one removal triggering a
@@ -51,16 +59,16 @@
 #    distinct cascades. CASCADE_GAP_SECONDS is set to 10s.
 #
 # 5. TIME TO SUN
-#    Measured from the STARTED timestamp to the first ADDED event for "Sun".
-#    Sessions where Sun was never added have this as None.
+#    Measured from GAME_STARTED (or TUTORIAL_STARTED if no GAME_STARTED) to
+#    the first ADDED event for "Sun". Sessions where Sun was never added: None.
 #
 # 6. FIRST ANIMAL AFTER SUN
 #    The first ADDED event (for any animal other than "Sun") that occurs after
 #    the first Sun ADDED event in the session.
 #
 # 7. TIME TO CASCADE
-#    Measured from the STARTED timestamp to the first DELETED_CASCADE event
-#    in the session. Sessions with no cascades have this as None.
+#    Measured from GAME_STARTED (or TUTORIAL_STARTED if no GAME_STARTED) to
+#    the first DELETED_CASCADE event. Sessions with no cascades: None.
 #
 # 8. TIMEZONE
 #    All timestamps in the raw logs are in UTC (from Loki/Grafana).
@@ -134,12 +142,14 @@ for row in rows:
     key = (row["ip"], row["device"])
     streams[key].append(row)
 
-# ── Step 2: Within each stream, split by STARTED events ───────────────────────
+# ── Step 2: Within each stream, split by TUTORIAL_STARTED (or legacy STARTED) ─
+SESSION_START_ACTIONS = {"TUTORIAL_STARTED", "STARTED"}
+
 all_sessions = []
 for (ip, device), stream_rows in streams.items():
     current = []
     for row in stream_rows:
-        if row["action"] == "STARTED":
+        if row["action"] in SESSION_START_ACTIONS:
             if current:
                 all_sessions.append(current)
             current = [row]
@@ -159,22 +169,31 @@ print(f"{'='*70}\n")
 session_stats = []
 
 for i, session in enumerate(all_sessions, 1):
-    session_start = session[0]["timestamp"]
-    ip            = session[0]["ip"]
-    device        = session[0]["device"]
+    tutorial_start = session[0]["timestamp"]
+    ip             = session[0]["ip"]
+    device         = session[0]["device"]
 
-    events = [r for r in session if r["action"] != "STARTED"]
-    time_in  = events[0]["timestamp"] if events else session_start
-    time_out = events[-1]["timestamp"] if events else session_start
-    duration = (time_out - time_in).total_seconds()
+    # GAME_STARTED = when tutorial was dismissed
+    game_started_events = [r for r in session if r["action"] == "GAME_STARTED"]
+    game_start = game_started_events[0]["timestamp"] if game_started_events else None
+
+    # Use game_start as reference for time-to-X metrics; fall back to tutorial_start
+    ref_start = game_start if game_start else tutorial_start
+
+    play_events = [r for r in session if r["action"] not in SESSION_START_ACTIONS and r["action"] != "GAME_STARTED"]
+    time_out = play_events[-1]["timestamp"] if play_events else (game_start or tutorial_start)
+
+    tutorial_duration = (game_start - tutorial_start).total_seconds() if game_start else None
+    game_duration     = (time_out - game_start).total_seconds() if game_start and play_events else None
+    total_duration    = (time_out - tutorial_start).total_seconds()
 
     adds     = [r for r in session if r["action"] == "ADDED"]
     deletes  = [r for r in session if r["action"] == "DELETED"]
     cascades_raw = [r for r in session if r["action"] == "DELETED_CASCADE"]
 
-    # Time to first Sun added
+    # Time to first Sun added (measured from game start)
     sun_events = [r for r in adds if r["animal"] == "Sun"]
-    time_to_sun = (sun_events[0]["timestamp"] - session_start).total_seconds() if sun_events else None
+    time_to_sun = (sun_events[0]["timestamp"] - ref_start).total_seconds() if sun_events else None
 
     # First animal added after Sun
     first_after_sun = None
@@ -194,30 +213,32 @@ for i, session in enumerate(all_sessions, 1):
     cascade_sizes  = [len(g) for g in cascade_groups]
     longest_cascade_idx = cascade_sizes.index(max(cascade_sizes)) if cascade_sizes else None
 
-    # Time to first cascade
-    time_to_cascade = (cascades_raw[0]["timestamp"] - session_start).total_seconds() if cascades_raw else None
+    # Time to first cascade (measured from game start)
+    time_to_cascade = (cascades_raw[0]["timestamp"] - ref_start).total_seconds() if cascades_raw else None
 
     session_stats.append({
-        "session_num":       i,
-        "ip":                ip,
-        "device":            device,
-        "session_start":     session_start,
-        "time_in":           time_in,
-        "time_out":          time_out,
-        "duration":          duration,
-        "adds":              adds,
-        "deletes":           deletes,
-        "cascades_raw":      cascades_raw,
-        "cascade_groups":    cascade_groups,
-        "cascade_sizes":     cascade_sizes,
+        "session_num":         i,
+        "ip":                  ip,
+        "device":              device,
+        "tutorial_start":      tutorial_start,
+        "game_start":          game_start,
+        "time_out":            time_out,
+        "tutorial_duration":   tutorial_duration,
+        "game_duration":       game_duration,
+        "total_duration":      total_duration,
+        "adds":                adds,
+        "deletes":             deletes,
+        "cascades_raw":        cascades_raw,
+        "cascade_groups":      cascade_groups,
+        "cascade_sizes":       cascade_sizes,
         "longest_cascade_idx": longest_cascade_idx,
-        "time_to_sun":       time_to_sun,
-        "first_after_sun":   first_after_sun,
-        "add_counter":       add_counter,
-        "delete_counter":    delete_counter,
-        "most_deleted":      most_deleted,
-        "time_to_cascade":   time_to_cascade,
-        "all_events":        session,
+        "time_to_sun":         time_to_sun,
+        "first_after_sun":     first_after_sun,
+        "add_counter":         add_counter,
+        "delete_counter":      delete_counter,
+        "most_deleted":        most_deleted,
+        "time_to_cascade":     time_to_cascade,
+        "all_events":          session,
     })
 
 # ── PER SESSION OUTPUT ────────────────────────────────────────────────────────
@@ -225,20 +246,29 @@ print(f"PER SESSION")
 print(f"{'-'*70}")
 
 for s in session_stats:
-    i          = s["session_num"]
-    time_in    = s["time_in"]
-    time_out   = s["time_out"]
-    duration   = s["duration"]
-    device     = s["device"]
-    ip         = s["ip"]
+    i               = s["session_num"]
+    tutorial_start  = s["tutorial_start"]
+    game_start      = s["game_start"]
+    time_out        = s["time_out"]
+    device          = s["device"]
+    ip              = s["ip"]
 
     print(f"\n  Session {i}  |  {device}  |  IP: {ip}")
-    print(f"    Time in:  {time_in.strftime('%H:%M:%S EDT')}")
-    print(f"    Time out: {time_out.strftime('%H:%M:%S EDT')}  ({duration:.0f}s total)")
+    print(f"    Tutorial started: {tutorial_start.strftime('%H:%M:%S EDT')}")
+    if game_start:
+        tut_dur = s["tutorial_duration"]
+        print(f"    Game started:     {game_start.strftime('%H:%M:%S EDT')}  ({tut_dur:.0f}s in tutorial)")
+    else:
+        print(f"    Game started:     — (tutorial never dismissed)")
+    print(f"    Time out:         {time_out.strftime('%H:%M:%S EDT')}")
+    if s["game_duration"] is not None:
+        print(f"    Play time:        {s['game_duration']:.0f}s  (total incl. tutorial: {s['total_duration']:.0f}s)")
+    else:
+        print(f"    Total time:       {s['total_duration']:.0f}s  (no gameplay recorded)")
 
     # Time to Sun
     if s["time_to_sun"] is not None:
-        print(f"    Time from session start to Sun added: {s['time_to_sun']:.1f}s")
+        print(f"    Time from game start to Sun added: {s['time_to_sun']:.1f}s")
     else:
         print(f"    Sun never added")
 
@@ -251,7 +281,7 @@ for s in session_stats:
     # Event order
     print(f"    Event order:")
     for ev in s["all_events"]:
-        if ev["action"] == "STARTED":
+        if ev["action"] in SESSION_START_ACTIONS or ev["action"] == "GAME_STARTED":
             continue
         tag = ev["action"]
         print(f"      {ev['timestamp'].strftime('%H:%M:%S')}  {tag:<18} {ev['animal']}")
@@ -296,8 +326,16 @@ print(f"{'='*70}\n")
 total_sessions = len(session_stats)
 device_counter = Counter(s["device"] for s in session_stats)
 
-durations           = [s["duration"] for s in session_stats]
-avg_linger          = sum(durations) / len(durations) if durations else 0
+sessions_with_game_start = sum(1 for s in session_stats if s["game_start"] is not None)
+
+tutorial_durations  = [s["tutorial_duration"] for s in session_stats if s["tutorial_duration"] is not None]
+avg_tutorial_dur    = sum(tutorial_durations) / len(tutorial_durations) if tutorial_durations else 0
+
+game_durations      = [s["game_duration"] for s in session_stats if s["game_duration"] is not None]
+avg_game_dur        = sum(game_durations) / len(game_durations) if game_durations else 0
+
+total_durations     = [s["total_duration"] for s in session_stats]
+avg_total_dur       = sum(total_durations) / len(total_durations) if total_durations else 0
 
 sun_times           = [s["time_to_sun"] for s in session_stats if s["time_to_sun"] is not None]
 avg_time_to_sun     = sum(sun_times) / len(sun_times) if sun_times else 0
@@ -331,8 +369,13 @@ for device, count in device_counter.most_common():
 
 print(f"\nTIME METRICS")
 print(f"{'-'*70}")
-print(f"  Avg linger time (time in → time out): {avg_linger:.1f}s  ({avg_linger/60:.1f} mins)")
-print(f"  Avg time from session start to Sun:   {avg_time_to_sun:.1f}s  ({avg_time_to_sun/60:.1f} mins)")
+print(f"  Sessions where tutorial was dismissed: {sessions_with_game_start} / {total_sessions}")
+print(f"  Avg tutorial idle time (TUTORIAL_STARTED → GAME_STARTED): {avg_tutorial_dur:.1f}s  ({avg_tutorial_dur/60:.1f} mins)")
+print(f"  (based on {len(tutorial_durations)} sessions with both timestamps)")
+print(f"  Avg actual play time (GAME_STARTED → last event): {avg_game_dur:.1f}s  ({avg_game_dur/60:.1f} mins)")
+print(f"  (based on {len(game_durations)} sessions with gameplay after tutorial dismiss)")
+print(f"  Avg total session time (TUTORIAL_STARTED → last event): {avg_total_dur:.1f}s  ({avg_total_dur/60:.1f} mins)")
+print(f"  Avg time from game start to Sun added: {avg_time_to_sun:.1f}s  ({avg_time_to_sun/60:.1f} mins)")
 print(f"  (based on {len(sun_times)}/{total_sessions} sessions where Sun was added)")
 
 print(f"\nCASCADES")
@@ -393,10 +436,15 @@ try:
 
     ws1.append(["Metric", "Value"]); style_header_row(ws1)
     ws1.append(["Total Sessions", total_sessions])
-    ws1.append(["Avg Linger Time (s)", round(avg_linger, 1)])
-    ws1.append(["Avg Linger Time (min)", round(avg_linger / 60, 2)])
-    ws1.append(["Avg Time to Sun (s)", round(avg_time_to_sun, 1)])
-    ws1.append(["Avg Time to Sun (min)", round(avg_time_to_sun / 60, 2)])
+    ws1.append(["Sessions Where Tutorial Was Dismissed", sessions_with_game_start])
+    ws1.append(["Avg Tutorial Idle Time (s)", round(avg_tutorial_dur, 1)])
+    ws1.append(["Avg Tutorial Idle Time (min)", round(avg_tutorial_dur / 60, 2)])
+    ws1.append(["Avg Actual Play Time (s)", round(avg_game_dur, 1)])
+    ws1.append(["Avg Actual Play Time (min)", round(avg_game_dur / 60, 2)])
+    ws1.append(["Avg Total Session Time (s)", round(avg_total_dur, 1)])
+    ws1.append(["Avg Total Session Time (min)", round(avg_total_dur / 60, 2)])
+    ws1.append(["Avg Time from Game Start to Sun (s)", round(avg_time_to_sun, 1)])
+    ws1.append(["Avg Time from Game Start to Sun (min)", round(avg_time_to_sun / 60, 2)])
     ws1.append(["Sessions With Sun Added", len(sun_times)])
     ws1.append(["Sessions With >= 1 Cascade", sessions_with_cascade])
     ws1.append(["Avg Time to First Cascade (s)", round(avg_time_to_cascade, 1)])
@@ -433,7 +481,8 @@ try:
     ws2 = wb.create_sheet("Per Session")
     ws2.append([
         "Session", "Device", "IP",
-        "Time In (EDT)", "Time Out (EDT)", "Duration (s)",
+        "Tutorial Started (EDT)", "Game Started (EDT)", "Time Out (EDT)",
+        "Tutorial Idle (s)", "Play Time (s)", "Total Time (s)",
         "Time to Sun (s)", "First Animal After Sun",
         "# Cascades", "Longest Cascade (animals)", "Time to First Cascade (s)",
         "Event Type", "Animal", "Cascade #"
@@ -441,17 +490,20 @@ try:
     style_header_row(ws2)
 
     for s in session_stats:
-        i            = s["session_num"]
-        device       = s["device"]
-        ip           = s["ip"]
-        time_in_str  = s["time_in"].strftime("%H:%M:%S")
-        time_out_str = s["time_out"].strftime("%H:%M:%S")
-        duration     = round(s["duration"])
-        time_to_sun  = round(s["time_to_sun"], 1) if s["time_to_sun"] is not None else "N/A"
-        fas          = s["first_after_sun"] or "N/A"
-        n_cascades   = len(s["cascade_groups"])
-        longest_c    = max(s["cascade_sizes"]) if s["cascade_sizes"] else 0
-        ttc          = round(s["time_to_cascade"], 1) if s["time_to_cascade"] is not None else "N/A"
+        i               = s["session_num"]
+        device          = s["device"]
+        ip              = s["ip"]
+        tut_str         = s["tutorial_start"].strftime("%H:%M:%S")
+        game_str        = s["game_start"].strftime("%H:%M:%S") if s["game_start"] else "N/A"
+        time_out_str    = s["time_out"].strftime("%H:%M:%S")
+        tut_dur         = round(s["tutorial_duration"], 1) if s["tutorial_duration"] is not None else "N/A"
+        game_dur        = round(s["game_duration"], 1) if s["game_duration"] is not None else "N/A"
+        total_dur       = round(s["total_duration"], 1)
+        time_to_sun     = round(s["time_to_sun"], 1) if s["time_to_sun"] is not None else "N/A"
+        fas             = s["first_after_sun"] or "N/A"
+        n_cascades      = len(s["cascade_groups"])
+        longest_c       = max(s["cascade_sizes"]) if s["cascade_sizes"] else 0
+        ttc             = round(s["time_to_cascade"], 1) if s["time_to_cascade"] is not None else "N/A"
 
         # Map each cascade event to its cascade number
         cascade_num_map = {}
@@ -459,27 +511,29 @@ try:
             for ev in group:
                 cascade_num_map[id(ev)] = ci
 
-        events = [r for r in s["all_events"] if r["action"] != "STARTED"]
+        events = [r for r in s["all_events"] if r["action"] not in SESSION_START_ACTIONS and r["action"] != "GAME_STARTED"]
         first_event = True
         for ev in events:
             cascade_label = cascade_num_map.get(id(ev), "")
             if first_event:
                 ws2.append([
-                    i, device, ip, time_in_str, time_out_str, duration,
+                    i, device, ip, tut_str, game_str, time_out_str,
+                    tut_dur, game_dur, total_dur,
                     time_to_sun, fas, n_cascades, longest_c, ttc,
                     ev["action"], ev["animal"], cascade_label
                 ])
                 first_event = False
             else:
                 ws2.append([
-                    "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "", "", "", "",
                     ev["action"], ev["animal"], cascade_label
                 ])
 
     set_col_widths(ws2, {
-        "A": 9, "B": 10, "C": 16, "D": 16, "E": 16, "F": 13,
-        "G": 16, "H": 28, "I": 12, "J": 22, "K": 22,
-        "L": 18, "M": 30, "N": 10
+        "A": 9, "B": 10, "C": 16, "D": 22, "E": 20, "F": 18,
+        "G": 16, "H": 14, "I": 14,
+        "J": 16, "K": 28, "L": 12, "M": 22, "N": 22,
+        "O": 18, "P": 30, "Q": 10
     })
 
     out_path = os.path.join(output_dir, "who_eats_whom_analysis.xlsx")

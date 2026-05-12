@@ -80,7 +80,7 @@ const SHELF_MAP: Record<string,string>={
 }
 const SHELF_ORDER=["☀️ Sun","🌱 Plants","🐛 Bugs","🐟 Water Animals","🐸 Land Animals","🦎 Reptiles","🐦 Birds"]
 
-const logEvent = (animal: string, action: "ADDED" | "DELETED" | "STARTED" | "DELETED_CASCADE", state: 0 | 1 | 2 = 0) => {
+const logEvent = (animal: string, action: "ADDED" | "DELETED" | "TUTORIAL_STARTED" | "GAME_STARTED" | "DELETED_CASCADE", state: 0 | 1 | 2 = 0) => {
   fetch("https://api.ipify.org?format=json")
     .then(r => r.json())
     .then(ipData => {
@@ -190,7 +190,7 @@ export default function Game3Page() {
   // Show tutorial on every page load
   useEffect(()=>{
     setShowTutorial(true)
-    logEvent("SESSION", "STARTED")
+    logEvent("SESSION", "TUTORIAL_STARTED")
     setMutedState(getMuted())
     setSpeakState(getSpeakEnabled())
   },[])
@@ -1334,7 +1334,7 @@ export default function Game3Page() {
       {/* ── Tutorial overlay ── */}
       <AnimatePresence>
         {showTutorial && (
-          <Tutorial onDone={() => setShowTutorial(false)} />
+          <Tutorial onDone={() => { logEvent("SESSION", "GAME_STARTED"); setShowTutorial(false) }} />
         )}
       </AnimatePresence>
     </div>
