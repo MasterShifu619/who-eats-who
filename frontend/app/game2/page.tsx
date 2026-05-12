@@ -141,6 +141,27 @@ export default function Game2Page() {
     window.addEventListener("pointerup", onUp)
   }, [locked, eaten])
 
+  const handleKeyboardFeed = useCallback((species: BubbleSpecies) => {
+    if (locked || eaten.has(species.scientific_name)) return
+    setLocked(true)
+    setHeronState("chewing")
+    setTimeout(() => {
+      if (species.is_prey) {
+        playRemoveSound(species.scientific_name)
+        setHeronState("happy")
+        setEaten((p) => new Set([...p, species.scientific_name]))
+        setScore((s) => s + 1)
+        setFeedback("valid")
+        setTimeout(() => { setHeronState("idle"); setFeedback(null); setLocked(false) }, 2600)
+      } else {
+        setHeronState("spit")
+        setSpitSpecies(species.scientific_name)
+        setFeedback("invalid")
+        setTimeout(() => { setHeronState("idle"); setSpitSpecies(null); setFeedback(null); setLocked(false) }, 2400)
+      }
+    }, 1200)
+  }, [locked, eaten])
+
   const activeBubbles = BUBBLE_SPECIES.filter((s) => !eaten.has(s.scientific_name))
   const fb = feedback ? FEEDBACK[feedback] : null
 
@@ -281,6 +302,7 @@ export default function Game2Page() {
             initialY={pos.y}
             size={BUBBLE_SIZE}
             onDragStart={handleDragStart}
+            onKeyboardFeed={handleKeyboardFeed}
             spit={spitSpecies === species.scientific_name}
             onSpitDone={() => setSpitSpecies(null)}
           />

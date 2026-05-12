@@ -11,6 +11,8 @@ interface DropZoneProps {
   isOver: boolean
   label: string
   onClear: () => void
+  isKeyboardTarget?: boolean
+  onKeyboardDrop?: () => void
 }
 
 // Two slightly different blob shapes for A & B
@@ -33,7 +35,7 @@ const ZONE_COLORS = {
   B: { idle: "rgba(244,237,211,0.80)", hover: "rgba(212,168,71,0.28)", filled: "rgba(232,216,176,0.88)" },
 }
 
-export default function DropZone({ zoneId, species, isOver, label, onClear }: DropZoneProps) {
+export default function DropZone({ zoneId, species, isOver, label, onClear, isKeyboardTarget, onKeyboardDrop }: DropZoneProps) {
   const [hoverInner, setHoverInner] = useState(false)
   const size = 168
 
@@ -47,6 +49,9 @@ export default function DropZone({ zoneId, species, isOver, label, onClear }: Dr
     : colors.idle
 
   const borderRadius = isOver ? shape.hover : shape.idle
+  const kbGlow = isKeyboardTarget && !species
+    ? "0 0 0 3px rgba(107,140,94,0.7), 0 6px 28px rgba(107,140,94,0.3)"
+    : undefined
 
   const localImg = species ? getLocalAnimalImage(species) : null
 
@@ -75,6 +80,16 @@ export default function DropZone({ zoneId, species, isOver, label, onClear }: Dr
       {/* Blob drop zone */}
       <motion.div
         className={isOver ? "wc-blob-animate" : ""}
+        role={isKeyboardTarget && !species ? "button" : undefined}
+        tabIndex={isKeyboardTarget && !species ? 0 : -1}
+        aria-label={species
+          ? `${label}: ${species.common_name || species.scientific_name}`
+          : `${label}, empty${isKeyboardTarget ? " — press Enter to place selected animal" : ""}`}
+        onKeyDown={(e) => {
+          if (isKeyboardTarget && !species && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault(); onKeyboardDrop?.()
+          }
+        }}
         style={{
           width: size,
           height: size,
@@ -83,14 +98,16 @@ export default function DropZone({ zoneId, species, isOver, label, onClear }: Dr
           backdropFilter: "blur(4px)",
           border: isOver
             ? "2px solid rgba(212,168,71,0.6)"
+            : isKeyboardTarget && !species
+            ? "2px solid rgba(107,140,94,0.7)"
             : species
             ? "1.5px solid rgba(92,61,46,0.3)"
             : "1.5px dashed rgba(92,61,46,0.25)",
-          boxShadow: isOver
+          boxShadow: kbGlow ?? (isOver
             ? "0 6px 28px rgba(212,168,71,0.22), inset 0 2px 12px rgba(212,168,71,0.08)"
             : species
             ? "0 4px 20px rgba(60,40,10,0.16), inset 0 1px 6px rgba(255,255,255,0.3)"
-            : "0 2px 12px rgba(60,40,10,0.10), inset 0 1px 4px rgba(255,255,255,0.2)",
+            : "0 2px 12px rgba(60,40,10,0.10), inset 0 1px 4px rgba(255,255,255,0.2)"),
           position: "relative",
           display: "flex",
           alignItems: "center",

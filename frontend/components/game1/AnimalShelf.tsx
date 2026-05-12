@@ -7,6 +7,7 @@ import type { Species } from "@/lib/types"
 
 interface AnimalShelfProps {
   onDragStart: (species: Species, originEl: HTMLElement, localImage: string | null) => void
+  onKeyboardSelect: (species: Species, localImage: string | null) => void
   placedSpecies: string[]
 }
 
@@ -51,7 +52,7 @@ function getTaxonEmoji(species: Species): string {
   return "🐾"
 }
 
-export default function AnimalShelf({ onDragStart, placedSpecies }: AnimalShelfProps) {
+export default function AnimalShelf({ onDragStart, onKeyboardSelect, placedSpecies }: AnimalShelfProps) {
   const [species, setSpecies] = useState<Species[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch]   = useState("")
@@ -178,6 +179,9 @@ export default function AnimalShelf({ onDragStart, placedSpecies }: AnimalShelfP
                       const el = itemRefs.current[s.scientific_name]
                       if (el) onDragStart(s, el, localImg)
                     }}
+                    onKeyboardSelect={() => {
+                      if (!isPlaced) onKeyboardSelect(s, localImg)
+                    }}
                   />
                 </motion.div>
               )
@@ -218,14 +222,23 @@ interface SpecimenCardProps {
   emoji: string
   isPlaced: boolean
   onDragStart: (e: React.PointerEvent) => void
+  onKeyboardSelect: () => void
 }
 
-function SpecimenCard({ label, localImg, emoji, isPlaced, onDragStart, species }: SpecimenCardProps) {
+function SpecimenCard({ label, localImg, emoji, isPlaced, onDragStart, onKeyboardSelect, species }: SpecimenCardProps) {
   const [hover, setHover] = useState(false)
 
   return (
     <motion.div
       className="select-none"
+      role="button"
+      tabIndex={isPlaced ? -1 : 0}
+      aria-label={isPlaced ? `${label}, already placed` : `Select ${label}`}
+      aria-disabled={isPlaced}
+      onKeyDown={(e) => {
+        if (isPlaced) return
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onKeyboardSelect() }
+      }}
       style={{
         /* Deckle-edge card via clip + border-radius trick */
         background: "rgba(255, 252, 238, 0.92)",
@@ -248,7 +261,6 @@ function SpecimenCard({ label, localImg, emoji, isPlaced, onDragStart, species }
       onPointerDown={onDragStart}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
-      aria-label={label}
     >
       {/* Animal illustration */}
       <div

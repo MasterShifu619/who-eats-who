@@ -16,6 +16,7 @@ interface FloatingBubbleProps {
   initialY: number
   size?: number
   onDragStart: (species: BubbleSpecies, el: HTMLElement) => void
+  onKeyboardFeed: (species: BubbleSpecies) => void
   spit?: boolean
   onSpitDone?: () => void
 }
@@ -34,7 +35,7 @@ function getFloatAnim(seed: string) {
 
 export default function FloatingBubble({
   species, initialX, initialY, size = 96,
-  onDragStart, spit = false, onSpitDone,
+  onDragStart, onKeyboardFeed, spit = false, onSpitDone,
 }: FloatingBubbleProps) {
   const controls = useAnimationControls()
   const ref = useRef<HTMLDivElement>(null)
@@ -81,11 +82,17 @@ export default function FloatingBubble({
         alignItems: "center",
         gap: 5,
       }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${species.common_name} — press Enter to feed to heron`}
       whileHover={{ scale: 1.07, rotate: f.rotate + 2 }}
       whileTap={{ scale: 0.96 }}
       onPointerDown={(e) => {
         e.preventDefault()
         if (ref.current) onDragStart(species, ref.current)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onKeyboardFeed(species) }
       }}
     >
       {/* SVG image */}

@@ -851,6 +851,20 @@ export default function Game3Page() {
           boxShadow:isDay?"0 2px 8px rgba(60,40,10,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
           touchAction:"none",
         }}
+        tabIndex={placedIds.has(node.id) ? -1 : 0}
+        role="button"
+        aria-label={placedIds.has(node.id) ? `${node.label}, already placed` : `Place ${node.label}`}
+        aria-disabled={placedIds.has(node.id)}
+        onKeyDown={(e)=>{
+          if(placedIds.has(node.id)) return
+          if(e.key==="Enter"||e.key===" "){
+            e.preventDefault()
+            const canvas=canvasRef.current; if(!canvas) return
+            const cx=shelfPos==="left"?(SHELF_W+dims.w)/2:shelfPos==="right"?(dims.w-SHELF_W)/2:dims.w/2
+            const cy=shelfPos==="bottom"?(dims.h-SHELF_H)/2:dims.h/2
+            placeAnimal(node.id,cx,cy)
+          }
+        }}
         onPointerDown={e=>handleShelfDragStart(e,node.id)}>
         {pngSrc?(
           <img src={pngSrc} alt={node.label} aria-label={node.label}
@@ -885,7 +899,41 @@ export default function Game3Page() {
       <canvas ref={canvasRef} style={{display:"block",touchAction:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}
         onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onPointerCancel={handlePointerUp}
-        onContextMenu={e=>e.preventDefault()}/>
+        onContextMenu={e=>e.preventDefault()}
+        aria-label="Food web canvas — use the Field Specimens shelf to add animals"
+        role="img"
+      />
+
+      {/* ── ARIA tree: screen-reader parallel DOM for canvas contents ── */}
+      <div role="region" aria-label="Food web contents" style={SR_ONLY}>
+        {placedIds.size === 0
+          ? <p>No animals placed yet. Use the Field Specimens shelf to add animals.</p>
+          : <p>{placedIds.size} animal{placedIds.size !== 1 ? "s" : ""} in the food web.</p>
+        }
+        <ul aria-label="Placed animals">
+          {[...placedIds].map(id => {
+            const def = STATIC_NODES.find(n => n.id === id)
+            if (!def) return null
+            const prey = id === SUN_ID ? [] : ALL_EDGES.filter(([p, pred]) => pred === id && placedIds.has(p)).map(([p]) => p)
+            const predators = id === SUN_ID ? [] : ALL_EDGES.filter(([p, pred]) => p === id && placedIds.has(pred)).map(([, pred]) => pred)
+            const desc = id === SUN_ID
+              ? "energy source for all producers"
+              : [
+                  prey.length ? `eats: ${prey.join(", ")}` : "no prey currently placed",
+                  predators.length ? `eaten by: ${predators.join(", ")}` : "no predators currently placed",
+                ].join(". ")
+            return (
+              <li key={id}>
+                <span>{def.label} — {desc}.</span>
+                {" "}
+                <button onClick={() => deleteNodeAnimated(id)} aria-label={`Remove ${def.label} from food web`}>
+                  Remove
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
 
       {/* ── Title + Message row ── */}
       <div style={{
@@ -1013,17 +1061,6 @@ export default function Game3Page() {
                     Field Specimens
                   </span>
                 )}
-                <button
-                  onClick={()=>{ const next=!mutedState; setMuted(next); setMutedState(next) }}
-                  aria-label={mutedState ? "Unmute sounds" : "Mute sounds"}
-                  style={{
-                    width:24,height:24,padding:0,fontSize:13,lineHeight:"22px",
-                    background:"transparent",cursor:"pointer",
-                    border:isDay?"1px solid rgba(92,61,46,0.15)":"1px solid rgba(255,255,255,0.08)",
-                    borderRadius:4,
-                    color:isDay?"rgba(92,61,46,0.6)":"rgba(120,150,190,0.6)",
-                  }}
-                >{mutedState?"🔇":"🔊"}</button>
                 <button onClick={autoFill} style={{
                   padding:"4px 8px",marginLeft:shelfPos==="bottom"?0:0,
                   fontFamily:"var(--font-mansalva), cursive",fontSize:11,
@@ -1119,6 +1156,20 @@ export default function Game3Page() {
             }}>☰ Creatures</motion.button>
         )}
       </AnimatePresence>
+
+      {/* ── Mute button — always visible top-right ── */}
+      <button
+        onClick={()=>{ const next=!mutedState; setMuted(next); setMutedState(next) }}
+        aria-label={mutedState ? "Unmute sounds" : "Mute sounds"}
+        style={{
+          position:"absolute", top:16, right:16, zIndex:30,
+          width:36, height:36, padding:0, fontSize:18, lineHeight:"34px",
+          background:isDay?"rgba(244,237,211,0.88)":"rgba(12,18,28,0.88)",
+          border:isDay?"1px solid rgba(92,61,46,0.2)":"1px solid rgba(255,255,255,0.1)",
+          borderRadius:"50%", cursor:"pointer",
+          boxShadow:isDay?"0 2px 8px rgba(44,24,16,0.12)":"0 2px 8px rgba(0,0,0,0.4)",
+        }}
+      >{mutedState?"🔇":"🔊"}</button>
 
       {/* ── Hold-to-remove hint pill ── fades in once any animal is placed */}
       <AnimatePresence>

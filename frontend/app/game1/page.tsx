@@ -29,6 +29,7 @@ export default function Game1Page() {
   const prefersReduced = useReducedMotion()
   const [zoneA, setZoneA] = useState<Species | null>(null)
   const [zoneB, setZoneB] = useState<Species | null>(null)
+  const [keyboardPick, setKeyboardPick] = useState<{ species: Species; localImage: string | null } | null>(null)
   const [drag, setDrag] = useState<DragState | null>(null)
   const [overZone, setOverZone] = useState<"A" | "B" | null>(null)
   const [result, setResult] = useState<WhoEatsWhomResult | null>(null)
@@ -120,6 +121,23 @@ export default function Game1Page() {
     window.addEventListener("pointerup", onUp)
   }, [zoneA, zoneB])
 
+  const handleKeyboardSelect = useCallback((species: Species, localImage: string | null) => {
+    setKeyboardPick({ species, localImage })
+  }, [])
+
+  const handleKeyboardDrop = useCallback((zone: "A" | "B") => {
+    if (!keyboardPick) return
+    if (zone === "A" && !zoneA) setZoneA(keyboardPick.species)
+    else if (zone === "B" && !zoneB) setZoneB(keyboardPick.species)
+    setKeyboardPick(null)
+  }, [keyboardPick, zoneA, zoneB])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setKeyboardPick(null) }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [])
+
   const placedSpecies = [zoneA?.scientific_name, zoneB?.scientific_name].filter(Boolean) as string[]
 
   const ariaStatus = checking
@@ -161,7 +179,7 @@ export default function Game1Page() {
 
       {/* ── Left shelf ── */}
       <div style={{ position: "relative", zIndex: 10 }}>
-        <AnimalShelf onDragStart={handleDragStart} placedSpecies={placedSpecies} />
+        <AnimalShelf onDragStart={handleDragStart} onKeyboardSelect={handleKeyboardSelect} placedSpecies={placedSpecies} />
       </div>
 
       {/* ── Main canvas area ── */}
@@ -245,6 +263,23 @@ export default function Game1Page() {
             )}
           </AnimatePresence>
 
+          {/* Keyboard-pick status banner */}
+          {keyboardPick && (
+            <div
+              role="status"
+              style={{
+                position: "absolute", top: -32, left: "50%", transform: "translateX(-50%)",
+                fontFamily: "var(--font-playfair), serif", fontStyle: "italic",
+                fontSize: 12, color: "rgba(107,140,94,0.95)",
+                background: "rgba(244,237,211,0.95)", padding: "4px 14px",
+                borderRadius: 20, border: "1px solid rgba(107,140,94,0.5)",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {keyboardPick.species.common_name} selected — Tab to a zone, Enter to place, Escape to cancel
+            </div>
+          )}
+
           <div ref={zoneARef}>
             <DropZone
               zoneId="A"
@@ -252,6 +287,8 @@ export default function Game1Page() {
               isOver={overZone === "A"}
               label="First Creature"
               onClear={() => setZoneA(null)}
+              isKeyboardTarget={!!keyboardPick && !zoneA}
+              onKeyboardDrop={() => handleKeyboardDrop("A")}
             />
           </div>
 
@@ -277,6 +314,8 @@ export default function Game1Page() {
               isOver={overZone === "B"}
               label="Second Creature"
               onClear={() => setZoneB(null)}
+              isKeyboardTarget={!!keyboardPick && !zoneB}
+              onKeyboardDrop={() => handleKeyboardDrop("B")}
             />
           </div>
         </div>
